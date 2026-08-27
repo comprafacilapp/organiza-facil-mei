@@ -1,7 +1,9 @@
 {
+  "id": "./",
   "name": "Organiza Fácil",
   "short_name": "Organiza Fácil",
-  "start_url": "./index.html",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1f6feb",
@@ -10,12 +12,14 @@
     {
       "src": "./icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "./icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -1,0 +1,3437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organiza Fácil</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    color: #222;
+}
+
+header {
+    background: #1f6feb;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+header p {
+    margin: 8px 0 0;
+}
+
+main {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+button {
+    border: none;
+    border-radius: 15px;
+    padding: 15px 10px;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,.10);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.icone {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.tela {
+    display: none;
+}
+
+.tela.ativa {
+    display: block;
+}
+
+.formulario {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.10);
+}
+
+.formulario h2 {
+    margin-top: 0;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.botao-salvar {
+    width: 100%;
+    background: #1f6feb;
+    color: white;
+    font-weight: bold;
+}
+
+.botao-voltar {
+    width: 100%;
+    margin-top: 12px;
+    background: #e5e7eb;
+}
+
+.pesquisa {
+    margin-top: 20px;
+}
+
+.item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.item strong {
+    font-size: 18px;
+}
+
+.acoes {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.botao-editar {
+    background: #fff3cd;
+    flex: 1;
+    padding: 10px;
+}
+
+.botao-excluir {
+    background: #f8d7da;
+    flex: 1;
+    padding: 10px;
+}
+
+.titulo-lista {
+    margin-top: 25px;
+}
+
+.resumo-financeiro {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.resumo {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.resumo strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.saldo {
+    font-size: 24px !important;
+}
+
+.entrada {
+    border-left: 5px solid #2e8b57;
+}
+
+.saida {
+    border-left: 5px solid #c0392b;
+}
+
+.total-orcamento {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.total-orcamento strong {
+    display: block;
+    font-size: 26px;
+    margin-top: 5px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+    font-size: 13px;
+}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+button {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 16px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px;
+}
+
+main {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+}
+
+.menu {
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    header p {
+        font-size: 15px;
+    }
+
+    .menu button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .item-lista {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .item-lista button {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    footer {
+        padding: 15px;
+    }
+}
+
+</style>
+<link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+<header>
+    <h1>ORGANIZA FÁCIL</h1>
+    <p>Seu dia organizado de forma simples</p>
+</header>
+
+<main>
+
+<!-- MENU -->
+
+<div id="menuPrincipal" class="tela ativa">
+
+    <div class="menu">
+
+        <button onclick="abrirClientes()">
+            <span class="icone">👥</span>
+            Clientes
+        </button>
+
+        <button onclick="abrirAnotacoes()">
+            <span class="icone">📝</span>
+            Anotações
+        </button>
+
+        <button onclick="abrirAgenda()">
+            <span class="icone">📅</span>
+            Agenda
+        </button>
+
+        <button onclick="abrirFinanceiro()">
+            <span class="icone">💰</span>
+            Financeiro
+        </button>
+
+        <button onclick="abrirOrcamentos()">
+            <span class="icone">🧾</span>
+            Orçamentos
+        </button>
+
+        <button onclick="abrirDocumentos()">
+            <span class="icone">📄</span>
+            Documentos
+        </button>
+<button onclick="abrirServicos()">
+    <span class="icone">🔧</span>
+    Serviços
+</button>
+        
+
+        
+
+        <button onclick="abrirConfiguracoes()">
+            <span class="icone">⚙️</span>
+            Configurações
+        </button>
+
+    </div>
+</div>
+
+<div id="telaDocumentos" class="tela">
+
+    <div class="formulario">
+
+        <h2>📄 Documentos</h2>
+
+        <input id="nomeDocumento"
+               type="text"
+               placeholder="Nome do documento">
+
+        <input id="tipoDocumento"
+               type="text"
+               placeholder="Tipo de documento">
+
+        <input id="dataDocumento"
+               type="date">
+
+        <textarea id="observacaoDocumento"
+                  placeholder="Observações"></textarea>
+
+        
+<button id="botaoSalvarDocumento"
+        class="botao-salvar"
+        onclick="salvarDocumento()">
+    💾 Salvar Documento
+</button>
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaDocumento"
+               placeholder="🔎 Pesquisar documento..."
+               oninput="pesquisarDocumentos()">
+
+    </div>
+
+    <h2 class="titulo-lista">
+        📋 Meus Documentos
+    </h2>
+
+    <div id="listaDocumentos"></div>
+
+</div>
+<div id="telaServicos" class="tela">
+
+    <div class="formulario">
+
+        <h2>🔧 Serviços</h2>
+
+        <input id="nomeServico"
+               type="text"
+               placeholder="Nome do serviço">
+
+        <textarea id="descricaoServico"
+                  placeholder="Descrição do serviço"></textarea>
+
+        <input id="valorServico"
+               type="number"
+               step="0.01"
+               placeholder="Valor do serviço">
+
+        <input id="tempoServico"
+               type="text"
+               placeholder="Tempo estimado">
+
+        <button id="botaoSalvarServico"
+        class="botao-salvar"
+        onclick="salvarServico()">
+    💾 Salvar Serviço
+</button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaServico"
+               placeholder="🔎 Pesquisar serviço..."
+               oninput="pesquisarServicos()">
+
+    </div>
+
+    <h2 class="titulo-lista">
+        📋 Meus Serviços
+    </h2>
+
+    <div id="listaServicos"></div>
+
+</div>
+
+<!-- CONFIGURAÇÕES -->
+            
+
+    
+
+
+
+<!-- CONFIGURAÇÕES -->
+<div id="telaConfiguracoes" class="tela">
+
+    <div class="formulario">
+
+        <h2>⚙️ Configurações da Empresa</h2>
+
+        <input id="nomeEmpresa"
+               type="text"
+               placeholder="Nome da empresa">
+
+        <input id="cnpjEmpresa"
+               type="text"
+               placeholder="CNPJ ou CPF">
+
+        <input id="telefoneEmpresa"
+               type="tel"
+               placeholder="Telefone">
+
+        <input id="emailEmpresa"
+               type="email"
+               placeholder="E-mail">
+
+        <input id="enderecoEmpresa"
+               type="text"
+               placeholder="Endereço">
+
+        <button id="botaoSalvarConfiguracoes"
+                class="botao-salvar"
+                onclick="salvarConfiguracoes()">
+            💾 Salvar Configurações
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div id="listaConfiguracoes" class="lista">
+
+    </div>
+
+</div>
+<!-- CLIENTES -->
+
+<div id="telaClientes" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloCliente">👥 Novo Cliente</h2>
+
+        <input id="nomeCliente"
+               type="text"
+               placeholder="Nome do cliente">
+
+        <input id="telefoneCliente"
+               type="tel"
+               placeholder="Telefone">
+
+        <input id="enderecoCliente"
+               type="text"
+               placeholder="Endereço">
+
+        <textarea id="observacaoCliente"
+                  placeholder="Observações"></textarea>
+
+        <button class="botao-salvar"
+                id="botaoCliente"
+                onclick="salvarCliente()">
+            💾 Salvar Cliente
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaCliente"
+               placeholder="🔎 Pesquisar cliente..."
+               oninput="pesquisarClientes()">
+
+    </div>
+
+    <h2 class="titulo-lista">📋 Meus Clientes</h2>
+
+    <div id="listaClientes"></div>
+
+</div>
+
+
+<!-- ANOTAÇÕES -->
+
+<div id="telaAnotacoes" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloAnotacao">📝 Nova Anotação</h2>
+
+        <input id="tituloAnotacaoInput"
+               placeholder="Título da anotação">
+
+        <textarea id="textoAnotacao"
+                  placeholder="Escreva sua anotação aqui..."></textarea>
+
+        <button class="botao-salvar"
+                id="botaoAnotacao"
+                onclick="salvarAnotacao()">
+            💾 Salvar Anotação
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaAnotacao"
+               placeholder="🔎 Pesquisar anotação..."
+               oninput="pesquisarAnotacoes()">
+
+    </div>
+
+    <h2 class="titulo-lista">📋 Minhas Anotações</h2>
+
+    <div id="listaAnotacoes"></div>
+
+</div>
+
+
+<!-- AGENDA -->
+
+<div id="telaAgenda" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloAgenda">📅 Novo Compromisso</h2>
+
+        <input id="dataAgenda"
+               type="date">
+
+        <input id="horaAgenda"
+               type="time">
+
+        <input id="clienteAgenda"
+               type="text"
+               placeholder="Nome do cliente">
+
+        <textarea id="descricaoAgenda"
+                  placeholder="Descrição do compromisso"></textarea>
+
+        <button class="botao-salvar"
+                id="botaoAgenda"
+                onclick="salvarAgenda()">
+            💾 Salvar Compromisso
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaAgenda"
+               placeholder="🔎 Pesquisar compromisso..."
+               oninput="pesquisarAgenda()">
+
+    </div>
+
+    <h2 class="titulo-lista">📋 Minha Agenda</h2>
+
+    <div id="listaAgenda"></div>
+
+</div>
+
+
+<!-- FINANCEIRO -->
+
+<div id="telaFinanceiro" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloFinanceiro">
+            💰 Novo Lançamento
+        </h2>
+
+        <select id="tipoFinanceiro">
+
+            <option value="entrada">
+                ➕ Entrada
+            </option>
+
+            <option value="saida">
+                ➖ Saída
+            </option>
+
+        </select>
+
+        <input id="dataFinanceiro"
+               type="date">
+
+        <input id="descricaoFinanceiro"
+               type="text"
+               placeholder="Descrição">
+
+        <input id="valorFinanceiro"
+               type="number"
+               step="0.01"
+               min="0"
+               placeholder="Valor">
+
+        <button class="botao-salvar"
+                id="botaoFinanceiro"
+                onclick="salvarFinanceiro()">
+            💾 Salvar Lançamento
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <h2 class="titulo-lista">
+        📊 Resumo Financeiro
+    </h2>
+
+    <div class="resumo-financeiro">
+
+        <div class="resumo">
+            ➕ Total de Entradas
+            <strong id="totalEntradas">
+                R$ 0,00
+            </strong>
+        </div>
+
+        <div class="resumo">
+            ➖ Total de Saídas
+            <strong id="totalSaidas">
+                R$ 0,00
+            </strong>
+        </div>
+
+        <div class="resumo">
+            💰 Saldo
+            <strong id="saldoFinanceiro"
+                    class="saldo">
+                R$ 0,00
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="pesquisa">
+
+        <input id="pesquisaFinanceiro"
+               placeholder="🔎 Pesquisar lançamento..."
+               oninput="pesquisarFinanceiro()">
+
+    </div>
+
+    <h2 class="titulo-lista">
+        📋 Lançamentos
+    </h2>
+
+    <div id="listaFinanceiro"></div>
+
+</div>
+
+
+<!-- ORÇAMENTOS -->
+
+<div id="telaOrcamentos" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloOrcamento">
+            🧾 Novo Orçamento
+        </h2>
+
+        <input id="dataOrcamento"
+               type="date">
+
+        <input id="clienteOrcamento"
+               type="text"
+               placeholder="Nome do cliente">
+
+        <input id="servicoOrcamento"
+               type="text"
+               placeholder="Serviço">
+
+        <input id="quantidadeOrcamento"
+               type="number"
+               min="1"
+               value="1"
+               placeholder="Quantidade"
+               oninput="calcularOrcamento()">
+
+        <input id="valorUnitarioOrcamento"
+               type="number"
+               step="0.01"
+               min="0"
+               placeholder="Valor unitário"
+               oninput="calcularOrcamento()">
+
+        <div class="total-orcamento">
+
+            💰 Total do orçamento
+
+            <strong id="totalOrcamento">
+                R$ 0,00
+            </strong>
+
+        </div>
+
+        <textarea id="observacaoOrcamento"
+                  placeholder="Observações"></textarea>
+
+        <button class="botao-salvar"
+                id="botaoOrcamento"
+                onclick="salvarOrcamento()">
+            💾 Salvar Orçamento
+        </button>
+<button class="botao-salvar" onclick="gerarOrcamento()">📄 Gerar Orçamento</button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+
+    <div class="pesquisa">
+
+        <input id="pesquisaOrcamento"
+               placeholder="🔎 Pesquisar orçamento..."
+               oninput="pesquisarOrcamentos()">
+
+    </div>
+
+
+    <h2 class="titulo-lista">
+        📋 Meus Orçamentos
+    </h2>
+
+    <div id="listaOrcamentos"></div>
+
+</div>
+
+</main>
+
+<footer>
+    Organiza Fácil — versão inicial
+</footer>
+
+
+<script>
+
+let clienteEditando = -1;
+let anotacaoEditando = -1;
+let agendaEditando = -1;
+let financeiroEditando = -1;
+let orcamentoEditando = -1;
+
+
+/* =========================
+   TELAS
+========================= */
+
+function esconderTelas() {
+
+    document.getElementById("menuPrincipal")
+        .classList.remove("ativa");
+
+    document.getElementById("telaClientes")
+        .classList.remove("ativa");
+
+    document.getElementById("telaAnotacoes")
+        .classList.remove("ativa");
+
+    document.getElementById("telaAgenda")
+        .classList.remove("ativa");
+
+    document.getElementById("telaFinanceiro")
+        .classList.remove("ativa");
+
+    document.getElementById("telaOrcamentos")
+        .classList.remove("ativa");
+
+    document.getElementById("telaDocumentos")
+        .classList.remove("ativa");
+
+    document.getElementById("telaServicos")
+        .classList.remove("ativa");
+
+    document.getElementById("telaConfiguracoes")
+        .classList.remove("ativa");
+}
+
+function voltarInicio() {
+
+    esconderTelas();
+
+    document.getElementById("menuPrincipal")
+        .classList.add("ativa");
+
+    limparCliente();
+    limparAnotacao();
+    limparAgenda();
+    limparFinanceiro();
+    limparOrcamento();
+}
+
+
+/* =========================
+   CLIENTES
+========================= */
+
+
+
+function abrirConfiguracoes() {
+
+    esconderTelas();
+
+    document.getElementById("telaConfiguracoes")
+        .classList.add("ativa");
+}
+
+function abrirDocumentos() {
+
+    esconderTelas();
+
+    document.getElementById("telaDocumentos")
+        .classList.add("ativa");
+}
+
+function abrirServicos() {
+
+    esconderTelas();
+
+    document.getElementById("telaServicos")
+        .classList.add("ativa");
+}
+
+function salvarDocumento() {
+
+    const nome =
+        document.getElementById("nomeDocumento").value.trim();
+
+    const tipo =
+        document.getElementById("tipoDocumento").value.trim();
+
+    const data =
+        document.getElementById("dataDocumento").value;
+
+    const observacao =
+        document.getElementById("observacaoDocumento").value.trim();
+
+    if (nome === "") {
+
+        alert("Digite o nome do documento.");
+
+        return;
+    }
+
+    let documentos =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    const documento = {
+        nome,
+        tipo,
+        data,
+        observacao
+    };
+
+    documentos.push(documento);
+
+    localStorage.setItem(
+        "documentos",
+        JSON.stringify(documentos)
+    );
+
+    alert("Documento salvo com sucesso!");
+
+
+document.getElementById("nomeDocumento").value = "";
+document.getElementById("tipoDocumento").value = "";
+document.getElementById("dataDocumento").value = "";
+document.getElementById("observacaoDocumento").value = "";
+
+document.querySelector("#telaDocumentos .botao-salvar").innerText =
+    "💾 Salvar Documento";
+
+mostrarDocumentos();
+}
+
+function mostrarDocumentos() {
+
+
+    let documentos =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    const lista =
+        document.getElementById("listaDocumentos");
+
+    lista.innerHTML = "";
+
+    if (documentos.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum documento cadastrado ainda.</p>";
+
+        return;
+    }
+
+    documentos.forEach(function(documento, indice) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "item-lista";
+
+        item.innerHTML = `
+            <h3>📄 ${documento.nome}</h3>
+            <p>📁 Tipo: ${documento.tipo || "Não informado"}</p>
+            <p>📅 Data: ${documento.data || "Não informada"}</p>
+            <p>📝 ${documento.observacao || "Sem observações"}</p>
+
+           <div class="acoes">
+
+    <button
+        class="botao-editar"
+        onclick="editarDocumento(${indice})">
+        ✏️ Editar
+    </button>
+
+    <button
+        class="botao-excluir"
+        onclick="excluirDocumento(${indice})">
+        🗑️ Excluir
+    </button>
+
+</div>
+        `;
+
+        lista.appendChild(item);
+
+    });
+}
+function salvarServico() {document.getElementById("botaoSalvarServico").innerText =
+    "💾 Salvar Serviço";
+
+    const nome =
+        document.getElementById("nomeServico").value.trim();
+
+    const descricao =
+        document.getElementById("descricaoServico").value.trim();
+
+    const valor =
+        document.getElementById("valorServico").value;
+
+    const tempo =
+        document.getElementById("tempoServico").value.trim();
+
+    if (nome === "") {
+
+        alert("Digite o nome do serviço.");
+
+        return;
+    }
+
+    let servicos =
+        JSON.parse(
+            localStorage.getItem("servicos")
+        ) || [];
+
+    const servico = {
+        nome,
+        descricao,
+        valor,
+        tempo
+    };
+
+    servicos.push(servico);
+
+    localStorage.setItem(
+        "servicos",
+        JSON.stringify(servicos)
+    );
+
+    alert("Serviço salvo com sucesso!");
+
+    document.getElementById("nomeServico").value = "";
+    document.getElementById("descricaoServico").value = "";
+    document.getElementById("valorServico").value = "";
+    document.getElementById("tempoServico").value = "";
+
+  mostrarServicos();
+}
+function mostrarServicos() {
+
+    let servicos =
+        JSON.parse(
+            localStorage.getItem("servicos")
+        ) || [];
+
+    const lista =
+        document.getElementById("listaServicos");
+
+    lista.innerHTML = "";
+
+    if (servicos.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum serviço cadastrado ainda.</p>";
+
+        return;
+    }
+
+    servicos.forEach(function(servico, indice) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "item-lista";
+
+        item.innerHTML = `
+            <h3>🔧 ${servico.nome}</h3>
+            <p>📝 ${servico.descricao || "Sem descrição"}</p>
+            <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
+            <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
+
+<div class="acoes">
+
+    <button
+        class="botao-editar"
+        onclick="editarServico(${indice})">
+        ✏️ Editar
+    </button>
+
+    <button
+        class="botao-excluir"
+        onclick="excluirServico(${indice})">
+        🗑️ Excluir
+    </button>
+
+</div>
+        `;
+
+        lista.appendChild(item);
+
+    });
+}function pesquisarServicos() {
+
+    const pesquisa =
+        document.getElementById("pesquisaServico")
+        .value
+        .toLowerCase()
+        .trim();
+
+    let servicos =
+        JSON.parse(
+            localStorage.getItem("servicos")
+        ) || [];
+
+
+    const filtrados =
+        servicos.filter(function(servico) {
+
+            return (
+                (servico.nome || "").toLowerCase().includes(pesquisa) ||
+                (servico.descricao || "").toLowerCase().includes(pesquisa) ||
+                (servico.tempo || "").toLowerCase().includes(pesquisa)
+            );
+
+        });
+
+    mostrarListaServicos(filtrados);
+}
+function mostrarListaServicos(servicos) {
+
+    const lista =
+        document.getElementById("listaServicos");
+
+    lista.innerHTML = "";
+
+    if (servicos.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum serviço encontrado.</p>";
+
+        return;
+    }
+
+    servicos.forEach(function(servico, indice) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "item-lista";
+
+        item.innerHTML = `
+            <h3>🔧 ${servico.nome}</h3>
+            <p>📝 ${servico.descricao || "Sem descrição"}</p>
+            <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
+            <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
+
+            <button onclick="excluirServico(${indice})">
+                🗑️ Excluir
+            </button>
+        `;
+
+        lista.appendChild(item);
+
+    });
+}function excluirServico(indice) {
+
+    let servicos =
+        JSON.parse(
+            localStorage.getItem("servicos")
+        ) || [];
+
+    if (!confirm("Tem certeza que deseja excluir este serviço?")) {
+        return;
+    }
+
+    servicos.splice(indice, 1);
+
+    localStorage.setItem(
+        "servicos",
+        JSON.stringify(servicos)
+    );
+
+    mostrarServicos();
+}function editarServico(indice) {
+
+    let servicos =
+        JSON.parse(
+            localStorage.getItem("servicos")
+        ) || [];
+
+    const servico = servicos[indice];
+
+    if (!servico) {
+        alert("Serviço não encontrado.");
+        return;
+    }
+
+    document.getElementById("nomeServico").value =
+        servico.nome || "";
+
+    document.getElementById("descricaoServico").value =
+        servico.descricao || "";
+
+    document.getElementById("valorServico").value =
+        servico.valor || "";
+
+    document.getElementById("tempoServico").value =
+        servico.tempo || "";
+
+    servicos.splice(indice, 1);
+
+    localStorage.setItem(
+        "servicos",
+        JSON.stringify(servicos)
+    );
+
+   document.getElementById("botaoSalvarServico").innerText =
+    "🔄 Atualizar Serviço";
+ mostrarServicos();
+
+
+}
+function mostrarListaDocumentos(documentos) {
+
+    const lista =
+        document.getElementById("listaDocumentos");
+
+    lista.innerHTML = "";
+
+    if (documentos.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum documento encontrado.</p>";
+
+        return;
+    }
+
+    documentos.forEach(function(documento, indice) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "item-lista";
+
+        item.innerHTML = `
+            <h3>📄 ${documento.nome}</h3>
+
+            <p>📁 Tipo: ${documento.tipo || "Não informado"}</p>
+
+            <p>📅 Data: ${documento.data || "Não informada"}</p>
+
+            <p>📝 ${documento.observacao || "Sem observações"}</p>
+
+            <button onclick="editarDocumento(${indice})">
+                ✏️ Editar
+            </button>
+
+            <button onclick="excluirDocumento(${indice})">
+                🗑️ Excluir
+            </button>
+        `;
+
+        lista.appendChild(item);
+
+    });
+}
+
+
+function pesquisarDocumentos() {
+
+    const pesquisa =
+        document.getElementById("pesquisaDocumento")
+        .value
+        .toLowerCase()
+        .trim();
+
+    let documentos =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    const filtrados =
+        documentos.filter(function(documento) {
+
+            return (
+                documento.nome.toLowerCase().includes(pesquisa) ||
+                documento.tipo.toLowerCase().includes(pesquisa) ||
+                documento.observacao.toLowerCase().includes(pesquisa)
+            );
+
+        });
+
+    mostrarListaDocumentos(filtrados);
+
+}
+
+
+function excluirDocumento(indice) {
+
+    let documentos =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    if (!confirm("Deseja realmente excluir este documento?")) {
+        return;
+    }
+
+    documentos.splice(indice, 1);
+
+    localStorage.setItem(
+        "documentos",
+        JSON.stringify(documentos)
+    );
+
+    mostrarDocumentos();
+
+    alert("Documento excluído com sucesso!");
+}
+
+
+function editarDocumento(indice) {
+
+    let documentos =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    const documento = documentos[indice];
+
+    if (!documento) {
+        alert("Documento não encontrado.");
+        return;
+    }
+
+    document.getElementById("nomeDocumento").value =
+        documento.nome || "";
+
+    document.getElementById("tipoDocumento").value =
+        documento.tipo || "";
+
+    document.getElementById("dataDocumento").value =
+        documento.data || "";
+
+    document.getElementById("observacaoDocumento").value =
+        documento.observacao || "";
+
+    documentos.splice(indice, 1);
+
+    localStorage.setItem(
+        "documentos",
+        JSON.stringify(documentos)
+    );
+
+    document.getElementById("botaoSalvarDocumento").innerText =
+        "🔄 Atualizar Documento";
+
+   
+
+    mostrarDocumentos();
+
+}
+ 
+function salvarConfiguracoes() {
+   
+document.getElementById("botaoSalvarConfiguracoes").innerText =
+    "💾 Salvar Configurações";
+
+    const configuracoes = {
+
+        nome: document.getElementById("nomeEmpresa").value.trim(),
+
+        cnpj: document.getElementById("cnpjEmpresa").value.trim(),
+
+        telefone: document.getElementById("telefoneEmpresa").value.trim(),
+
+        email: document.getElementById("emailEmpresa").value.trim(),
+
+        endereco: document.getElementById("enderecoEmpresa").value.trim()
+    };
+
+    localStorage.setItem(
+        "configuracoesEmpresa",
+        JSON.stringify(configuracoes)
+    );
+
+    mostrarConfiguracoes();
+
+    alert("Configurações salvas com sucesso!");
+
+}
+
+function mostrarConfiguracoes() {
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem("configuracoesEmpresa")
+        );
+
+    const lista =
+        document.getElementById("listaConfiguracoes");
+
+    lista.innerHTML = "";
+
+    if (!configuracoes) {
+
+        lista.innerHTML =
+            "<p>Nenhuma configuração cadastrada ainda.</p>";
+
+        return;
+    }
+
+    const item =
+        document.createElement("div");
+
+    item.className = "item-lista";
+
+    item.innerHTML = `
+        <h3>⚙️ Dados da Empresa</h3>
+
+        <p>🏢 Nome: ${configuracoes.nome || "Não informado"}</p>
+
+        <p>📄 CNPJ/CPF: ${configuracoes.cnpj || "Não informado"}</p>
+
+        <p>📞 Telefone: ${configuracoes.telefone || "Não informado"}</p>
+
+        <p>📧 E-mail: ${configuracoes.email || "Não informado"}</p>
+
+        <p>📍 Endereço: ${configuracoes.endereco || "Não informado"}</p>
+
+    <div class="acoes">
+
+    <button
+        class="botao-editar"
+        onclick="editarConfiguracoes()">
+        ✏️ Editar
+    </button>
+
+    <button
+        class="botao-excluir"
+        onclick="excluirConfiguracoes()">
+        🗑️ Excluir
+    </button>
+
+</div>
+    `;
+
+    lista.appendChild(item);
+}
+
+function editarConfiguracoes() {
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem("configuracoesEmpresa")
+        );
+
+    if (!configuracoes) {
+        alert("Nenhuma configuração encontrada.");
+        return;
+    }
+
+    document.getElementById("nomeEmpresa").value =
+        configuracoes.nome || "";
+
+    document.getElementById("cnpjEmpresa").value =
+        configuracoes.cnpj || "";
+
+    document.getElementById("telefoneEmpresa").value =
+        configuracoes.telefone || "";
+
+    document.getElementById("emailEmpresa").value =
+        configuracoes.email || "";
+
+    document.getElementById("enderecoEmpresa").value =
+        configuracoes.endereco || "";
+
+    document.getElementById("botaoSalvarConfiguracoes").innerText =
+        "🔄 Atualizar Configurações";
+}function excluirConfiguracoes() {
+
+    if (!confirm("Tem certeza que deseja excluir as configurações da empresa?")) {
+        return;
+    }
+
+    localStorage.removeItem("configuracoesEmpresa");
+
+    document.getElementById("nomeEmpresa").value = "";
+    document.getElementById("cnpjEmpresa").value = "";
+    document.getElementById("telefoneEmpresa").value = "";
+    document.getElementById("emailEmpresa").value = "";
+    document.getElementById("enderecoEmpresa").value = "";
+
+    document.getElementById("botaoSalvarConfiguracoes").innerText =
+        "💾 Salvar Configurações";
+
+    mostrarConfiguracoes();
+
+    alert("Configurações excluídas com sucesso!");
+}
+
+function abrirClientes() {
+
+    esconderTelas();
+
+    document.getElementById("telaClientes")
+        .classList.add("ativa");
+
+    mostrarClientes();
+}
+
+
+function salvarCliente() {
+
+    const nome =
+        document.getElementById("nomeCliente")
+        .value.trim();
+
+    const telefone =
+        document.getElementById("telefoneCliente")
+        .value.trim();
+
+    const endereco =
+        document.getElementById("enderecoCliente")
+        .value.trim();
+
+    const observacao =
+        document.getElementById("observacaoCliente")
+        .value.trim();
+
+    if (nome === "") {
+
+        alert("Digite o nome do cliente.");
+
+        return;
+    }
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente = {
+        nome,
+        telefone,
+        endereco,
+        observacao
+    };
+
+    if (clienteEditando === -1) {
+
+        clientes.push(cliente);
+
+        alert(
+            "Cliente " +
+            nome +
+            " salvo com sucesso!"
+        );
+
+    } else {
+
+        clientes[clienteEditando] = cliente;
+
+        alert(
+            "Cliente atualizado com sucesso!"
+        );
+    }
+
+    localStorage.setItem(
+        "clientes",
+        JSON.stringify(clientes)
+    );
+
+    limparCliente();
+
+    mostrarClientes();
+}
+
+
+function limparCliente() {
+
+    document.getElementById("nomeCliente").value = "";
+    document.getElementById("telefoneCliente").value = "";
+    document.getElementById("enderecoCliente").value = "";
+    document.getElementById("observacaoCliente").value = "";
+
+    document.getElementById("tituloCliente").innerText =
+        "👥 Novo Cliente";
+
+    document.getElementById("botaoCliente").innerText =
+        "💾 Salvar Cliente";
+
+    clienteEditando = -1;
+}
+
+
+function mostrarClientes() {
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    mostrarListaClientes(clientes);
+}
+
+
+function mostrarListaClientes(clientes) {
+
+    const lista =
+        document.getElementById("listaClientes");
+
+    lista.innerHTML = "";
+
+    if (clientes.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum cliente cadastrado ainda.</p>";
+
+        return;
+    }
+
+    clientes.forEach(function(cliente, indice) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "item";
+
+        div.innerHTML = `
+
+            <strong>${cliente.nome}</strong><br>
+
+            📞 ${cliente.telefone || "Não informado"}<br>
+
+            📍 ${cliente.endereco || "Não informado"}<br>
+
+            📝 ${cliente.observacao || "Sem observações"}
+
+            <div class="acoes">
+
+                <button
+                    class="botao-editar"
+                    onclick="editarCliente(${indice})">
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="botao-excluir"
+                    onclick="excluirCliente(${indice})">
+                    🗑️ Excluir
+                </button>
+
+            </div>
+        `;
+
+        lista.appendChild(div);
+    });
+}
+
+
+function pesquisarClientes() {
+
+    const texto =
+        document.getElementById("pesquisaCliente")
+        .value
+        .toLowerCase()
+        .trim();
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const resultados =
+        clientes.filter(function(cliente) {
+
+            return cliente.nome
+                .toLowerCase()
+                .includes(texto);
+        });
+
+    mostrarListaClientes(resultados);
+}
+
+
+function editarCliente(indice) {
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[indice];
+
+    document.getElementById("nomeCliente").value =
+        cliente.nome;
+
+    document.getElementById("telefoneCliente").value =
+        cliente.telefone;
+
+    document.getElementById("enderecoCliente").value =
+        cliente.endereco;
+
+    document.getElementById("observacaoCliente").value =
+        cliente.observacao;
+
+    clienteEditando = indice;
+
+    document.getElementById("tituloCliente").innerText =
+        "✏️ Editar Cliente";
+
+    document.getElementById("botaoCliente").innerText =
+        "💾 Atualizar Cliente";
+}
+
+
+function excluirCliente(indice) {
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    if (!confirm(
+        "Deseja realmente excluir este cliente?"
+    )) {
+
+        return;
+    }
+
+    clientes.splice(indice, 1);
+
+    localStorage.setItem(
+        "clientes",
+        JSON.stringify(clientes)
+    );
+
+    alert(
+        "Cliente excluído com sucesso!"
+    );
+
+    mostrarClientes();
+}
+
+
+/* =========================
+   ANOTAÇÕES
+========================= */
+
+function abrirAnotacoes() {
+
+    esconderTelas();
+
+    document.getElementById("telaAnotacoes")
+        .classList.add("ativa");
+
+    mostrarAnotacoes();
+}
+
+
+function salvarAnotacao() {
+
+    const titulo =
+        document.getElementById("tituloAnotacaoInput")
+        .value.trim();
+
+    const texto =
+        document.getElementById("textoAnotacao")
+        .value.trim();
+
+    if (titulo === "") {
+
+        alert("Digite um título.");
+
+        return;
+    }
+
+    if (texto === "") {
+
+        alert("Digite o texto da anotação.");
+
+        return;
+    }
+
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    const anotacao = {
+        titulo,
+        texto
+    };
+
+    if (anotacaoEditando === -1) {
+
+        anotacoes.push(anotacao);
+
+        alert(
+            "Anotação salva com sucesso!"
+        );
+
+    } else {
+
+        anotacoes[anotacaoEditando] =
+            anotacao;
+
+        alert(
+            "Anotação atualizada com sucesso!"
+        );
+    }
+
+    localStorage.setItem(
+        "anotacoes",
+        JSON.stringify(anotacoes)
+    );
+
+    limparAnotacao();
+
+    mostrarAnotacoes();
+}
+
+
+function limparAnotacao() {
+
+    document.getElementById(
+        "tituloAnotacaoInput"
+    ).value = "";
+
+    document.getElementById(
+        "textoAnotacao"
+    ).value = "";
+
+    document.getElementById(
+        "tituloAnotacao"
+    ).innerText =
+        "📝 Nova Anotação";
+
+    document.getElementById(
+        "botaoAnotacao"
+    ).innerText =
+        "💾 Salvar Anotação";
+
+    anotacaoEditando = -1;
+}
+
+
+function mostrarAnotacoes() {
+
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    mostrarListaAnotacoes(anotacoes);
+}
+
+
+function mostrarListaAnotacoes(anotacoes) {
+
+    const lista =
+        document.getElementById(
+            "listaAnotacoes"
+        );
+
+    lista.innerHTML = "";
+
+    if (anotacoes.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhuma anotação cadastrada ainda.</p>";
+
+        return;
+    }
+
+    anotacoes.forEach(function(
+        anotacao,
+        indice
+    ) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "item";
+
+        div.innerHTML = `
+
+            <strong>${anotacao.titulo}</strong>
+
+            <p>${anotacao.texto}</p>
+
+            <div class="acoes">
+
+                <button
+                    class="botao-editar"
+                    onclick="editarAnotacao(${indice})">
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="botao-excluir"
+                    onclick="excluirAnotacao(${indice})">
+                    🗑️ Excluir
+                </button>
+
+            </div>
+        `;
+
+        lista.appendChild(div);
+    });
+}
+
+
+function pesquisarAnotacoes() {
+
+    const texto =
+        document.getElementById(
+            "pesquisaAnotacao"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    const resultados =
+        anotacoes.filter(function(anotacao) {
+
+            return (
+                anotacao.titulo
+                    .toLowerCase()
+                    .includes(texto)
+                ||
+                anotacao.texto
+                    .toLowerCase()
+                    .includes(texto)
+            );
+        });
+
+    mostrarListaAnotacoes(resultados);
+}
+
+
+function editarAnotacao(indice) {
+
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    const anotacao =
+        anotacoes[indice];
+
+    document.getElementById(
+        "tituloAnotacaoInput"
+    ).value =
+        anotacao.titulo;
+
+    document.getElementById(
+        "textoAnotacao"
+    ).value =
+        anotacao.texto;
+
+    anotacaoEditando = indice;
+
+    document.getElementById(
+        "tituloAnotacao"
+    ).innerText =
+        "✏️ Editar Anotação";
+
+    document.getElementById(
+        "botaoAnotacao"
+    ).innerText =
+        "💾 Atualizar Anotação";
+}
+
+
+function excluirAnotacao(indice) {
+
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    if (!confirm(
+        "Deseja realmente excluir esta anotação?"
+    )) {
+
+        return;
+    }
+
+    anotacoes.splice(indice, 1);
+
+    localStorage.setItem(
+        "anotacoes",
+        JSON.stringify(anotacoes)
+    );
+
+    alert(
+        "Anotação excluída com sucesso!"
+    );
+
+    mostrarAnotacoes();
+}
+
+
+/* =========================
+   AGENDA
+========================= */
+
+function abrirAgenda() {
+
+    esconderTelas();
+
+    document.getElementById("telaAgenda")
+        .classList.add("ativa");
+
+    mostrarAgenda();
+}
+
+
+function salvarAgenda() {
+
+    const data =
+        document.getElementById(
+            "dataAgenda"
+        ).value;
+
+    const hora =
+        document.getElementById(
+            "horaAgenda"
+        ).value;
+
+    const cliente =
+        document.getElementById(
+            "clienteAgenda"
+        ).value
+        .trim();
+
+    const descricao =
+        document.getElementById(
+            "descricaoAgenda"
+        ).value
+        .trim();
+
+    if (data === "") {
+
+        alert("Escolha a data.");
+
+        return;
+    }
+
+    if (hora === "") {
+
+        alert("Escolha o horário.");
+
+        return;
+    }
+
+    if (cliente === "") {
+
+        alert("Digite o nome do cliente.");
+
+        return;
+    }
+
+    if (descricao === "") {
+
+        alert(
+            "Digite a descrição do compromisso."
+        );
+
+        return;
+    }
+
+    let agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    const compromisso = {
+        data,
+        hora,
+        cliente,
+        descricao
+    };
+
+    if (agendaEditando === -1) {
+
+        agenda.push(compromisso);
+
+        alert(
+            "Compromisso salvo com sucesso!"
+        );
+
+    } else {
+
+        agenda[agendaEditando] =
+            compromisso;
+
+        alert(
+            "Compromisso atualizado com sucesso!"
+        );
+    }
+
+    localStorage.setItem(
+        "agenda",
+        JSON.stringify(agenda)
+    );
+
+    limparAgenda();
+
+    mostrarAgenda();
+}
+
+
+function limparAgenda() {
+
+    document.getElementById(
+        "dataAgenda"
+    ).value = "";
+
+    document.getElementById(
+        "horaAgenda"
+    ).value = "";
+
+    document.getElementById(
+        "clienteAgenda"
+    ).value = "";
+
+    document.getElementById(
+        "descricaoAgenda"
+    ).value = "";
+
+    document.getElementById(
+        "tituloAgenda"
+    ).innerText =
+        "📅 Novo Compromisso";
+
+    document.getElementById(
+        "botaoAgenda"
+    ).innerText =
+        "💾 Salvar Compromisso";
+
+    agendaEditando = -1;
+}
+
+
+function formatarData(data) {
+
+    const partes =
+        data.split("-");
+
+    return (
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+    );
+}
+
+
+function mostrarAgenda() {
+
+    let agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    mostrarListaAgenda(agenda);
+}
+
+
+function mostrarListaAgenda(agenda) {
+
+    const lista =
+        document.getElementById(
+            "listaAgenda"
+        );
+
+    lista.innerHTML = "";
+
+    if (agenda.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum compromisso cadastrado ainda.</p>";
+
+        return;
+    }
+
+    agenda.forEach(function(
+        compromisso,
+        indice
+    ) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "item";
+
+        div.innerHTML = `
+
+            <strong>
+                📅 ${formatarData(
+                    compromisso.data
+                )}
+            </strong>
+
+            <br>
+
+            🕐 ${compromisso.hora}
+
+            <br>
+
+            👤 ${compromisso.cliente}
+
+            <br>
+
+            📝 ${compromisso.descricao}
+
+            <div class="acoes">
+
+                <button
+                    class="botao-editar"
+                    onclick="editarAgenda(${indice})">
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="botao-excluir"
+                    onclick="excluirAgenda(${indice})">
+                    🗑️ Excluir
+                </button>
+
+            </div>
+        `;
+
+        lista.appendChild(div);
+    });
+}
+
+
+function pesquisarAgenda() {
+
+    const texto =
+        document.getElementById(
+            "pesquisaAgenda"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+    let agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    const resultados =
+        agenda.filter(function(compromisso) {
+
+            return (
+                compromisso.cliente
+                    .toLowerCase()
+                    .includes(texto)
+                ||
+                compromisso.descricao
+                    .toLowerCase()
+                    .includes(texto)
+                ||
+                compromisso.data
+                    .includes(texto)
+            );
+        });
+
+    mostrarListaAgenda(resultados);
+}
+
+
+function editarAgenda(indice) {
+
+    let agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    const compromisso =
+        agenda[indice];
+
+    document.getElementById(
+        "dataAgenda"
+    ).value =
+        compromisso.data;
+
+    document.getElementById(
+        "horaAgenda"
+    ).value =
+        compromisso.hora;
+
+    document.getElementById(
+        "clienteAgenda"
+    ).value =
+        compromisso.cliente;
+
+    document.getElementById(
+        "descricaoAgenda"
+    ).value =
+        compromisso.descricao;
+
+    agendaEditando = indice;
+
+    document.getElementById(
+        "tituloAgenda"
+    ).innerText =
+        "✏️ Editar Compromisso";
+
+    document.getElementById(
+        "botaoAgenda"
+    ).innerText =
+        "💾 Atualizar Compromisso";
+}
+
+
+function excluirAgenda(indice) {
+
+    let agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    if (!confirm(
+        "Deseja realmente excluir este compromisso?"
+    )) {
+
+        return;
+    }
+
+    agenda.splice(indice, 1);
+
+    localStorage.setItem(
+        "agenda",
+        JSON.stringify(agenda)
+    );
+
+    alert(
+        "Compromisso excluído com sucesso!"
+    );
+
+    mostrarAgenda();
+}
+
+
+/* =========================
+   FINANCEIRO
+========================= */
+
+function abrirFinanceiro() {
+
+    esconderTelas();
+
+    document.getElementById(
+        "telaFinanceiro"
+    ).classList.add("ativa");
+
+    mostrarFinanceiro();
+}
+
+
+function salvarFinanceiro() {
+
+    const tipo =
+        document.getElementById(
+            "tipoFinanceiro"
+        ).value;
+
+    const data =
+        document.getElementById(
+            "dataFinanceiro"
+        ).value;
+
+    const descricao =
+        document.getElementById(
+            "descricaoFinanceiro"
+        ).value
+        .trim();
+
+    const valor =
+        parseFloat(
+            document.getElementById(
+                "valorFinanceiro"
+            ).value
+        );
+
+
+    if (data === "") {
+
+        alert("Escolha a data.");
+
+        return;
+    }
+
+
+    if (descricao === "") {
+
+        alert("Digite a descrição.");
+
+        return;
+    }
+
+
+    if (isNaN(valor) || valor <= 0) {
+
+        alert("Digite um valor válido.");
+
+        return;
+    }
+
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+
+    const lancamento = {
+        tipo,
+        data,
+        descricao,
+        valor
+    };
+
+
+    if (financeiroEditando === -1) {
+
+        financeiro.push(lancamento);
+
+        alert(
+            "Lançamento salvo com sucesso!"
+        );
+
+    } else {
+
+        financeiro[financeiroEditando] =
+            lancamento;
+
+        alert(
+            "Lançamento atualizado com sucesso!"
+        );
+    }
+
+
+    localStorage.setItem(
+        "financeiro",
+        JSON.stringify(financeiro)
+    );
+
+
+    limparFinanceiro();
+
+    mostrarFinanceiro();
+}
+
+
+function limparFinanceiro() {
+
+    document.getElementById(
+        "tipoFinanceiro"
+    ).value = "entrada";
+
+    document.getElementById(
+        "dataFinanceiro"
+    ).value = "";
+
+    document.getElementById(
+        "descricaoFinanceiro"
+    ).value = "";
+
+    document.getElementById(
+        "valorFinanceiro"
+    ).value = "";
+
+    document.getElementById(
+        "tituloFinanceiro"
+    ).innerText =
+        "💰 Novo Lançamento";
+
+    document.getElementById(
+        "botaoFinanceiro"
+    ).innerText =
+        "💾 Salvar Lançamento";
+
+    financeiroEditando = -1;
+}
+
+
+function formatarMoeda(valor) {
+
+    return valor.toLocaleString(
+        "pt-BR",
+        {
+            style: "currency",
+            currency: "BRL"
+        }
+    );
+}
+
+
+function mostrarFinanceiro() {
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+
+    let entradas = 0;
+    let saidas = 0;
+
+
+    financeiro.forEach(function(
+        lancamento
+    ) {
+
+        if (
+            lancamento.tipo ===
+            "entrada"
+        ) {
+
+            entradas +=
+                Number(lancamento.valor);
+
+        } else {
+
+            saidas +=
+                Number(lancamento.valor);
+        }
+
+    });
+
+
+    const saldo =
+        entradas - saidas;
+
+
+    document.getElementById(
+        "totalEntradas"
+    ).innerText =
+        formatarMoeda(entradas);
+
+
+    document.getElementById(
+        "totalSaidas"
+    ).innerText =
+        formatarMoeda(saidas);
+
+
+    document.getElementById(
+        "saldoFinanceiro"
+    ).innerText =
+        formatarMoeda(saldo);
+
+
+    mostrarListaFinanceiro(
+        financeiro
+    );
+}
+
+
+function mostrarListaFinanceiro(
+    financeiro
+) {
+
+    const lista =
+        document.getElementById(
+            "listaFinanceiro"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if (financeiro.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum lançamento cadastrado ainda.</p>";
+
+        return;
+    }
+
+
+    financeiro.forEach(function(
+        lancamento,
+        indice
+    ) {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "item " +
+            lancamento.tipo;
+
+
+        const sinal =
+            lancamento.tipo ===
+            "entrada"
+            ? "➕"
+            : "➖";
+
+
+        div.innerHTML = `
+
+            <strong>
+                ${sinal}
+                ${formatarMoeda(
+                    Number(lancamento.valor)
+                )}
+            </strong>
+
+            <br>
+
+            📅 ${formatarData(
+                lancamento.data
+            )}
+
+            <br>
+
+            📝 ${lancamento.descricao}
+
+            <div class="acoes">
+
+                <button
+                    class="botao-editar"
+                    onclick="editarFinanceiro(${indice})">
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="botao-excluir"
+                    onclick="excluirFinanceiro(${indice})">
+                    🗑️ Excluir
+                </button>
+
+            </div>
+        `;
+
+
+        lista.appendChild(div);
+    });
+}
+
+
+function pesquisarFinanceiro() {
+
+    const texto =
+        document.getElementById(
+            "pesquisaFinanceiro"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+
+    const resultados =
+        financeiro.filter(function(
+            lancamento
+        ) {
+
+            return (
+                lancamento.descricao
+                    .toLowerCase()
+                    .includes(texto)
+                ||
+                lancamento.data
+                    .includes(texto)
+            );
+
+        });
+
+
+    mostrarListaFinanceiro(
+        resultados
+    );
+}
+
+
+function editarFinanceiro(indice) {
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+
+    const lancamento =
+        financeiro[indice];
+
+
+    document.getElementById(
+        "tipoFinanceiro"
+    ).value =
+        lancamento.tipo;
+
+
+    document.getElementById(
+        "dataFinanceiro"
+    ).value =
+        lancamento.data;
+
+
+    document.getElementById(
+        "descricaoFinanceiro"
+    ).value =
+        lancamento.descricao;
+
+
+    document.getElementById(
+        "valorFinanceiro"
+    ).value =
+        lancamento.valor;
+
+
+    financeiroEditando =
+        indice;
+
+
+    document.getElementById(
+        "tituloFinanceiro"
+    ).innerText =
+        "✏️ Editar Lançamento";
+
+
+    document.getElementById(
+        "botaoFinanceiro"
+    ).innerText =
+        "💾 Atualizar Lançamento";
+}
+
+
+function excluirFinanceiro(indice) {
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+
+    if (!confirm(
+        "Deseja realmente excluir este lançamento?"
+    )) {
+
+        return;
+    }
+
+
+    financeiro.splice(
+        indice,
+        1
+    );
+
+
+    localStorage.setItem(
+        "financeiro",
+        JSON.stringify(financeiro)
+    );
+
+
+    alert(
+        "Lançamento excluído com sucesso!"
+    );
+
+
+    mostrarFinanceiro();
+}
+
+
+/* =========================
+   ORÇAMENTOS
+========================= */
+
+function abrirOrcamentos() {
+
+    esconderTelas();
+
+    document.getElementById(
+        "telaOrcamentos"
+    ).classList.add("ativa");
+
+    mostrarOrcamentos();
+}
+
+
+function calcularOrcamento() {
+
+    const quantidade =
+        parseFloat(
+            document.getElementById(
+                "quantidadeOrcamento"
+            ).value
+        ) || 0;
+
+    const valorUnitario =
+        parseFloat(
+            document.getElementById(
+                "valorUnitarioOrcamento"
+            ).value
+        ) || 0;
+
+    const total =
+        quantidade *
+        valorUnitario;
+
+    document.getElementById(
+        "totalOrcamento"
+    ).innerText =
+        formatarMoeda(total);
+}
+
+
+function salvarOrcamento() {
+
+    const data =
+        document.getElementById(
+            "dataOrcamento"
+        ).value;
+
+    const cliente =
+        document.getElementById(
+            "clienteOrcamento"
+        ).value
+        .trim();
+
+    const servico =
+        document.getElementById(
+            "servicoOrcamento"
+        ).value
+        .trim();
+
+    const quantidade =
+        parseFloat(
+            document.getElementById(
+                "quantidadeOrcamento"
+            ).value
+        );
+
+    const valorUnitario =
+        parseFloat(
+            document.getElementById(
+                "valorUnitarioOrcamento"
+            ).value
+        );
+
+    const observacao =
+        document.getElementById(
+            "observacaoOrcamento"
+        ).value
+        .trim();
+
+
+    if (data === "") {
+
+        alert("Escolha a data.");
+
+        return;
+    }
+
+
+    if (cliente === "") {
+
+        alert(
+            "Digite o nome do cliente."
+        );
+
+        return;
+    }
+
+
+    if (servico === "") {
+
+        alert(
+            "Digite o serviço."
+        );
+
+        return;
+    }
+
+
+    if (
+        isNaN(quantidade) ||
+        quantidade <= 0
+    ) {
+
+        alert(
+            "Digite uma quantidade válida."
+        );
+
+        return;
+    }
+
+
+    if (
+        isNaN(valorUnitario) ||
+        valorUnitario <= 0
+    ) {
+
+        alert(
+            "Digite um valor unitário válido."
+        );
+
+        return;
+    }
+
+
+    const total =
+        quantidade *
+        valorUnitario;
+
+
+    let orcamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentos"
+            )
+        ) || [];
+
+
+    const orcamento = {
+
+        data,
+        cliente,
+        servico,
+        quantidade,
+        valorUnitario,
+        total,
+        observacao
+    };
+
+
+    if (orcamentoEditando === -1) {
+
+        orcamentos.push(orcamento);
+
+        alert(
+            "Orçamento salvo com sucesso!"
+        );
+
+    } else {
+
+        orcamentos[orcamentoEditando] =
+            orcamento;
+
+        alert(
+            "Orçamento atualizado com sucesso!"
+        );
+    }
+
+
+    localStorage.setItem(
+        "orcamentos",
+        JSON.stringify(orcamentos)
+    );
+
+
+    limparOrcamento();
+
+    mostrarOrcamentos();
+}
+
+
+function limparOrcamento() {
+
+    document.getElementById(
+        "dataOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "clienteOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "servicoOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "quantidadeOrcamento"
+    ).value = "1";
+
+    document.getElementById(
+        "valorUnitarioOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "observacaoOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "totalOrcamento"
+    ).innerText =
+        "R$ 0,00";
+
+    document.getElementById(
+        "tituloOrcamento"
+    ).innerText =
+        "🧾 Novo Orçamento";
+
+    document.getElementById(
+        "botaoOrcamento"
+    ).innerText =
+        "💾 Salvar Orçamento";
+
+    orcamentoEditando = -1;
+}
+
+
+function mostrarOrcamentos() {
+
+    let orcamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentos"
+            )
+        ) || [];
+
+
+    mostrarListaOrcamentos(
+        orcamentos
+    );
+}
+
+
+function mostrarListaOrcamentos(
+    orcamentos
+) {
+
+    const lista =
+        document.getElementById(
+            "listaOrcamentos"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if (orcamentos.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhum orçamento cadastrado ainda.</p>";
+
+        return;
+    }
+
+
+    orcamentos.forEach(function(
+        orcamento,
+        indice
+    ) {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "item";
+
+
+        div.innerHTML = `
+
+            <strong>
+                🧾 Orçamento —
+                ${orcamento.cliente}
+            </strong>
+
+            <br>
+
+            📅 ${formatarData(
+                orcamento.data
+            )}
+
+            <br>
+
+            🔧 ${orcamento.servico}
+
+            <br>
+
+            🔢 Quantidade:
+            ${orcamento.quantidade}
+
+            <br>
+
+            💵 Valor unitário:
+            ${formatarMoeda(
+                Number(
+                    orcamento.valorUnitario
+                )
+            )}
+
+            <br>
+
+            💰 <strong>
+                Total:
+                ${formatarMoeda(
+                    Number(
+                        orcamento.total
+                    )
+                )}
+            </strong>
+
+            ${
+                orcamento.observacao
+                ?
+                "<br>📝 " +
+                orcamento.observacao
+                :
+                ""
+            }
+
+            <div class="acoes">
+
+                <button
+                    class="botao-editar"
+                    onclick="editarOrcamento(${indice})">
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="botao-excluir"
+                    onclick="excluirOrcamento(${indice})">
+                    🗑️ Excluir
+                </button>
+
+            </div>
+        `;
+
+
+        lista.appendChild(div);
+    });
+}
+
+
+function pesquisarOrcamentos() {
+
+    const texto =
+        document.getElementById(
+            "pesquisaOrcamento"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    let orcamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentos"
+            )
+        ) || [];
+
+
+    const resultados =
+        orcamentos.filter(function(
+            orcamento
+        ) {
+
+            return (
+
+                orcamento.cliente
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                orcamento.servico
+                    .toLowerCase()
+                    .includes(texto)
+
+            );
+
+        });
+
+
+    mostrarListaOrcamentos(
+        resultados
+    );
+}
+
+
+function editarOrcamento(indice) {
+
+    let orcamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentos"
+            )
+        ) || [];
+
+
+    const orcamento =
+        orcamentos[indice];
+
+
+    document.getElementById(
+        "dataOrcamento"
+    ).value =
+        orcamento.data;
+
+
+    document.getElementById(
+        "clienteOrcamento"
+    ).value =
+        orcamento.cliente;
+
+
+    document.getElementById(
+        "servicoOrcamento"
+    ).value =
+        orcamento.servico;
+
+
+    document.getElementById(
+        "quantidadeOrcamento"
+    ).value =
+        orcamento.quantidade;
+
+
+    document.getElementById(
+        "valorUnitarioOrcamento"
+    ).value =
+        orcamento.valorUnitario;
+
+
+    document.getElementById(
+        "observacaoOrcamento"
+    ).value =
+        orcamento.observacao;
+
+
+    orcamentoEditando =
+        indice;
+
+
+    document.getElementById(
+        "tituloOrcamento"
+    ).innerText =
+        "✏️ Editar Orçamento";
+
+
+    document.getElementById(
+        "botaoOrcamento"
+    ).innerText =
+        "💾 Atualizar Orçamento";
+
+
+    calcularOrcamento();
+}
+function gerarOrcamento() {
+    const cliente = document.getElementById("clienteOrcamento").value;
+    const servico = document.getElementById("servicoOrcamento").value;
+    const quantidade = document.getElementById("quantidadeOrcamento").value;
+    const valor = document.getElementById("valorUnitarioOrcamento").value;
+    const observacao = document.getElementById("observacaoOrcamento").value;
+const dataOrcamento = new Date().toLocaleDateString("pt-BR");
+
+    if (!cliente || !servico) {
+        alert("Preencha o cliente e o serviço.");
+        return;
+    }
+
+    const total = Number(quantidade || 1) * Number(valor || 0);
+
+    const janela = window.open("", "_blank");
+
+    janela.document.write(`
+        <html>
+        <head>
+            <title>Orçamento - Organiza Fácil</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    max-width: 800px;
+                    margin: 40px auto;
+                    padding: 30px;
+                }
+
+                h1 {
+                    text-align: center;
+                }
+
+                .linha {
+                    margin: 15px 0;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #ddd;
+                }
+
+                .total {
+                    margin-top: 30px;
+                    padding: 20px;
+                    text-align: right;
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+
+                .botao {
+                    text-align: center;
+                    margin-top: 30px;
+                }
+
+                button {
+                    padding: 12px 25px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+
+                @media print {
+                    .botao {
+                        display: none;
+                    }
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <h1>ORGANIZA FÁCIL</h1>
+
+            <h2>ORÇAMENTO</h2>
+<p><strong>Data:</strong> ${dataOrcamento}</p
+            <div class="linha">
+                <strong>Cliente:</strong> ${cliente}
+            </div>
+
+            <div class="linha">
+                <strong>Serviço:</strong> ${servico}
+            </div>
+
+            <div class="linha">
+                <strong>Quantidade:</strong> ${quantidade || 1}
+            </div>
+
+            <div class="linha">
+                <strong>Valor unitário:</strong>
+                R$ ${Number(valor || 0).toFixed(2).replace(".", ",")}
+            </div>
+
+            <div class="total">
+                TOTAL: R$ ${total.toFixed(2).replace(".", ",")}
+            </div>
+
+            <div class="linha">
+                <strong>Observações:</strong><br>
+                ${observacao || "Nenhuma"}
+            </div>
+
+            <div class="botao">
+                <button onclick="window.print()">
+                    🖨️ Imprimir / Salvar PDF
+                </button>
+            </div>
+
+        </body>
+        </html>
+    `);
+
+    janela.document.close();
+}
+
+
+function excluirOrcamento(indice) {
+
+    let orcamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentos"
+            )
+        ) || [];
+
+
+    if (!confirm(
+        "Deseja realmente excluir este orçamento?"
+    )) {
+
+        return;
+    }
+
+
+    orcamentos.splice(
+        indice,
+        1
+    );
+
+
+    localStorage.setItem(
+        "orcamentos",
+        JSON.stringify(
+            orcamentos
+        )
+    );
+
+
+    alert(
+        "Orçamento excluído com sucesso!"
+    );
+
+
+    mostrarOrcamentos();
+}
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker.register("./service-worker.js")
+            .then(function() {
+                console.log("Service Worker registrado com sucesso.");
+            })
+            .catch(function(error) {
+                console.error("Erro ao registrar o Service Worker:", error);
+            });
+    });
+}
+</script>
+
+</body>
+</html

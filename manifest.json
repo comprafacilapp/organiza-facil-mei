@@ -1,0 +1,9 @@
+{
+  "name": "Organiza Fácil",
+  "short_name": "Organiza Fácil",
+"start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f6feb",
+  "description": "Seu dia organizado de forma simples"
+}

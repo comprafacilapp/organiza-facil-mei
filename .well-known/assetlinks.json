@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.comprafacilapp.organizafacil",
+        "sha256_cert_fingerprints": ["A4:1F:77:6E:F2:AC:E8:4F:5A:4C:AC:EF:4C:F3:89:78:09:8D:55:2C:CD:4D:69:18:78:B8:98:22:4A:67:41:B8"]
+      }
+    }]

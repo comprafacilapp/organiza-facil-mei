@@ -3338,7 +3338,7 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
             <h1>ORGANIZA FÁCIL</h1>
 
             <h2>ORÇAMENTO</h2>
-<p><strong>Data:</strong> ${dataOrcamento}</p
+<p><strong>Data:</strong> ${dataOrcamento}</p>
             <div class="linha">
                 <strong>Cliente:</strong> ${cliente}
             </div>
@@ -3366,11 +3366,39 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
             </div>
 
             <div class="botao">
-                <button onclick="window.print()">
-                    🖨️ Imprimir / Salvar PDF
-                </button>
-            </div>
+    <button onclick="window.print()">
+        🖨️ Imprimir / Salvar PDF
+    </button>
 
+    <button onclick="compartilharOrcamento()">
+        📤 Compartilhar
+    </button>
+</div>
+
+<script>
+function compartilharOrcamento() {
+
+    const texto = document.body.innerText
+        .replace("🖨️ Imprimir / Salvar PDF", "")
+        .replace("📤 Compartilhar", "")
+        .trim();
+
+    if (navigator.share) {
+        navigator.share({
+            title: "Orçamento - Organiza Fácil",
+            text: texto
+        }).catch(function() {});
+    } else {
+        navigator.clipboard.writeText(texto)
+            .then(function() {
+                alert("Orçamento copiado! Agora você pode colar no WhatsApp ou e-mail.");
+            })
+            .catch(function() {
+                alert("Este aparelho não permite o compartilhamento direto.");
+            });
+    }
+}
+<\/script>
         </body>
         </html>
     `);

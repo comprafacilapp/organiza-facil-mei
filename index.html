@@ -3283,20 +3283,30 @@ function salvarOrcamento() {
                 "valorUnitarioOrcamento"
             ).value
         );
-    const validade =
+   const validade =
     parseInt(
         document.getElementById(
             "validadeOrcamento"
         ).value
-  
+    ) || 15;
 
+const status =
+    document.getElementById(
+        "statusOrcamento"
+    ).value;
 
+const observacao =
+    document.getElementById(
+        "observacaoOrcamento"
+    ).value
+    .trim();
 
+if (data === "") {
 
-        
-        return;
-    }
+    alert("Escolha a data.");
 
+    return;
+}
 
     if (cliente === "") {
 

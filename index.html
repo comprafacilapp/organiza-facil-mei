@@ -759,6 +759,11 @@ main {
             </strong>
 
         </div>
+        <input id="validadeOrcamento"
+       type="number"
+       min="1"
+       value="15"
+       placeholder="Validade do orçamento (dias)">
 
         <textarea id="observacaoOrcamento"
                   placeholder="Observações"></textarea>
@@ -2864,6 +2869,12 @@ function salvarOrcamento() {
                 "valorUnitarioOrcamento"
             ).value
         );
+    const validade =
+    parseInt(
+        document.getElementById(
+            "validadeOrcamento"
+        ).value
+    ) || 15;
 
     const observacao =
         document.getElementById(
@@ -2947,6 +2958,7 @@ function salvarOrcamento() {
         quantidade,
         valorUnitario,
         total,
+        validade,
         observacao
     };
 
@@ -3092,6 +3104,10 @@ function mostrarListaOrcamentos(
             )}
 
             <br>
+            ⏳ Validade:
+            ${orcamento.validade || 15} dias
+
+<br>
 
             🔧 ${orcamento.servico}
 
@@ -3241,7 +3257,11 @@ function editarOrcamento(indice) {
         "valorUnitarioOrcamento"
     ).value =
         orcamento.valorUnitario;
-
+    
+document.getElementById(
+    "validadeOrcamento"
+).value =
+    orcamento.validade || 15;
 
     document.getElementById(
         "observacaoOrcamento"
@@ -3277,6 +3297,7 @@ const nomeEmpresa =
     const servico = document.getElementById("servicoOrcamento").value;
     const quantidade = document.getElementById("quantidadeOrcamento").value;
     const valor = document.getElementById("valorUnitarioOrcamento").value;
+    const validade = document.getElementById("validadeOrcamento").value;
     const observacao = document.getElementById("observacaoOrcamento").value;
 const dataOrcamento = new Date().toLocaleDateString("pt-BR");
 
@@ -3299,7 +3320,7 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
                     max-width: 800px;
                     margin: 40px auto;
                     padding: 30px;
-                    font-size: 18px;
+                    font-size: 20px;
                 }
 
                 h1 {
@@ -3345,6 +3366,7 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
            
             <h2>ORÇAMENTO</h2>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
+<p><strong>Validade:</strong> ${validade || 15} dias</p>
             <div class="linha">
                 <strong>Cliente:</strong> ${cliente}
             </div>

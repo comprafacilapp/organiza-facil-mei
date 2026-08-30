@@ -3268,6 +3268,11 @@ function editarOrcamento(indice) {
     calcularOrcamento();
 }
 function gerarOrcamento() {
+    const configuracoes =
+    JSON.parse(localStorage.getItem("configuracoesEmpresa")) || {};
+
+const nomeEmpresa =
+    configuracoes.nome || "Prestador de Serviço";
     const cliente = document.getElementById("clienteOrcamento").value;
     const servico = document.getElementById("servicoOrcamento").value;
     const quantidade = document.getElementById("quantidadeOrcamento").value;
@@ -3336,8 +3341,8 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
 
         <body>
 
-            <h1>ORGANIZA FÁCIL</h1>
-
+           <h1>${nomeEmpresa}</h1>
+           
             <h2>ORÇAMENTO</h2>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
             <div class="linha">
@@ -3389,7 +3394,7 @@ function compartilharOrcamento() {
 
     if (navigator.share) {
         navigator.share({
-            title: "Orçamento - Organiza Fácil",
+            title: "Orçamento - ${nomeEmpresa}",
             text: texto
         }).catch(function() {});
     } else {

@@ -3357,10 +3357,13 @@ function salvarOrcamento() {
                 "orcamentos"
             )
         ) || [];
-
+let numeroOrcamento =
+    orcamentos.length + 1;
 
     const orcamento = {
 
+      numero: numeroOrcamento,  
+    
         data,
         cliente,
         servico,
@@ -3371,7 +3374,11 @@ function salvarOrcamento() {
         observacao
     };
 
-
+if (orcamentoEditando !== -1) {
+    orcamento.numero =
+        orcamentos[orcamentoEditando].numero ||
+        numeroOrcamento;
+}
     if (orcamentoEditando === -1) {
 
         orcamentos.push(orcamento);
@@ -3502,9 +3509,9 @@ function mostrarListaOrcamentos(
         div.innerHTML = `
 
             <strong>
-                🧾 Orçamento —
-                ${orcamento.cliente}
-            </strong>
+    🧾 Orçamento Nº ${String(orcamento.numero || indice + 1).padStart(4, "0")} —
+    ${orcamento.cliente}
+</strong>
 
             <br>
 
@@ -3716,7 +3723,17 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
     }
 
     const total = Number(quantidade || 1) * Number(valor || 0);
+const orcamentos =
+    JSON.parse(
+        localStorage.getItem("orcamentos")
+    ) || [];
 
+const numeroOrcamento =
+    orcamentoEditando !== -1 &&
+    orcamentos[orcamentoEditando]
+        ? orcamentos[orcamentoEditando].numero ||
+          orcamentoEditando + 1
+        : orcamentos.length + 1;
     const janela = window.open("", "_blank");
 
     janela.document.write(`
@@ -3774,6 +3791,7 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
            <h1>${nomeEmpresa}</h1>
            
             <h2>ORÇAMENTO</h2>
+<p><strong>Nº:</strong> ${String(numeroOrcamento).padStart(4, "0")}</p>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
 <p><strong>Validade:</strong> ${validade || 15} dias</p>
             <div class="linha">

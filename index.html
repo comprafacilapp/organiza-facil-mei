@@ -711,6 +711,10 @@ main {
         </div>
 
     </div>
+    <button class="botao-salvar"
+        onclick="compartilharFinanceiro()">
+    📤 Compartilhar Resumo
+</button>
 
     <div class="pesquisa">
 
@@ -2616,7 +2620,108 @@ if (mesSelecionado !== "") {
         financeiro
     );
 }
+function compartilharFinanceiro() {
 
+    const mesSelecionado =
+        document.getElementById(
+            "mesFinanceiro"
+        ).value;
+
+    let financeiro =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+    if (mesSelecionado !== "") {
+
+        financeiro =
+            financeiro.filter(function(
+                lancamento
+            ) {
+
+                return lancamento.data &&
+                       lancamento.data.startsWith(
+                           mesSelecionado
+                       );
+            });
+    }
+
+    let entradas = 0;
+    let saidas = 0;
+
+    financeiro.forEach(function(
+        lancamento
+    ) {
+
+        if (lancamento.tipo === "entrada") {
+
+            entradas +=
+                Number(lancamento.valor);
+
+        } else {
+
+            saidas +=
+                Number(lancamento.valor);
+        }
+    });
+
+    const saldo =
+        entradas - saidas;
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
+
+    const nomeEmpresa =
+        configuracoes.nome ||
+        "Organiza Fácil";
+
+    let periodo = "Todos os períodos";
+
+    if (mesSelecionado !== "") {
+
+        const partes =
+            mesSelecionado.split("-");
+
+        periodo =
+            partes[1] + "/" + partes[0];
+    }
+
+    const texto =
+        nomeEmpresa +
+        "\n\n📊 RESUMO FINANCEIRO" +
+        "\n📅 Período: " + periodo +
+        "\n\n➕ Entradas: " +
+        formatarMoeda(entradas) +
+        "\n➖ Saídas: " +
+        formatarMoeda(saidas) +
+        "\n💰 Saldo: " +
+        formatarMoeda(saldo);
+
+    if (navigator.share) {
+
+        navigator.share({
+            title:
+                "Resumo Financeiro - " +
+                nomeEmpresa,
+            text: texto
+        }).catch(function() {});
+
+    } else {
+
+        navigator.clipboard
+            .writeText(texto)
+            .then(function() {
+
+                alert(
+                    "Resumo copiado! Agora você pode colar no WhatsApp ou e-mail."
+                );
+            });
+    }
+}
 
 function mostrarListaFinanceiro(
     financeiro

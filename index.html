@@ -648,6 +648,17 @@ main {
         <input id="descricaoFinanceiro"
                type="text"
                placeholder="Descrição">
+        <select id="categoriaFinanceiro">
+    <option value="">🏷️ Selecione a categoria</option>
+    <option value="Servico">Serviço</option>
+    <option value="Material">Material</option>
+    <option value="Combustivel">Combustível</option>
+    <option value="Transporte">Transporte</option>
+    <option value="Alimentacao">Alimentação</option>
+    <option value="Equipamentos">Equipamentos</option>
+    <option value="Impostos">Impostos / Taxas</option>
+    <option value="Outros">Outros</option>
+</select>
 
         <input id="valorFinanceiro"
                type="number"
@@ -2399,6 +2410,10 @@ function salvarFinanceiro() {
             "descricaoFinanceiro"
         ).value
         .trim();
+    const categoria =
+    document.getElementById(
+        "categoriaFinanceiro"
+    ).value;
 
     const valor =
         parseFloat(
@@ -2442,6 +2457,7 @@ function salvarFinanceiro() {
         tipo,
         data,
         descricao,
+        categoria,
         valor
     };
 
@@ -2490,6 +2506,9 @@ function limparFinanceiro() {
     document.getElementById(
         "descricaoFinanceiro"
     ).value = "";
+    document.getElementById(
+    "categoriaFinanceiro"
+).value = "";
 
     document.getElementById(
         "valorFinanceiro"
@@ -2660,6 +2679,9 @@ function mostrarListaFinanceiro(
             <br>
 
             📝 ${lancamento.descricao}
+            <br>
+
+🏷️ ${lancamento.categoria || "Sem categoria"}
 
             <div class="acoes">
 
@@ -2752,6 +2774,10 @@ function editarFinanceiro(indice) {
         "descricaoFinanceiro"
     ).value =
         lancamento.descricao;
+    document.getElementById(
+    "categoriaFinanceiro"
+).value =
+    lancamento.categoria || "";
 
 
     document.getElementById(

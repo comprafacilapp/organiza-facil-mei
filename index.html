@@ -715,6 +715,13 @@ main {
         onclick="compartilharFinanceiro()">
     📤 Compartilhar Resumo
 </button>
+    <h2 class="titulo-lista">
+    📊 Despesas por Categoria
+</h2>
+
+<div id="resumoCategorias"
+     class="resumo-financeiro">
+</div>
 
     <div class="pesquisa">
 
@@ -2614,11 +2621,75 @@ if (mesSelecionado !== "") {
         "saldoFinanceiro"
     ).innerText =
         formatarMoeda(saldo);
-
+mostrarResumoCategorias(
+    financeiro
+);
 
     mostrarListaFinanceiro(
         financeiro
     );
+}
+    function mostrarResumoCategorias(financeiro) {
+
+    const resumo =
+        document.getElementById(
+            "resumoCategorias"
+        );
+
+    resumo.innerHTML = "";
+
+    const categorias = {};
+
+    financeiro.forEach(function(
+        lancamento
+    ) {
+
+        if (lancamento.tipo !== "saida") {
+            return;
+        }
+
+        const categoria =
+            lancamento.categoria ||
+            "Sem categoria";
+
+        if (!categorias[categoria]) {
+            categorias[categoria] = 0;
+        }
+
+        categorias[categoria] +=
+            Number(lancamento.valor);
+    });
+
+    const nomesCategorias =
+        Object.keys(categorias);
+
+    if (nomesCategorias.length === 0) {
+
+        resumo.innerHTML =
+            "<div class='resumo'>Nenhuma despesa neste período.</div>";
+
+        return;
+    }
+
+    nomesCategorias.forEach(function(
+        categoria
+    ) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "resumo";
+
+        div.innerHTML =
+            "🏷️ " + categoria +
+            "<strong>" +
+            formatarMoeda(
+                categorias[categoria]
+            ) +
+            "</strong>";
+
+        resumo.appendChild(div);
+    });
 }
 function compartilharFinanceiro() {
 

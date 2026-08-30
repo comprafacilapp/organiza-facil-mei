@@ -722,7 +722,14 @@ main {
 <div id="resumoCategorias"
      class="resumo-financeiro">
 </div>
+<h2 class="titulo-lista">
+    📈 Comparação com Mês Anterior
+</h2>
 
+<div id="comparacaoFinanceiro"
+     class="resumo">
+    Selecione um mês para comparar.
+</div>
     <div class="pesquisa">
 
         <input id="pesquisaFinanceiro"
@@ -2624,7 +2631,7 @@ if (mesSelecionado !== "") {
 mostrarResumoCategorias(
     financeiro
 );
-
+mostrarComparacaoFinanceiro();
     mostrarListaFinanceiro(
         financeiro
     );
@@ -2690,6 +2697,129 @@ mostrarResumoCategorias(
 
         resumo.appendChild(div);
     });
+}
+    function mostrarComparacaoFinanceiro() {
+
+    const area =
+        document.getElementById(
+            "comparacaoFinanceiro"
+        );
+
+    const mesSelecionado =
+        document.getElementById(
+            "mesFinanceiro"
+        ).value;
+
+    if (mesSelecionado === "") {
+
+        area.innerHTML =
+            "Selecione um mês para comparar.";
+
+        return;
+    }
+
+    const partes =
+        mesSelecionado.split("-");
+
+    const ano =
+        Number(partes[0]);
+
+    const mes =
+        Number(partes[1]);
+
+    const dataAnterior =
+        new Date(ano, mes - 2, 1);
+
+    const anoAnterior =
+        dataAnterior.getFullYear();
+
+    const mesAnterior =
+        String(
+            dataAnterior.getMonth() + 1
+        ).padStart(2, "0");
+
+    const chaveMesAnterior =
+        anoAnterior +
+        "-" +
+        mesAnterior;
+
+    const financeiro =
+        JSON.parse(
+            localStorage.getItem(
+                "financeiro"
+            )
+        ) || [];
+
+    let saldoAtual = 0;
+    let saldoAnterior = 0;
+
+    financeiro.forEach(function(
+        lancamento
+    ) {
+
+        if (!lancamento.data) {
+            return;
+        }
+
+        const valor =
+            Number(lancamento.valor);
+
+        const movimento =
+            lancamento.tipo === "entrada"
+                ? valor
+                : -valor;
+
+        if (
+            lancamento.data.startsWith(
+                mesSelecionado
+            )
+        ) {
+            saldoAtual += movimento;
+        }
+
+        if (
+            lancamento.data.startsWith(
+                chaveMesAnterior
+            )
+        ) {
+            saldoAnterior += movimento;
+        }
+    });
+
+    const diferenca =
+        saldoAtual - saldoAnterior;
+
+    let resultado = "";
+
+    if (diferenca > 0) {
+
+        resultado =
+            "⬆️ Melhorou " +
+            formatarMoeda(diferenca);
+
+    } else if (diferenca < 0) {
+
+        resultado =
+            "⬇️ Caiu " +
+            formatarMoeda(
+                Math.abs(diferenca)
+            );
+
+    } else {
+
+        resultado =
+            "➡️ Saldo sem alteração";
+    }
+
+    area.innerHTML =
+        "Mês atual: <strong>" +
+        formatarMoeda(saldoAtual) +
+        "</strong>" +
+        "<br>Mês anterior: <strong>" +
+        formatarMoeda(saldoAnterior) +
+        "</strong>" +
+        "<br><br>" +
+        resultado;
 }
 function compartilharFinanceiro() {
 

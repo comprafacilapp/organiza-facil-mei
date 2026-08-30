@@ -2760,6 +2760,42 @@ function compartilharFinanceiro() {
         periodo =
             partes[1] + "/" + partes[0];
     }
+    const categorias = {};
+
+financeiro.forEach(function(
+    lancamento
+) {
+
+    if (lancamento.tipo !== "saida") {
+        return;
+    }
+
+    const categoria =
+        lancamento.categoria ||
+        "Sem categoria";
+
+    if (!categorias[categoria]) {
+        categorias[categoria] = 0;
+    }
+
+    categorias[categoria] +=
+        Number(lancamento.valor);
+});
+
+let textoCategorias = "";
+
+Object.keys(categorias).forEach(function(
+    categoria
+) {
+
+    textoCategorias +=
+        "\n🏷️ " +
+        categoria +
+        ": " +
+        formatarMoeda(
+            categorias[categoria]
+        );
+});
 
     const texto =
         nomeEmpresa +
@@ -2770,7 +2806,9 @@ function compartilharFinanceiro() {
         "\n➖ Saídas: " +
         formatarMoeda(saidas) +
         "\n💰 Saldo: " +
-        formatarMoeda(saldo);
+formatarMoeda(saldo) +
+"\n\n📊 DESPESAS POR CATEGORIA" +
+textoCategorias;
 
     if (navigator.share) {
 

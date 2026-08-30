@@ -671,6 +671,9 @@ main {
     <h2 class="titulo-lista">
         📊 Resumo Financeiro
     </h2>
+    <input id="mesFinanceiro"
+       type="month"
+       onchange="mostrarFinanceiro()">
 
     <div class="resumo-financeiro">
 
@@ -2524,7 +2527,24 @@ function mostrarFinanceiro() {
         JSON.parse(
             localStorage.getItem("financeiro")
         ) || [];
+const mesSelecionado =
+    document.getElementById(
+        "mesFinanceiro"
+    ).value;
 
+if (mesSelecionado !== "") {
+
+    financeiro =
+        financeiro.filter(function(
+            lancamento
+        ) {
+
+            return lancamento.data &&
+                   lancamento.data.startsWith(
+                       mesSelecionado
+                   );
+        });
+}
 
     let entradas = 0;
     let saidas = 0;

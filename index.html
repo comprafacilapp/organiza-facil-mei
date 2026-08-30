@@ -797,6 +797,11 @@ main {
        min="1"
        value="15"
        placeholder="Validade do orçamento (dias)">
+        <select id="statusOrcamento">
+    <option value="Pendente">⏳ Pendente</option>
+    <option value="Aprovado">✅ Aprovado</option>
+    <option value="Recusado">❌ Recusado</option>
+</select>
 
         <textarea id="observacaoOrcamento"
                   placeholder="Observações"></textarea>
@@ -3283,19 +3288,12 @@ function salvarOrcamento() {
         document.getElementById(
             "validadeOrcamento"
         ).value
-    ) || 15;
-
-    const observacao =
-        document.getElementById(
-            "observacaoOrcamento"
-        ).value
-        .trim();
+  
 
 
-    if (data === "") {
 
-        alert("Escolha a data.");
 
+        
         return;
     }
 
@@ -3371,6 +3369,7 @@ let numeroOrcamento =
         valorUnitario,
         total,
         validade,
+        status,
         observacao
     };
 
@@ -3435,7 +3434,9 @@ function limparOrcamento() {
     document.getElementById(
         "observacaoOrcamento"
     ).value = "";
-
+document.getElementById(
+    "statusOrcamento"
+).value = "Pendente";
     document.getElementById(
         "totalOrcamento"
     ).innerText =
@@ -3522,6 +3523,10 @@ function mostrarListaOrcamentos(
             <br>
             ⏳ Validade:
             ${orcamento.validade || 15} dias
+
+<br>
+📌 Status:
+${orcamento.status || "Pendente"}
 
 <br>
 
@@ -3678,6 +3683,10 @@ document.getElementById(
     "validadeOrcamento"
 ).value =
     orcamento.validade || 15;
+    document.getElementById(
+    "statusOrcamento"
+).value =
+    orcamento.status || "Pendente";
 
     document.getElementById(
         "observacaoOrcamento"
@@ -3714,6 +3723,10 @@ const nomeEmpresa =
     const quantidade = document.getElementById("quantidadeOrcamento").value;
     const valor = document.getElementById("valorUnitarioOrcamento").value;
     const validade = document.getElementById("validadeOrcamento").value;
+    const status =
+    document.getElementById(
+        "statusOrcamento"
+    ).value;
     const observacao = document.getElementById("observacaoOrcamento").value;
 const dataOrcamento = new Date().toLocaleDateString("pt-BR");
 
@@ -3794,6 +3807,7 @@ const numeroOrcamento =
 <p><strong>Nº:</strong> ${String(numeroOrcamento).padStart(4, "0")}</p>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
 <p><strong>Validade:</strong> ${validade || 15} dias</p>
+<p><strong>Status:</strong> ${status}</p>
             <div class="linha">
                 <strong>Cliente:</strong> ${cliente}
             </div>

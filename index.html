@@ -2788,22 +2788,40 @@ mostrarComparacaoFinanceiro();
 
     const diferenca =
         saldoAtual - saldoAnterior;
+let porcentagem = null;
 
+if (saldoAnterior !== 0) {
+
+    porcentagem =
+        Math.abs(
+            (diferenca / saldoAnterior) * 100
+        );
+}
     let resultado = "";
 
     if (diferenca > 0) {
 
         resultado =
-            "⬆️ Melhorou " +
-            formatarMoeda(diferenca);
+    "⬆️ Melhorou " +
+    formatarMoeda(diferenca) +
+    (porcentagem !== null
+        ? " (" +
+          porcentagem.toFixed(1).replace(".", ",") +
+          "%)"
+        : "");
 
     } else if (diferenca < 0) {
 
-        resultado =
-            "⬇️ Caiu " +
-            formatarMoeda(
-                Math.abs(diferenca)
-            );
+    resultado =
+    "⬇️ Caiu " +
+    formatarMoeda(
+        Math.abs(diferenca)
+    ) +
+    (porcentagem !== null
+        ? " (" +
+          porcentagem.toFixed(1).replace(".", ",") +
+          "%)"
+        : "");
 
     } else {
 

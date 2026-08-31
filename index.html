@@ -789,6 +789,10 @@ main {
         <input id="enderecoClienteOrcamento"
        type="text"
        placeholder="Endereço do cliente">
+        <div id="avisoNovoClienteOrcamento"
+     style="display:none;">
+    👤 Preencha os dados do novo cliente
+</div>
         <button id="botaoSalvarNovoClienteOrcamento"
         type="button"
         onclick="salvarNovoClienteOrcamento()"
@@ -3517,6 +3521,9 @@ document.getElementById(
     document.getElementById(
     "botaoSalvarNovoClienteOrcamento"
 ).style.display = "none";
+    document.getElementById(
+    "avisoNovoClienteOrcamento"
+).style.display = "none";
 
     document.getElementById(
         "servicoOrcamento"
@@ -3900,6 +3907,9 @@ document.getElementById(
         document.getElementById(
     "botaoSalvarNovoClienteOrcamento"
 ).style.display = "block";
+       document.getElementById(
+    "avisoNovoClienteOrcamento"
+).style.display = "block"; 
     }
    function salvarNovoClienteOrcamento() {
 
@@ -3964,6 +3974,9 @@ document.getElementById(
     document.getElementById(
         "botaoSalvarNovoClienteOrcamento"
     ).style.display = "none";
+       document.getElementById(
+    "avisoNovoClienteOrcamento"
+).style.display = "none";
 
     alert(
         "Cliente " +

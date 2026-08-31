@@ -775,6 +775,10 @@ main {
     </option>
 
 </select>
+        <button type="button"
+        onclick="abrirNovoClienteOrcamento()">
+    ➕ Novo Cliente
+</button>
         <input id="clienteOrcamento"
        type="text"
        placeholder="Nome do cliente">
@@ -785,6 +789,12 @@ main {
         <input id="enderecoClienteOrcamento"
        type="text"
        placeholder="Endereço do cliente">
+        <button id="botaoSalvarNovoClienteOrcamento"
+        type="button"
+        onclick="salvarNovoClienteOrcamento()"
+        style="display:none;">
+    👤 Salvar Novo Cliente
+</button>
 
 
         <input id="servicoOrcamento"
@@ -3504,6 +3514,9 @@ document.getElementById(
 document.getElementById(
     "clienteCadastradoOrcamento"
 ).value = "";
+    document.getElementById(
+    "botaoSalvarNovoClienteOrcamento"
+).style.display = "none";
 
     document.getElementById(
         "servicoOrcamento"
@@ -3867,7 +3880,99 @@ document.getElementById(
     "enderecoClienteOrcamento"
 ).value = cliente.endereco || "";
     }      
+    function abrirNovoClienteOrcamento() {
+
+    document.getElementById(
+        "clienteCadastradoOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "clienteOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "telefoneClienteOrcamento"
+    ).value = "";
+
+    document.getElementById(
+        "enderecoClienteOrcamento"
+    ).value = "";
+        document.getElementById(
+    "botaoSalvarNovoClienteOrcamento"
+).style.display = "block";
+    }
+   function salvarNovoClienteOrcamento() {
+
+    const nome =
+        document.getElementById(
+            "clienteOrcamento"
+        ).value.trim();
+
+    const telefone =
+        document.getElementById(
+            "telefoneClienteOrcamento"
+        ).value.trim();
+
+    const endereco =
+        document.getElementById(
+            "enderecoClienteOrcamento"
+        ).value.trim();
+
+    if (nome === "") {
+        alert("Digite o nome do cliente.");
+        return;
+    }
+
+    let clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const jaExiste =
+        clientes.some(function(cliente) {
+            return cliente.nome
+                .toLowerCase() ===
+                nome.toLowerCase();
+        });
+
+    if (jaExiste) {
+        alert("Este cliente já está cadastrado.");
+        return;
+    }
+
+    const cliente = {
+        nome,
+        telefone,
+        endereco,
+        observacao: ""
+    };
+
+    clientes.push(cliente);
+
+    localStorage.setItem(
+        "clientes",
+        JSON.stringify(clientes)
+    );
+
+    carregarClientesOrcamento();
+
+    document.getElementById(
+        "clienteCadastradoOrcamento"
+    ).value =
+        clientes.length - 1;
+
+    document.getElementById(
+        "botaoSalvarNovoClienteOrcamento"
+    ).style.display = "none";
+
+    alert(
+        "Cliente " +
+        nome +
+        " salvo com sucesso!"
+    );
+} 
 function gerarOrcamento() {
+
 
     const configuracoes =
     JSON.parse(localStorage.getItem("configuracoesEmpresa")) || {};

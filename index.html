@@ -499,8 +499,10 @@ main {
                placeholder="Nome do cliente">
 
         <input id="telefoneCliente"
-               type="tel"
-               placeholder="Telefone">
+       type="tel"
+       placeholder="Telefone"
+       maxlength="15"
+       oninput="mascaraTelefone(this)">
 
         <input id="enderecoCliente"
                type="text"
@@ -1686,7 +1688,45 @@ function abrirClientes() {
 
 }
 
+function mascaraTelefone(campo) {
 
+    let numero =
+        campo.value.replace(/\D/g, "");
+
+    numero =
+        numero.substring(0, 11);
+
+    if (numero.length > 10) {
+
+        numero = numero.replace(
+            /^(\d{2})(\d{5})(\d{4})$/,
+            "($1) $2-$3"
+        );
+
+    } else if (numero.length > 6) {
+
+        numero = numero.replace(
+            /^(\d{2})(\d{4})(\d{0,4})$/,
+            "($1) $2-$3"
+        );
+
+    } else if (numero.length > 2) {
+
+        numero = numero.replace(
+            /^(\d{2})(\d+)/,
+            "($1) $2"
+        );
+
+    } else if (numero.length > 0) {
+
+        numero = numero.replace(
+            /^(\d{0,2})/,
+            "($1"
+        );
+    }
+
+    campo.value = numero;
+}
 function salvarCliente() {
 
     const nome =

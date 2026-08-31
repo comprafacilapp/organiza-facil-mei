@@ -3728,6 +3728,17 @@ function gerarOrcamento() {
 
 const nomeEmpresa =
     configuracoes.nome || "Prestador de Serviço";
+    const cnpjEmpresa =
+    configuracoes.cnpj || "";
+
+const telefoneEmpresa =
+    configuracoes.telefone || "";
+
+const emailEmpresa =
+    configuracoes.email || "";
+
+const enderecoEmpresa =
+    configuracoes.endereco || "";
     const cliente = document.getElementById("clienteOrcamento").value;
     const servico = document.getElementById("servicoOrcamento").value;
     const quantidade = document.getElementById("quantidadeOrcamento").value;
@@ -3812,8 +3823,13 @@ const numeroOrcamento =
         <body>
 
            <h1>${nomeEmpresa}</h1>
-           
-            <h2>ORÇAMENTO</h2>
+
+<p><strong>CNPJ/CPF:</strong> ${cnpjEmpresa}</p>
+<p><strong>Telefone:</strong> ${telefoneEmpresa}</p>
+<p><strong>E-mail:</strong> ${emailEmpresa}</p>
+<p><strong>Endereço:</strong> ${enderecoEmpresa}</p>
+
+<h2>ORÇAMENTO</h2>
 <p><strong>Nº:</strong> ${String(numeroOrcamento).padStart(4, "0")}</p>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
 <p><strong>Validade:</strong> ${validade || 15} dias</p>

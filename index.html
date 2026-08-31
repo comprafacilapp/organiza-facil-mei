@@ -449,8 +449,10 @@ main {
                placeholder="CNPJ ou CPF">
 
         <input id="telefoneEmpresa"
-               type="tel"
-               placeholder="Telefone">
+       type="tel"
+       placeholder="Telefone"
+       maxlength="15"
+       oninput="mascaraTelefone(this)">
 
         <input id="emailEmpresa"
                type="email"
@@ -784,10 +786,11 @@ main {
         <input id="clienteOrcamento"
        type="text"
        placeholder="Nome do cliente">
-        
-<input id="telefoneClienteOrcamento"
-       type="text"
-       placeholder="Telefone do cliente">
+        <input id="telefoneClienteOrcamento"
+       type="tel"
+       placeholder="Telefone do cliente"
+       maxlength="15"
+       oninput="mascaraTelefone(this)">
         <input id="enderecoClienteOrcamento"
        type="text"
        placeholder="Endereço do cliente">

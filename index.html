@@ -922,6 +922,7 @@ function abrirConfiguracoes() {
 
     document.getElementById("telaConfiguracoes")
         .classList.add("ativa");
+     mostrarConfiguracoes();
 }
 
 function abrirDocumentos() {
@@ -1653,6 +1654,7 @@ function abrirClientes() {
         .classList.add("ativa");
 
     mostrarClientes();
+
 }
 
 
@@ -2971,72 +2973,7 @@ function compartilharFinanceiro() {
             });
     }
 
-    let entradas = 0;
-    let saidas = 0;
-
-    financeiro.forEach(function(
-        lancamento
-    ) {
-
-        if (lancamento.tipo === "entrada") {
-
-            entradas +=
-                Number(lancamento.valor);
-
-        } else {
-
-            saidas +=
-                Number(lancamento.valor);
-        }
-    });
-
-    const saldo =
-        entradas - saidas;
-
-    const configuracoes =
-        JSON.parse(
-            localStorage.getItem(
-                "configuracoesEmpresa"
-            )
-        ) || {};
-
-    const nomeEmpresa =
-        configuracoes.nome ||
-        "Organiza Fácil";
-
-    let periodo = "Todos os períodos";
-
-    if (mesSelecionado !== "") {
-
-        const partes =
-            mesSelecionado.split("-");
-
-        periodo =
-            partes[1] + "/" + partes[0];
-    }
-    const categorias = {};
-
-financeiro.forEach(function(
-    lancamento
-) {
-
-    if (lancamento.tipo !== "saida") {
-        return;
-    }
-
-    const categoria =
-        lancamento.categoria ||
-        "Sem categoria";
-
-    if (!categorias[categoria]) {
-        categorias[categoria] = 0;
-    }
-
-    categorias[categoria] +=
-        Number(lancamento.valor);
-});
-
-let textoCategorias = "";
+   
 
 Object.keys(categorias).forEach(function(
     categoria

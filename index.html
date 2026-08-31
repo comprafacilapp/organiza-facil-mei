@@ -3828,6 +3828,8 @@ function gerarOrcamento() {
 
 const nomeEmpresa =
     configuracoes.nome || "Prestador de Serviço";
+    const logoEmpresa =
+    configuracoes.logo || "";
     const cnpjEmpresa =
     configuracoes.cnpj || "";
 
@@ -3868,6 +3870,12 @@ const numeroOrcamento =
         ? orcamentos[orcamentoEditando].numero ||
           orcamentoEditando + 1
         : orcamentos.length + 1;
+    const htmlLogo =
+    logoEmpresa
+        ? '<div style="text-align:center; margin-bottom:15px;"><img src="' +
+          logoEmpresa +
+          '" alt="Logo da empresa" style="max-width:180px; max-height:120px; object-fit:contain;"></div>'
+        : "";
     const janela = window.open("", "_blank");
 
     janela.document.write(`
@@ -3921,6 +3929,7 @@ const numeroOrcamento =
         </head>
 
         <body>
+        ${htmlLogo}
 
            <h1>${nomeEmpresa}</h1>
 

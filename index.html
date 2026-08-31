@@ -459,6 +459,13 @@ main {
         <input id="enderecoEmpresa"
                type="text"
                placeholder="Endereço">
+        <label for="logoEmpresa">
+    🖼️ Logo da empresa
+</label>
+
+<input id="logoEmpresa"
+       type="file"
+       accept="image/*">
 
         <button id="botaoSalvarConfiguracoes"
                 class="botao-salvar"
@@ -1411,6 +1418,10 @@ function salvarConfiguracoes() {
    
 document.getElementById("botaoSalvarConfiguracoes").innerText =
     "💾 Salvar Configurações";
+    const arquivoLogo =
+    document.getElementById(
+        "logoEmpresa"
+    ).files[0];
 
     const configuracoes = {
 
@@ -1424,7 +1435,93 @@ document.getElementById("botaoSalvarConfiguracoes").innerText =
 
         endereco: document.getElementById("enderecoEmpresa").value.trim()
     };
+const configuracoesAntigas =
+    JSON.parse(
+        localStorage.getItem(
+            "configuracoesEmpresa"
+        )
+    ) || {};
 
+configuracoes.logo =
+    configuracoesAntigas.logo || "";
+    if (arquivoLogo) {
+
+    const leitor =
+        new FileReader();
+
+   leitor.onload = function(evento) {
+
+    const imagem = new Image();
+
+    imagem.onload = function() {
+
+        const canvas =
+            document.createElement("canvas");
+
+        const maximo = 500;
+
+        let largura = imagem.width;
+        let altura = imagem.height;
+
+        if (largura > altura && largura > maximo) {
+
+            altura =
+                Math.round(
+                    altura * maximo / largura
+                );
+
+            largura = maximo;
+
+        } else if (altura > maximo) {
+
+            largura =
+                Math.round(
+                    largura * maximo / altura
+                );
+
+            altura = maximo;
+        }
+
+        canvas.width = largura;
+        canvas.height = altura;
+
+        const contexto =
+            canvas.getContext("2d");
+
+        contexto.drawImage(
+            imagem,
+            0,
+            0,
+            largura,
+            altura
+        );
+
+        configuracoes.logo =
+            canvas.toDataURL(
+                "image/webp",
+                0.8
+            ); 
+
+        localStorage.setItem(
+            "configuracoesEmpresa",
+            JSON.stringify(configuracoes)
+        );
+
+        mostrarConfiguracoes();
+
+        alert(
+            "Configurações e logo salvas com sucesso!"
+        );
+    };
+imagem.src = evento.target.result;
+
+};
+    leitor.readAsDataURL(
+        arquivoLogo
+    );
+
+    return;
+}
     localStorage.setItem(
         "configuracoesEmpresa",
         JSON.stringify(configuracoes)
@@ -1462,6 +1559,9 @@ function mostrarConfiguracoes() {
     item.className = "item-lista";
 
     item.innerHTML = `
+    ${configuracoes.logo
+    ? '<img src="' + configuracoes.logo + '" alt="Logo da empresa" style="max-width:160px; max-height:100px; object-fit:contain; display:block; margin:10px auto;">'
+    : ""}
         <h3>⚙️ Dados da Empresa</h3>
 
         <p>🏢 Nome: ${configuracoes.nome || "Não informado"}</p>

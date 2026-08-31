@@ -767,10 +767,19 @@ main {
 
         <input id="dataOrcamento"
                type="date">
+        <select id="clienteCadastradoOrcamento"
+        onchange="selecionarClienteOrcamento()">
 
+    <option value="">
+        👥 Selecionar cliente cadastrado
+    </option>
+
+</select>
         <input id="clienteOrcamento"
-               type="text"
-               placeholder="Nome do cliente">
+       type="text"
+       placeholder="Nome do cliente">
+
+
 
         <input id="servicoOrcamento"
                type="text"
@@ -3258,9 +3267,10 @@ function abrirOrcamentos() {
     ).classList.add("ativa");
 
     mostrarOrcamentos();
+
+    carregarClientesOrcamento();
+
 }
-
-
 function calcularOrcamento() {
 
     const quantidade =
@@ -3758,6 +3768,59 @@ document.getElementById(
 
 
     calcularOrcamento();
+}
+    function carregarClientesOrcamento() {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const seletor =
+        document.getElementById(
+            "clienteCadastradoOrcamento"
+        );
+
+    seletor.innerHTML =
+        '<option value="">👥 Selecionar cliente cadastrado</option>';
+
+    clientes.forEach(function(cliente, indice) {
+
+        const opcao =
+            document.createElement("option");
+
+        opcao.value = indice;
+        opcao.textContent = cliente.nome;
+
+        seletor.appendChild(opcao);
+    });
+}
+    function selecionarClienteOrcamento() {
+
+    const indice =
+        document.getElementById(
+            "clienteCadastradoOrcamento"
+        ).value;
+
+    if (indice === "") {
+        return;
+    }
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[indice];
+
+    if (!cliente) {
+        return;
+    }
+
+    document.getElementById(
+        "clienteOrcamento"
+    ).value = cliente.nome;
 }
 function gerarOrcamento() {
     const configuracoes =

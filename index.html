@@ -818,11 +818,10 @@ main {
                oninput="calcularOrcamento()">
 
         <input id="valorUnitarioOrcamento"
-               type="number"
-               step="0.01"
-               min="0"
-               placeholder="Valor unitário"
-               oninput="calcularOrcamento()">
+       type="text"
+       inputmode="decimal"
+       placeholder="R$ 0,00"
+       oninput="mascaraMoeda(this); calcularOrcamento()">
 
         <div class="total-orcamento">
 
@@ -2737,7 +2736,42 @@ function formatarMoeda(valor) {
     );
 }
 
+function valorParaNumero(valor) {
 
+    if (!valor) {
+        return 0;
+    }
+
+    return Number(
+        valor
+            .replace("R$", "")
+            .replace(/\./g, "")
+            .replace(",", ".")
+            .trim()
+    ) || 0;
+}
+   function mascaraMoeda(campo) {
+
+    let numero =
+        campo.value.replace(/\D/g, "");
+
+    if (numero === "") {
+        campo.value = "";
+        return;
+    }
+
+    const valor =
+        Number(numero) / 100;
+
+    campo.value =
+        valor.toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+} 
 function mostrarFinanceiro() {
 
     let financeiro =
@@ -3344,11 +3378,11 @@ function calcularOrcamento() {
         ) || 0;
 
     const valorUnitario =
-        parseFloat(
-            document.getElementById(
-                "valorUnitarioOrcamento"
-            ).value
-        ) || 0;
+    valorParaNumero(
+        document.getElementById(
+            "valorUnitarioOrcamento"
+        ).value
+    );
 
     const total =
         quantidade *
@@ -3398,11 +3432,11 @@ function salvarOrcamento() {
         );
 
     const valorUnitario =
-        parseFloat(
-            document.getElementById(
-                "valorUnitarioOrcamento"
-            ).value
-        );
+    valorParaNumero(
+        document.getElementById(
+            "valorUnitarioOrcamento"
+        ).value
+    );
    const validade =
     parseInt(
         document.getElementById(

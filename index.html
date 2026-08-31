@@ -778,7 +778,13 @@ main {
         <input id="clienteOrcamento"
        type="text"
        placeholder="Nome do cliente">
-
+        
+<input id="telefoneClienteOrcamento"
+       type="text"
+       placeholder="Telefone do cliente">
+        <input id="enderecoClienteOrcamento"
+       type="text"
+       placeholder="Endereço do cliente">
 
 
         <input id="servicoOrcamento"
@@ -3310,6 +3316,16 @@ function salvarOrcamento() {
             "clienteOrcamento"
         ).value
         .trim();
+    const telefoneCliente =
+    document.getElementById(
+        "telefoneClienteOrcamento"
+    ).value
+    .trim();
+    const enderecoCliente =
+    document.getElementById(
+        "enderecoClienteOrcamento"
+    ).value
+    .trim();
 
     const servico =
         document.getElementById(
@@ -3421,6 +3437,8 @@ let numeroOrcamento =
     
         data,
         cliente,
+        telefoneCliente,
+enderecoCliente,
         servico,
         quantidade,
         valorUnitario,
@@ -3475,6 +3493,17 @@ function limparOrcamento() {
     document.getElementById(
         "clienteOrcamento"
     ).value = "";
+    document.getElementById(
+    "telefoneClienteOrcamento"
+).value = "";
+
+document.getElementById(
+    "enderecoClienteOrcamento"
+).value = "";
+
+document.getElementById(
+    "clienteCadastradoOrcamento"
+).value = "";
 
     document.getElementById(
         "servicoOrcamento"
@@ -3717,6 +3746,15 @@ function editarOrcamento(indice) {
         "clienteOrcamento"
     ).value =
         orcamento.cliente;
+    document.getElementById(
+    "telefoneClienteOrcamento"
+).value =
+    orcamento.telefoneCliente || "";
+
+document.getElementById(
+    "enderecoClienteOrcamento"
+).value =
+    orcamento.enderecoCliente || "";
 
 
     document.getElementById(
@@ -3821,8 +3859,16 @@ document.getElementById(
     document.getElementById(
         "clienteOrcamento"
     ).value = cliente.nome;
-}
+
+   document.getElementById(
+    "telefoneClienteOrcamento"
+).value = cliente.telefone || ""; 
+        document.getElementById(
+    "enderecoClienteOrcamento"
+).value = cliente.endereco || "";
+    }      
 function gerarOrcamento() {
+
     const configuracoes =
     JSON.parse(localStorage.getItem("configuracoesEmpresa")) || {};
 
@@ -3842,6 +3888,11 @@ const emailEmpresa =
 const enderecoEmpresa =
     configuracoes.endereco || "";
     const cliente = document.getElementById("clienteOrcamento").value;
+    const telefoneCliente =
+    document.getElementById("telefoneClienteOrcamento").value;
+
+const enderecoCliente =
+    document.getElementById("enderecoClienteOrcamento").value;
     const servico = document.getElementById("servicoOrcamento").value;
     const quantidade = document.getElementById("quantidadeOrcamento").value;
     const valor = document.getElementById("valorUnitarioOrcamento").value;
@@ -3944,12 +3995,20 @@ const numeroOrcamento =
 <p><strong>Validade:</strong> ${validade || 15} dias</p>
 <p><strong>Status:</strong> ${status}</p>
             <div class="linha">
-                <strong>Cliente:</strong> ${cliente}
-            </div>
+    <strong>Cliente:</strong> ${cliente}
+</div>
 
-            <div class="linha">
-                <strong>Serviço:</strong> ${servico}
-            </div>
+<div class="linha">
+    <strong>Telefone:</strong> ${telefoneCliente || "Não informado"}
+</div>
+
+<div class="linha">
+    <strong>Endereço:</strong> ${enderecoCliente || "Não informado"}
+</div>
+
+<div class="linha">
+    <strong>Serviço:</strong> ${servico}
+</div>
 
             <div class="linha">
                 <strong>Quantidade:</strong> ${quantidade || 1}

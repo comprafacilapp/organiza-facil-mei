@@ -3973,7 +3973,14 @@ document.getElementById(
 
 
     calcularOrcamento();
+     document.getElementById(
+        "tituloOrcamento"
+    ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
+
     function carregarClientesOrcamento() {
 
     const clientes =

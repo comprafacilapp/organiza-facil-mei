@@ -8,7 +8,7 @@
 <style>
 * {
     box-sizing: border-box;
-}
+}F
 
 body {
     margin: 0;
@@ -389,9 +389,10 @@ main {
                   placeholder="Descrição do serviço"></textarea>
 
         <input id="valorServico"
-               type="number"
-               step="0.01"
-               placeholder="Valor do serviço">
+       type="text"
+       inputmode="decimal"
+       placeholder="R$ 0,00"
+       oninput="mascaraMoeda(this)">
 
         <input id="tempoServico"
                type="text"
@@ -1093,7 +1094,11 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         document.getElementById("descricaoServico").value.trim();
 
     const valor =
-        document.getElementById("valorServico").value;
+    valorParaNumero(
+        document.getElementById(
+            "valorServico"
+        ).value
+    );
 
     const tempo =
         document.getElementById("tempoServico").value.trim();
@@ -1163,7 +1168,7 @@ function mostrarServicos() {
         item.innerHTML = `
             <h3>🔧 ${servico.nome}</h3>
             <p>📝 ${servico.descricao || "Sem descrição"}</p>
-            <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
+            <p>💰 Valor: ${formatarMoeda(Number(servico.valor) || 0)}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
 
 <div class="acoes">
@@ -1289,7 +1294,9 @@ function mostrarListaServicos(servicos) {
         servico.descricao || "";
 
     document.getElementById("valorServico").value =
-        servico.valor || "";
+    servico.valor
+        ? formatarMoeda(Number(servico.valor))
+        : "";
 
     document.getElementById("tempoServico").value =
         servico.tempo || "";

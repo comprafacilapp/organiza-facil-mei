@@ -674,10 +674,10 @@ main {
 </select>
 
         <input id="valorFinanceiro"
-               type="number"
-               step="0.01"
-               min="0"
-               placeholder="Valor">
+       type="text"
+       inputmode="decimal"
+       placeholder="R$ 0,00"
+       oninput="mascaraMoeda(this)">
 
         <button class="botao-salvar"
                 id="botaoFinanceiro"
@@ -2620,11 +2620,11 @@ function salvarFinanceiro() {
     ).value;
 
     const valor =
-        parseFloat(
-            document.getElementById(
-                "valorFinanceiro"
-            ).value
-        );
+    valorParaNumero(
+        document.getElementById(
+            "valorFinanceiro"
+        ).value
+    );
 
 
     if (data === "") {
@@ -3355,9 +3355,11 @@ function editarFinanceiro(indice) {
 
 
     document.getElementById(
-        "valorFinanceiro"
-    ).value =
-        lancamento.valor;
+    "valorFinanceiro"
+).value =
+    lancamento.valor
+        ? formatarMoeda(Number(lancamento.valor))
+        : "";
 
 
     financeiroEditando =

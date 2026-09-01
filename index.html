@@ -4160,7 +4160,12 @@ const enderecoCliente =
     document.getElementById("enderecoClienteOrcamento").value;
     const servico = document.getElementById("servicoOrcamento").value;
     const quantidade = document.getElementById("quantidadeOrcamento").value;
-    const valor = document.getElementById("valorUnitarioOrcamento").value;
+    const valor =
+    valorParaNumero(
+        document.getElementById(
+            "valorUnitarioOrcamento"
+        ).value
+    );
     const validade = document.getElementById("validadeOrcamento").value;
     const status =
     document.getElementById(

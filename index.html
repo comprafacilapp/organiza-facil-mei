@@ -4185,7 +4185,12 @@ const numeroOrcamento =
     orcamentos[orcamentoEditando]
         ? orcamentos[orcamentoEditando].numero ||
           orcamentoEditando + 1
-        : orcamentos.length + 1;
+        : orcamentos.reduce(function(maior, orcamento) {
+            return Math.max(
+                maior,
+                Number(orcamento.numero) || 0
+            );
+        }, 0) + 1;
     const htmlLogo =
     logoEmpresa
         ? '<div style="text-align:center; margin-bottom:15px;"><img src="' +

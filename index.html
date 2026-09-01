@@ -3585,7 +3585,12 @@ if (data === "") {
             )
         ) || [];
 let numeroOrcamento =
-    orcamentos.length + 1;
+    orcamentos.reduce(function(maior, orcamento) {
+        return Math.max(
+            maior,
+            Number(orcamento.numero) || 0
+        );
+    }, 0) + 1;
 
     const orcamento = {
 

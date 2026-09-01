@@ -1311,6 +1311,12 @@ function mostrarListaServicos(servicos) {
    document.getElementById("botaoSalvarServico").innerText =
     "🔄 Atualizar Serviço";
  mostrarServicos();
+    document.getElementById(
+    "nomeServico"
+).scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
 
 
 }
@@ -1452,6 +1458,12 @@ function editarDocumento(indice) {
    
 
     mostrarDocumentos();
+  document.getElementById(
+    "nomeDocumento"
+).scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});  
 
 }
  
@@ -2562,6 +2574,12 @@ function editarAgenda(indice) {
         "botaoAgenda"
     ).innerText =
         "💾 Atualizar Compromisso";
+    document.getElementById(
+    "tituloAgenda"
+).scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
 }
 
 
@@ -3389,7 +3407,14 @@ function editarFinanceiro(indice) {
         "botaoFinanceiro"
     ).innerText =
         "💾 Atualizar Lançamento";
+    document.getElementById(
+    "tituloFinanceiro"
+).scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
 }
+
 
 
 function excluirFinanceiro(indice) {

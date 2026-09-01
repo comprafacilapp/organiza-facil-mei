@@ -3080,7 +3080,63 @@ function compartilharFinanceiro() {
     }
 
    
+ let entradas = 0;
+    let saidas = 0;
 
+    const categorias = {};
+
+    financeiro.forEach(function(lancamento) {
+
+        const valor =
+            Number(lancamento.valor) || 0;
+
+        if (lancamento.tipo === "entrada") {
+
+            entradas += valor;
+
+        } else {
+
+            saidas += valor;
+
+            const categoria =
+                lancamento.categoria ||
+                "Sem categoria";
+
+            if (!categorias[categoria]) {
+                categorias[categoria] = 0;
+            }
+
+            categorias[categoria] += valor;
+        }
+    });
+
+    const saldo =
+        entradas - saidas;
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
+
+    const nomeEmpresa =
+        configuracoes.nome ||
+        "Prestador de Serviço";
+
+    let periodo =
+        "Todos os períodos";
+
+    if (mesSelecionado !== "") {
+
+        const partes =
+            mesSelecionado.split("-");
+
+        periodo =
+            partes[1] + "/" + partes[0];
+    }
+
+    let textoCategorias = "";
 Object.keys(categorias).forEach(function(
     categoria
 ) {

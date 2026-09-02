@@ -4594,16 +4594,36 @@ button {
 <p><strong>Data:</strong> ${dataOrcamento}</p>
 <p><strong>Validade:</strong> ${validade || 15} dias</p>
 <p><strong>Status:</strong> ${status}</p>
-            <div class="linha">
-    <strong>Cliente:</strong> ${cliente}
-</div>
 
-<div class="linha">
-    <strong>Telefone:</strong> ${telefoneCliente || "Não informado"}
-</div>
+            <div style="
+    margin-top:25px;
+    padding:15px 18px;
+    background:#f2f5f8;
+    border-left:5px solid #1f3a5f;
+    border-radius:5px;
+">
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        DADOS DO CLIENTE
+    </div>
 
-<div class="linha">
-    <strong>Endereço:</strong> ${enderecoCliente || "Não informado"}
+    <div>
+        <strong>Cliente:</strong> ${cliente}
+    </div>
+
+    <div>
+        <strong>Telefone:</strong>
+        ${telefoneCliente || "Não informado"}
+    </div>
+
+    <div>
+        <strong>Endereço:</strong>
+        ${enderecoCliente || "Não informado"}
+    </div>
 </div>
 
 <div class="linha">

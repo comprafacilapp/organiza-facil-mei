@@ -4626,22 +4626,63 @@ button {
     </div>
 </div>
 
-<div class="linha">
-    <strong>Serviço:</strong> ${servico}
+<div style="margin-top:25px;">
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        SERVIÇO
+    </div>
+
+    <table style="
+        width:100%;
+        border-collapse:collapse;
+    ">
+        <thead>
+            <tr style="background:#1f3a5f; color:white;">
+                <th style="padding:10px; text-align:left;">
+                    Descrição
+                </th>
+                <th style="padding:10px; text-align:center;">
+                    Qtd.
+                </th>
+                <th style="padding:10px; text-align:right;">
+                    Valor unitário
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #ddd;">
+                    ${servico}
+                </td>
+
+                <td style="
+                    padding:12px;
+                    text-align:center;
+                    border-bottom:1px solid #ddd;
+                ">
+                    ${quantidade || 1}
+                </td>
+
+                <td style="
+                    padding:12px;
+                    text-align:right;
+                    border-bottom:1px solid #ddd;
+                ">
+                    ${formatarMoeda(Number(valor) || 0)}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
-            <div class="linha">
-                <strong>Quantidade:</strong> ${quantidade || 1}
-            </div>
-
-            <div class="linha">
-                <strong>Valor unitário:</strong>
-                R$ ${Number(valor || 0).toFixed(2).replace(".", ",")}
-            </div>
-
-            <div class="total">
-                TOTAL: R$ ${total.toFixed(2).replace(".", ",")}
-            </div>
+<div class="total">
+    TOTAL: ${formatarMoeda(total)}
+</div>
 
             <div class="linha">
                 <strong>Observações:</strong><br>

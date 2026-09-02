@@ -3112,6 +3112,7 @@ function compartilharFinanceiro() {
             financeiro.filter(function(
                 lancamento
             ) {
+            
 
                 return lancamento.data &&
                        lancamento.data.startsWith(
@@ -3260,6 +3261,28 @@ function mostrarListaFinanceiro(
         div.className =
             "item " +
             lancamento.tipo;
+        div.onclick = function(event) {
+
+    if (event.target.closest("button")) {
+        return;
+    }
+
+    document.querySelectorAll(
+        ".compartilhar-individual"
+    ).forEach(function(outroBotao) {
+
+        outroBotao.style.display = "none";
+    });
+
+    const botao =
+        div.querySelector(
+            ".compartilhar-individual"
+        );
+
+    if (botao) {
+        botao.style.display = "block";
+    }
+};
 
 
         const sinal =
@@ -3290,7 +3313,13 @@ function mostrarListaFinanceiro(
             <br>
 
 🏷️ ${lancamento.categoria || "Sem categoria"}
-
+<button
+    class="compartilhar-individual"
+    style="display:none;"
+    onclick="event.stopPropagation()">
+    📤 Compartilhar lançamento
+</button>
+            
             <div class="acoes">
 
                 <button
@@ -3307,11 +3336,89 @@ function mostrarListaFinanceiro(
 
             </div>
         `;
+const botaoCompartilhar =
+    div.querySelector(
+        ".compartilhar-individual"
+    );
 
+botaoCompartilhar.onclick = function(event) {
+
+    event.stopPropagation();
+
+    compartilharLancamento(
+        lancamento,
+        botaoCompartilhar
+    );
+};
 
         lista.appendChild(div);
     });
 }
+    function compartilharLancamento(lancamento, botao) {
+
+
+    if (!lancamento) {
+        return;
+    }
+
+    const tipo =
+        lancamento.tipo === "entrada"
+            ? "Entrada"
+            : "Saída";
+
+    const texto =
+        "💰 LANÇAMENTO FINANCEIRO" +
+        "\n\n" +
+        tipo +
+        "\n📝 " +
+        (lancamento.descricao || "Sem descrição") +
+        "\n🏷️ " +
+        (lancamento.categoria || "Sem categoria") +
+        "\n💵 " +
+        formatarMoeda(
+            Number(lancamento.valor) || 0
+        ) +
+        "\n📅 " +
+        formatarData(lancamento.data);
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "Lançamento Financeiro",
+            text: texto
+        }).then(function() {
+
+            botao.style.display = "none";
+
+        }).catch(function() {});
+
+    } else {
+
+        navigator.clipboard
+            .writeText(texto)
+            .then(function() {
+
+                botao.style.display = "none";
+
+                alert(
+                    "Lançamento copiado! Agora você pode colar no WhatsApp ou e-mail."
+                );
+            });
+    }
+}
+  document.addEventListener("click", function(event) {
+
+    if (event.target.closest("#listaFinanceiro")) {
+        return;
+    }
+
+    document.querySelectorAll(
+        ".compartilhar-individual"
+    ).forEach(function(botao) {
+
+        botao.style.display = "none";
+    });
+});  
 
 
 function pesquisarFinanceiro() {

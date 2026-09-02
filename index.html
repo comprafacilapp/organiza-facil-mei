@@ -4566,14 +4566,30 @@ button {
         <body>
         ${htmlLogo}
 
-           <h1>${nomeEmpresa}</h1>
+<h1>${nomeEmpresa}</h1>
 
-<p><strong>CNPJ/CPF:</strong> ${cnpjEmpresa}</p>
-<p><strong>Telefone:</strong> ${telefoneEmpresa}</p>
-<p><strong>E-mail:</strong> ${emailEmpresa}</p>
-<p><strong>Endereço:</strong> ${enderecoEmpresa}</p>
+<div style="
+    text-align:center;
+    margin-bottom:25px;
+    color:#555;
+">
+    <div>
+        <strong>CNPJ/CPF:</strong> ${cnpjEmpresa}
+    </div>
+
+    <div>
+        <strong>Telefone:</strong> ${telefoneEmpresa}
+        &nbsp; | &nbsp;
+        <strong>E-mail:</strong> ${emailEmpresa}
+    </div>
+
+    <div>
+        <strong>Endereço:</strong> ${enderecoEmpresa}
+    </div>
+</div>
 
 <h2>ORÇAMENTO</h2>
+           
 <p><strong>Nº:</strong> ${String(numeroOrcamento).padStart(4, "0")}</p>
 <p><strong>Data:</strong> ${dataOrcamento}</p>
 <p><strong>Validade:</strong> ${validade || 15} dias</p>

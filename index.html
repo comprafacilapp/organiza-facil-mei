@@ -3262,10 +3262,20 @@ function mostrarListaFinanceiro(
             "item " +
             lancamento.tipo;
         div.onclick = function(event) {
-event.stopPropagation();
+
+    event.stopPropagation();
+
     if (event.target.closest("button")) {
         return;
     }
+
+    const botao =
+        div.querySelector(
+            ".compartilhar-individual"
+        );
+
+    const estavaAberto =
+        botao.style.display === "block";
 
     document.querySelectorAll(
         ".compartilhar-individual"
@@ -3274,12 +3284,7 @@ event.stopPropagation();
         outroBotao.style.display = "none";
     });
 
-    const botao =
-        div.querySelector(
-            ".compartilhar-individual"
-        );
-
-    if (botao) {
+    if (!estavaAberto) {
         botao.style.display = "block";
     }
 };

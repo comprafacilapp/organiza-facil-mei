@@ -3262,7 +3262,7 @@ function mostrarListaFinanceiro(
             "item " +
             lancamento.tipo;
         div.onclick = function(event) {
-
+event.stopPropagation();
     if (event.target.closest("button")) {
         return;
     }
@@ -3408,7 +3408,11 @@ botaoCompartilhar.onclick = function(event) {
 }
   document.addEventListener("click", function(event) {
 
-    if (event.target.closest("#listaFinanceiro")) {
+    if (
+        event.target.closest(
+            ".compartilhar-individual"
+        )
+    ) {
         return;
     }
 
@@ -3418,7 +3422,7 @@ botaoCompartilhar.onclick = function(event) {
 
         botao.style.display = "none";
     });
-});  
+});
 
 
 function pesquisarFinanceiro() {

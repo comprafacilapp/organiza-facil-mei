@@ -4684,10 +4684,26 @@ button {
     TOTAL: ${formatarMoeda(total)}
 </div>
 
-            <div class="linha">
-                <strong>Observações:</strong><br>
-                ${observacao || "Nenhuma"}
-            </div>
+           <div style="
+    margin-top:25px;
+    padding:15px 18px;
+    background:#f2f5f8;
+    border-left:5px solid #1f3a5f;
+    border-radius:5px;
+">
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        OBSERVAÇÕES
+    </div>
+
+    <div>
+        ${observacao || "Nenhuma"}
+    </div>
+</div>
 
             <div class="botao">
     <button onclick="window.print()">

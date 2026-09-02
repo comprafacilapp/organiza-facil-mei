@@ -864,33 +864,34 @@ main {
        inputmode="decimal"
        placeholder="R$ 0,00"
        oninput="mascaraMoeda(this); calcularOrcamento()">
+        <div class="total-orcamento">
 
-        <input id="percentualSinalOrcamento"
-       type="number"
-       min="0"
-       max="100"
-       value="30"
-       placeholder="Ex.: 30"
-       oninput="calcularOrcamento()">
+    💰 Total do orçamento
+
+    <strong id="totalOrcamento">
+        R$ 0,00
+    </strong>
+
 </div>
-       <div class="total-orcamento">
-    💰 Valor do sinal
 
-    <strong id="valorSinalOrcamento">  <div class="total-orcamento">
-
-            💰 Total do orçamento
-
-            <strong id="totalOrcamento">
-                R$ 0,00
-            </strong>
-
-        </div>
-        <div class="campo">
+       <div class="campo">
     <label>
         💰 Sinal para aprovação (%)
     </label>
 
- 
+    <input id="percentualSinalOrcamento"
+           type="number"
+           min="0"
+           max="100"
+           value="30"
+           placeholder="Ex.: 30"
+           oninput="calcularOrcamento()">
+</div>
+
+<div class="total-orcamento">
+    💰 Valor do sinal
+
+    <strong id="valorSinalOrcamento">
         R$ 0,00
     </strong>
 </div> 

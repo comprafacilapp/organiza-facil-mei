@@ -865,7 +865,18 @@ main {
        placeholder="R$ 0,00"
        oninput="mascaraMoeda(this); calcularOrcamento()">
 
-        <div class="total-orcamento">
+        <input id="percentualSinalOrcamento"
+       type="number"
+       min="0"
+       max="100"
+       value="30"
+       placeholder="Ex.: 30"
+       oninput="calcularOrcamento()">
+</div>
+       <div class="total-orcamento">
+    💰 Valor do sinal
+
+    <strong id="valorSinalOrcamento">  <div class="total-orcamento">
 
             💰 Total do orçamento
 
@@ -874,6 +885,15 @@ main {
             </strong>
 
         </div>
+        <div class="campo">
+    <label>
+        💰 Sinal para aprovação (%)
+    </label>
+
+ 
+        R$ 0,00
+    </strong>
+</div> 
         <input id="validadeOrcamento"
        type="number"
        min="1"
@@ -3729,6 +3749,21 @@ function calcularOrcamento() {
         "totalOrcamento"
     ).innerText =
         formatarMoeda(total);
+    const percentualSinal =
+    parseFloat(
+        document.getElementById(
+            "percentualSinalOrcamento"
+        ).value
+    ) || 0;
+
+const valorSinal =
+    total *
+    percentualSinal / 100;
+
+document.getElementById(
+    "valorSinalOrcamento"
+).innerText =
+    formatarMoeda(valorSinal);
 }
 
 

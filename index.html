@@ -698,7 +698,47 @@ main {
     <input id="mesFinanceiro"
        type="month"
        onchange="mostrarFinanceiro()">
+<div class="campo">
+    <label>
+        💵 Valor disponível para o mês
+    </label>
 
+    <input id="orcamentoMensal"
+           type="text"
+           inputmode="decimal"
+           placeholder="R$ 0,00"
+           oninput="mascaraMoeda(this)">
+
+    <button class="botao-salvar"
+            onclick="salvarOrcamentoMensal()">
+        💾 Salvar valor do mês
+    </button>
+</div>
+
+<div class="resumo-financeiro">
+
+    <div class="resumo">
+        💵 Orçamento do mês
+        <strong id="orcamentoMensalExibido">
+            R$ 0,00
+        </strong>
+    </div>
+
+    <div class="resumo">
+        🛒 Gasto no mês
+        <strong id="gastoOrcamentoMensal">
+            R$ 0,00
+        </strong>
+    </div>
+
+    <div class="resumo">
+        💰 Restante disponível
+        <strong id="restanteOrcamentoMensal">
+            R$ 0,00
+        </strong>
+    </div>
+
+</div>
     <div class="resumo-financeiro">
 
         <div class="resumo">
@@ -2813,6 +2853,50 @@ function valorParaNumero(valor) {
             }
         );
 } 
+   function salvarOrcamentoMensal() {
+
+    const mes =
+        document.getElementById(
+            "mesFinanceiro"
+        ).value;
+
+    if (!mes) {
+        alert(
+            "Selecione o mês antes de salvar o valor."
+        );
+        return;
+    }
+
+    const valor =
+        valorParaNumero(
+            document.getElementById(
+                "orcamentoMensal"
+            ).value
+        );
+
+    let orcamentosMensais =
+        JSON.parse(
+            localStorage.getItem(
+                "orcamentosMensais"
+            )
+        ) || {};
+
+    orcamentosMensais[mes] =
+        valor;
+
+    localStorage.setItem(
+        "orcamentosMensais",
+        JSON.stringify(
+            orcamentosMensais
+        )
+    );
+
+    mostrarFinanceiro();
+
+    alert(
+        "Valor do mês salvo com sucesso!"
+    );
+} 
 function mostrarFinanceiro() {
 
     let financeiro =
@@ -2865,7 +2949,54 @@ if (mesSelecionado !== "") {
 
     const saldo =
         entradas - saidas;
+let orcamentosMensais =
+    JSON.parse(
+        localStorage.getItem(
+            "orcamentosMensais"
+        )
+    ) || {};
 
+const orcamentoDoMes =
+    mesSelecionado
+        ? Number(
+            orcamentosMensais[
+                mesSelecionado
+            ]
+        ) || 0
+        : 0;
+
+const restanteOrcamento =
+    orcamentoDoMes - saidas;
+
+document.getElementById(
+    "orcamentoMensalExibido"
+).innerText =
+    formatarMoeda(
+        orcamentoDoMes
+    );
+
+document.getElementById(
+    "gastoOrcamentoMensal"
+).innerText =
+    formatarMoeda(
+        saidas
+    );
+
+document.getElementById(
+    "restanteOrcamentoMensal"
+).innerText =
+    formatarMoeda(
+        restanteOrcamento
+    );
+
+document.getElementById(
+    "orcamentoMensal"
+).value =
+    orcamentoDoMes
+        ? formatarMoeda(
+            orcamentoDoMes
+        )
+        : "";
 
     document.getElementById(
         "totalEntradas"

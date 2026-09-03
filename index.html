@@ -3816,6 +3816,12 @@ function salvarOrcamento() {
             "validadeOrcamento"
         ).value
     ) || 15;
+    const percentualSinal =
+    parseFloat(
+        document.getElementById(
+            "percentualSinalOrcamento"
+        ).value
+    ) || 0;
 
 const status =
     document.getElementById(
@@ -3913,6 +3919,7 @@ enderecoCliente,
         valorUnitario,
         total,
         validade,
+        percentualSinal,
         status,
         observacao
     };
@@ -4002,6 +4009,14 @@ document.getElementById(
         "totalOrcamento"
     ).innerText =
         "R$ 0,00";
+    document.getElementById(
+    "percentualSinalOrcamento"
+).value = "30";
+
+document.getElementById(
+    "valorSinalOrcamento"
+).innerText =
+    "R$ 0,00";
 
     document.getElementById(
         "tituloOrcamento"
@@ -4253,6 +4268,10 @@ document.getElementById(
     "validadeOrcamento"
 ).value =
     orcamento.validade || 15;
+    document.getElementById(
+    "percentualSinalOrcamento"
+).value =
+    orcamento.percentualSinal ?? 30;
     document.getElementById(
     "statusOrcamento"
 ).value =

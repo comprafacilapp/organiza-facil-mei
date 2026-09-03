@@ -1566,6 +1566,40 @@ ${
 `);
 
 janela.document.close();    
+        janela.compartilharProposta = async function() {
+
+    const texto =
+        janela.document.body.innerText;
+
+    if (navigator.share) {
+
+        try {
+
+            await navigator.share({
+                title: "Proposta Comercial",
+                text: texto
+            });
+
+        } catch (erro) {
+        }
+
+    } else if (navigator.clipboard) {
+
+        await navigator.clipboard.writeText(
+            texto
+        );
+
+        alert(
+            "Proposta copiada. Agora você pode colar e enviar."
+        );
+
+    } else {
+
+        alert(
+            "Compartilhamento não disponível neste navegador."
+        );
+    }
+};
 }
 
 function mostrarDocumentos() {

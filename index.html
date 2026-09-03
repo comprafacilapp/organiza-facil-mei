@@ -1393,7 +1393,196 @@ h1 {
 <div class="titulo-proposta">
     PROPOSTA COMERCIAL
 </div>
+<div style="
+    margin-top:25px;
+    padding:15px 18px;
+    background:#f2f5f8;
+    border-left:5px solid #1f3a5f;
+    border-radius:5px;
+">
 
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        DADOS DO CLIENTE
+    </div>
+
+    <div>
+        <strong>Empresa / Cliente:</strong>
+        ${cliente}
+    </div>
+
+    <div>
+        <strong>Responsável:</strong>
+        ${responsavel || "Não informado"}
+    </div>
+
+    <div>
+        <strong>Telefone:</strong>
+        ${telefoneCliente || "Não informado"}
+    </div>
+
+    <div>
+        <strong>E-mail:</strong>
+        ${emailCliente || "Não informado"}
+    </div>
+
+    <div>
+        <strong>Data:</strong>
+        ${data ? data.split("-").reverse().join("/") : "Não informada"}
+    </div>
+
+</div>
+<div style="
+    margin-top:25px;
+">
+
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        SERVIÇO PROPOSTO
+    </div>
+
+    <div style="
+        padding:15px 18px;
+        border:1px solid #ddd;
+        border-radius:5px;
+    ">
+
+        <div>
+            <strong>Serviço:</strong>
+            ${servico}
+        </div>
+
+        <div style="margin-top:10px;">
+            <strong>Descrição:</strong>
+            ${descricao || "Não informada"}
+        </div>
+
+        <div style="margin-top:10px;">
+            <strong>Condições / Forma de atendimento:</strong>
+            ${condicoes || "Não informadas"}
+        </div>
+
+    </div>
+
+</div>
+<div style="
+    margin-top:25px;
+    padding:15px 18px;
+    background:#f2f5f8;
+    border-left:5px solid #1f3a5f;
+    border-radius:5px;
+">
+
+    <div style="
+        font-weight:bold;
+        color:#1f3a5f;
+        margin-bottom:10px;
+        font-size:18px;
+    ">
+        CONDIÇÕES COMERCIAIS
+    </div>
+
+    <div>
+        <strong>Valor:</strong>
+        ${formatarMoeda(Number(valor) || 0)}
+    </div>
+
+    <div style="margin-top:8px;">
+        <strong>Forma de cobrança:</strong>
+        ${formaCobranca || "Não informada"}
+    </div>
+
+    <div style="margin-top:8px;">
+        <strong>Forma de pagamento:</strong>
+        ${pagamento || "Não informada"}
+    </div>
+
+    <div style="margin-top:8px;">
+        <strong>Validade da proposta:</strong>
+        ${validade} dias
+    </div>
+
+</div>
+${
+    observacao
+        ?
+        `
+        <div style="
+            margin-top:25px;
+            padding:15px 18px;
+            border:1px solid #ddd;
+            border-radius:5px;
+        ">
+
+            <div style="
+                font-weight:bold;
+                color:#1f3a5f;
+                margin-bottom:10px;
+                font-size:18px;
+            ">
+                OBSERVAÇÕES
+            </div>
+
+            <div>
+                ${observacao}
+            </div>
+
+        </div>
+        `
+        :
+        ""
+}
+<div class="botoes-proposta"
+     style="
+        text-align:center;
+        margin-top:30px;
+     ">
+
+    <button onclick="window.print()">
+        🖨️ Imprimir / Salvar PDF
+    </button>
+
+    <button onclick="compartilharProposta()">
+        📤 Compartilhar
+    </button>
+
+    <button onclick="window.close()">
+        ✖️ Fechar
+    </button>
+
+</div>
+
+<script>
+function compartilharProposta() {
+
+    const texto =
+        document.body.innerText;
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "Proposta Comercial",
+            text: texto
+        });
+
+    } else {
+
+        navigator.clipboard.writeText(texto);
+
+        alert(
+            "Proposta copiada. Agora você pode colar e enviar."
+        );
+    }
+}
+</script>
 </body>
 </html>
 `);
@@ -4941,6 +5130,9 @@ button {
         margin: 0 auto;
         padding: 20px;
     }
+    .botoes-proposta {
+    display: none;
+}
 
     .botao {
         display: none;

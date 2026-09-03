@@ -462,7 +462,11 @@ main {
         </button>
 
     </div>
+<h2 class="titulo-lista">
+    📋 Propostas Salvas
+</h2>
 
+<div id="listaPropostasComerciais"></div>
 </div>
 <div id="telaServicos" class="tela">
 
@@ -1128,6 +1132,7 @@ function abrirPropostaComercial() {
     document.getElementById(
         "telaPropostaComercial"
     ).classList.add("ativa");
+   mostrarPropostasComerciais(); 
 }
 function abrirServicos() {
 
@@ -1304,7 +1309,86 @@ mostrarDocumentos();
     alert(
         "Proposta comercial salva com sucesso!"
     );
-}
+   }
+     function mostrarPropostasComerciais() {
+
+    const propostas =
+        JSON.parse(
+            localStorage.getItem(
+                "propostasComerciais"
+            )
+        ) || [];
+
+    const lista =
+        document.getElementById(
+            "listaPropostasComerciais"
+        );
+
+    lista.innerHTML = "";
+
+    if (propostas.length === 0) {
+
+        lista.innerHTML =
+            "<p>Nenhuma proposta salva ainda.</p>";
+
+        return;
+    }
+
+    propostas.forEach(
+        function(proposta, indice) {
+
+            const item =
+                document.createElement("div");
+
+            item.className = "item-lista";
+
+            item.innerHTML = `
+                <h3>
+                    📑 ${proposta.cliente}
+                </h3>
+
+                <p>
+                    🔧 ${proposta.servico}
+                </p>
+
+                <p>
+                    💰 ${formatarMoeda(
+                        Number(proposta.valor) || 0
+                    )}
+                </p>
+
+                <p>
+                    📅 ${
+                        proposta.data
+                            ? proposta.data
+                                .split("-")
+                                .reverse()
+                                .join("/")
+                            : "Data não informada"
+                    }
+                </p>
+
+                <div class="acoes">
+
+                    <button
+                        class="botao-editar"
+                        onclick="editarPropostaComercial(${indice})">
+                        ✏️ Editar
+                    </button>
+
+                    <button
+                        class="botao-excluir"
+                        onclick="excluirPropostaComercial(${indice})">
+                        🗑️ Excluir
+                    </button>
+
+                </div>
+            `;
+
+            lista.appendChild(item);
+        }
+    );
+}  
     function gerarPropostaComercial() {
 
     const configuracoes =

@@ -332,6 +332,10 @@ main {
     <div class="formulario">
 
         <h2>📄 Documentos</h2>
+        <button class="botao-salvar"
+        onclick="abrirPropostaComercial()">
+    📑 Criar Proposta Comercial
+</button>
 
         <input id="nomeDocumento"
                type="text"
@@ -373,6 +377,22 @@ main {
     </h2>
 
     <div id="listaDocumentos"></div>
+
+</div>
+    <!-- PROPOSTA COMERCIAL -->
+
+<div id="telaPropostaComercial" class="tela">
+
+    <div class="formulario">
+
+        <h2>📑 Proposta Comercial</h2>
+
+        <button class="botao-voltar"
+                onclick="abrirDocumentos()">
+            ← Voltar para Documentos
+        </button>
+
+    </div>
 
 </div>
 <div id="telaServicos" class="tela">
@@ -1030,7 +1050,14 @@ function abrirDocumentos() {
 
     mostrarDocumentos();
 }
+function abrirPropostaComercial() {
 
+    esconderTelas();
+
+    document.getElementById(
+        "telaPropostaComercial"
+    ).classList.add("ativa");
+}
 function abrirServicos() {
 
     esconderTelas();

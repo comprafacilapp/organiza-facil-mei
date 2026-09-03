@@ -1550,7 +1550,7 @@ ${
         🖨️ Imprimir / Salvar PDF
     </button>
 
-   <button id="botaoCompartilharProposta">
+   <button onclick="compartilharProposta()">
     📤 Compartilhar
 </button>
 
@@ -1559,58 +1559,49 @@ ${
     </button>
 
 </div>
+<script>
+function compartilharProposta() {
 
+    const texto = document.body.innerText
+        .replace("🖨️ Imprimir / Salvar PDF", "")
+        .replace("📤 Compartilhar", "")
+        .replace("✖️ Fechar", "")
+        .trim();
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "Proposta Comercial",
+            text: texto
+        }).catch(function() {});
+
+    } else {
+
+        navigator.clipboard.writeText(texto)
+            .then(function() {
+
+                alert(
+                    "Proposta copiada! Agora você pode colar no WhatsApp ou e-mail."
+                );
+
+            })
+            .catch(function() {
+
+                alert(
+                    "Este aparelho não permite o compartilhamento direto."
+                );
+
+            });
+    }
+}
+<\/script>
 
 </body>
 </html>
 `);
 
 janela.document.close();    
-      const botaoCompartilhar =
-    janela.document.getElementById(
-        "botaoCompartilharProposta"
-    );
-
-botaoCompartilhar.addEventListener(
-    "click",
-    async function() {
-
-        const texto =
-            janela.document.body.innerText;
-
-        if (navigator.share) {
-
-            try {
-
-                await navigator.share({
-                    title: "Proposta Comercial",
-                    text: texto
-                });
-
-            } catch (erro) {
-            }
-
-        } else {
-
-            try {
-
-                await navigator.clipboard.writeText(
-                    texto
-                );
-
-                alert(
-                    "Proposta copiada. Agora você pode colar e enviar."
-                );
-
-            } catch (erro) {
-
-                alert(
-                    "Não foi possível compartilhar neste navegador."
-                );
-            }
-        }
-    }
-);
+     
 }
 
 function mostrarDocumentos() {

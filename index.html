@@ -4124,26 +4124,39 @@ ${orcamento.status || "Pendente"}
 
             <br>
 
-            💰 <strong>
-                Total:
-                ${formatarMoeda(
-                    Number(
-                        orcamento.total
-                    )
-                )}
             </strong>
 
-            ${
-                orcamento.observacao
-                ?
-                "<br>📝 " +
-                orcamento.observacao
-                :
-                ""
-            }
+<br>
 
-            <div class="acoes">
+💰 <strong>
+    Total:
+    ${formatarMoeda(
+        Number(
+            orcamento.total
+        )
+    )}
+</strong>
 
+<br>
+
+💰 Sinal:
+${orcamento.percentualSinal ?? 30}%
+—
+${formatarMoeda(
+    Number(orcamento.total || 0) *
+    Number(orcamento.percentualSinal ?? 30) / 100
+)}
+
+${
+    orcamento.observacao
+        ?
+        "<br>📝 " +
+        orcamento.observacao
+        :
+        ""
+}
+
+<div class="acoes">
                 <button
                     class="botao-editar"
                     onclick="editarOrcamento(${indice})">

@@ -386,7 +386,72 @@ main {
     <div class="formulario">
 
         <h2>📑 Proposta Comercial</h2>
+        <label>Empresa / Cliente</label>
+<input id="clienteProposta"
+       type="text"
+       placeholder="Nome da empresa ou cliente">
 
+<label>Responsável / Contato</label>
+<input id="responsavelProposta"
+       type="text"
+       placeholder="Nome do responsável">
+
+<label>Telefone</label>
+<input id="telefoneProposta"
+       type="text"
+       inputmode="tel"
+       placeholder="Telefone"
+       oninput="mascaraTelefone(this)">
+
+<label>E-mail</label>
+<input id="emailProposta"
+       type="email"
+       placeholder="E-mail">
+
+<label>Data da proposta</label>
+<input id="dataProposta"
+       type="date">
+        <label>Serviço proposto</label>
+<input id="servicoProposta"
+       type="text"
+       placeholder="Ex.: Lavagem de veículos">
+
+<label>Descrição da proposta</label>
+<textarea id="descricaoProposta"
+          placeholder="Descreva os serviços que serão realizados"></textarea>
+
+<label>Condições / Forma de atendimento</label>
+<textarea id="condicoesProposta"
+          placeholder="Ex.: dias de atendimento, horários, local e condições do serviço"></textarea>
+<label>Valor da proposta</label>
+<input id="valorProposta"
+       type="text"
+       inputmode="decimal"
+       placeholder="R$ 0,00"
+       oninput="mascaraMoeda(this)">
+
+<label>Forma de cobrança</label>
+<input id="formaCobrancaProposta"
+       type="text"
+       placeholder="Ex.: por veículo, mensal, por serviço ou pacote">
+
+<label>Forma de pagamento</label>
+<input id="pagamentoProposta"
+       type="text"
+       placeholder="Ex.: Pix, transferência ou a combinar">
+
+<label>Validade da proposta (dias)</label>
+<input id="validadeProposta"
+       type="number"
+       min="1"
+       value="15">
+        <label>Observações finais</label>
+<textarea id="observacaoProposta"
+          placeholder="Informações adicionais da proposta"></textarea>
+        <button class="botao-salvar"
+        onclick="gerarPropostaComercial()">
+    📑 Gerar Proposta Comercial
+</button>
         <button class="botao-voltar"
                 onclick="abrirDocumentos()">
             ← Voltar para Documentos
@@ -1119,6 +1184,219 @@ document.querySelector("#telaDocumentos .botao-salvar").innerText =
     "💾 Salvar Documento";
 
 mostrarDocumentos();
+}
+    function gerarPropostaComercial() {
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
+
+    const nomeEmpresa =
+        configuracoes.nome ||
+        "Prestador de Serviço";
+
+    const cnpjEmpresa =
+        configuracoes.cnpj || "";
+
+    const telefoneEmpresa =
+        configuracoes.telefone || "";
+
+    const emailEmpresa =
+        configuracoes.email || "";
+
+    const enderecoEmpresa =
+        configuracoes.endereco || "";
+const cliente =
+    document.getElementById(
+        "clienteProposta"
+    ).value.trim();
+
+const responsavel =
+    document.getElementById(
+        "responsavelProposta"
+    ).value.trim();
+
+const telefoneCliente =
+    document.getElementById(
+        "telefoneProposta"
+    ).value.trim();
+
+const emailCliente =
+    document.getElementById(
+        "emailProposta"
+    ).value.trim();
+
+const data =
+    document.getElementById(
+        "dataProposta"
+    ).value;
+
+const servico =
+    document.getElementById(
+        "servicoProposta"
+    ).value.trim();
+        const descricao =
+    document.getElementById(
+        "descricaoProposta"
+    ).value.trim();
+
+const condicoes =
+    document.getElementById(
+        "condicoesProposta"
+    ).value.trim();
+
+const valor =
+    valorParaNumero(
+        document.getElementById(
+            "valorProposta"
+        ).value
+    );
+
+const formaCobranca =
+    document.getElementById(
+        "formaCobrancaProposta"
+    ).value.trim();
+
+const pagamento =
+    document.getElementById(
+        "pagamentoProposta"
+    ).value.trim();
+
+const validade =
+    parseInt(
+        document.getElementById(
+            "validadeProposta"
+        ).value
+    ) || 15;
+
+const observacao =
+    document.getElementById(
+        "observacaoProposta"
+    ).value.trim();
+        if (!cliente || !servico) {
+
+    alert(
+        "Preencha a empresa/cliente e o serviço proposto."
+    );
+
+    return;
+}
+   const janela =
+    window.open(
+        "",
+        "_blank"
+    );
+
+if (!janela) {
+
+    alert(
+        "Não foi possível abrir a proposta. Verifique se o navegador bloqueou a nova janela."
+    );
+
+    return;
+}     
+    janela.document.write(`
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Proposta Comercial</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 35px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #222;
+    background: #fff;
+}
+
+h1 {
+    text-align: center;
+    margin: 5px 0 10px;
+    font-size: 28px;
+    color: #1f3a5f;
+}
+
+.titulo-proposta {
+    margin-top: 25px;
+    padding: 12px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: #1f3a5f;
+    border-radius: 5px;
+}
+
+.dados-empresa {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.dados-empresa div {
+    margin: 4px 0;
+}
+
+@media print {
+
+    body {
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>${nomeEmpresa}</h1>
+
+<div class="dados-empresa">
+
+    <div>
+        <strong>CNPJ/CPF:</strong>
+        ${cnpjEmpresa || "Não informado"}
+    </div>
+
+    <div>
+        <strong>Telefone:</strong>
+        ${telefoneEmpresa || "Não informado"}
+        &nbsp; | &nbsp;
+        <strong>E-mail:</strong>
+        ${emailEmpresa || "Não informado"}
+    </div>
+
+    <div>
+        <strong>Endereço:</strong>
+        ${enderecoEmpresa || "Não informado"}
+    </div>
+
+</div>
+
+<div class="titulo-proposta">
+    PROPOSTA COMERCIAL
+</div>
+
+</body>
+</html>
+`);
+
+janela.document.close();    
 }
 
 function mostrarDocumentos() {

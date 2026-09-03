@@ -1550,9 +1550,9 @@ ${
         🖨️ Imprimir / Salvar PDF
     </button>
 
-    <button onclick="compartilharProposta()">
-        📤 Compartilhar
-    </button>
+   <button id="botaoCompartilharProposta">
+    📤 Compartilhar
+</button>
 
     <button onclick="window.close()">
         ✖️ Fechar
@@ -1566,41 +1566,51 @@ ${
 `);
 
 janela.document.close();    
-        janela.compartilharProposta = async function() {
-            alert("BOTÃO COMPARTILHAR FOI ACIONADO");
+      const botaoCompartilhar =
+    janela.document.getElementById(
+        "botaoCompartilharProposta"
+    );
 
-    const texto =
-        janela.document.body.innerText;
+botaoCompartilhar.addEventListener(
+    "click",
+    async function() {
 
-    if (navigator.share) {
+        const texto =
+            janela.document.body.innerText;
 
-        try {
+        if (navigator.share) {
 
-            await navigator.share({
-                title: "Proposta Comercial",
-                text: texto
-            });
+            try {
 
-        } catch (erro) {
+                await navigator.share({
+                    title: "Proposta Comercial",
+                    text: texto
+                });
+
+            } catch (erro) {
+            }
+
+        } else {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    texto
+                );
+
+                alert(
+                    "Proposta copiada. Agora você pode colar e enviar."
+                );
+
+            } catch (erro) {
+
+                alert(
+                    "Não foi possível compartilhar neste navegador."
+                );
+            }
         }
-
-    } else if (navigator.clipboard) {
-
-        await navigator.clipboard.writeText(
-            texto
-        );
-
-        alert(
-            "Proposta copiada. Agora você pode colar e enviar."
-        );
-
-    } else {
-
-        alert(
-            "Compartilhamento não disponível neste navegador."
-        );
     }
-};
+);
 }
 
 function mostrarDocumentos() {

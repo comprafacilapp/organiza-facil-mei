@@ -1560,29 +1560,7 @@ ${
 
 </div>
 
-<script>
-function compartilharProposta() {
 
-    const texto =
-        document.body.innerText;
-
-    if (navigator.share) {
-
-        navigator.share({
-            title: "Proposta Comercial",
-            text: texto
-        });
-
-    } else {
-
-        navigator.clipboard.writeText(texto);
-
-        alert(
-            "Proposta copiada. Agora você pode colar e enviar."
-        );
-    }
-}
-</script>
 </body>
 </html>
 `);

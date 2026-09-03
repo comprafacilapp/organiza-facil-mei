@@ -454,6 +454,7 @@ main {
 </button>
         <button class="botao-salvar"
         onclick="gerarPropostaComercial()">
+          
     📑 Gerar Proposta Comercial
 </button>
         <button class="botao-voltar"
@@ -1299,13 +1300,33 @@ mostrarDocumentos();
         observacao
     };
 
+   const indiceEdicao =
+    localStorage.getItem(
+        "indicePropostaEmEdicao"
+    );
+
+if (indiceEdicao !== null) {
+
+    propostas[Number(indiceEdicao)] =
+        proposta;
+
+} else {
+
     propostas.push(proposta);
+
+} 
 
     localStorage.setItem(
         "propostasComerciais",
         JSON.stringify(propostas)
     );
+localStorage.removeItem(
+    "indicePropostaEmEdicao"
+);
 
+document.querySelector(
+    "#telaPropostaComercial .botao-salvar"
+).innerText = "💾 Salvar Proposta";
     alert(
         "Proposta comercial salva com sucesso!"
     );
@@ -1403,7 +1424,87 @@ document.getElementById("observacaoProposta").value = "";
         }
     );
 }  
-    function gerarPropostaComercial() {
+    function editarPropostaComercial(indice) {
+const propostas =
+    JSON.parse(
+        localStorage.getItem(
+            "propostasComerciais"
+        )
+    ) || [];
+
+const proposta = propostas[indice];
+
+if (!proposta) {
+    return;
+}
+    document.getElementById(
+    "clienteProposta"
+).value = proposta.cliente || "";
+
+document.getElementById(
+    "responsavelProposta"
+).value = proposta.responsavel || "";
+
+document.getElementById(
+    "telefoneProposta"
+).value = proposta.telefone || "";
+
+document.getElementById(
+    "emailProposta"
+).value = proposta.email || "";    
+        document.getElementById(
+    "dataProposta"
+).value = proposta.data || "";
+
+document.getElementById(
+    "servicoProposta"
+).value = proposta.servico || "";
+
+document.getElementById(
+    "descricaoProposta"
+).value = proposta.descricao || "";
+
+document.getElementById(
+    "condicoesProposta"
+).value = proposta.condicoes || "";
+        document.getElementById(
+    "valorProposta"
+).value =
+    proposta.valor
+        ? formatarMoeda(Number(proposta.valor))
+        : "";
+
+document.getElementById(
+    "formaCobrancaProposta"
+).value = proposta.formaCobranca || "";
+
+document.getElementById(
+    "pagamentoProposta"
+).value = proposta.pagamento || "";
+
+document.getElementById(
+    "validadeProposta"
+).value = proposta.validade || 15;
+
+document.getElementById(
+    "observacaoProposta"
+).value = proposta.observacao || "";
+localStorage.setItem(
+    "indicePropostaEmEdicao",
+    indice
+);
+ document.querySelector(
+    "#telaPropostaComercial .botao-salvar"
+).innerText = "🔄 Atualizar Proposta";
+        document.getElementById(
+    "clienteProposta"
+).scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
+}
+
+function gerarPropostaComercial() {
 
     const configuracoes =
         JSON.parse(
@@ -1411,7 +1512,6 @@ document.getElementById("observacaoProposta").value = "";
                 "configuracoesEmpresa"
             )
         ) || {};
-
     const nomeEmpresa =
         configuracoes.nome ||
         "Prestador de Serviço";

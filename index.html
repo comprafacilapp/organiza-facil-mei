@@ -4482,6 +4482,12 @@ const enderecoCliente =
         ).value
     );
     const validade = document.getElementById("validadeOrcamento").value;
+    const percentualSinal =
+    parseFloat(
+        document.getElementById(
+            "percentualSinalOrcamento"
+        ).value
+    ) || 0;
     const status =
     document.getElementById(
         "statusOrcamento"
@@ -4495,6 +4501,11 @@ const dataOrcamento = new Date().toLocaleDateString("pt-BR");
     }
 
     const total = Number(quantidade || 1) * Number(valor || 0);
+    const valorSinal =
+    total * percentualSinal / 100;
+
+const saldoRestante =
+    total - valorSinal;
 const orcamentos =
     JSON.parse(
         localStorage.getItem("orcamentos")
@@ -4719,7 +4730,22 @@ button {
 <div class="total">
     TOTAL: ${formatarMoeda(total)}
 </div>
+<div style="
+    margin-top:12px;
+    padding:15px 18px;
+    background:#f2f5f8;
+    border-radius:5px;
+">
+    <div>
+        <strong>Sinal para aprovação (${percentualSinal}%):</strong>
+        ${formatarMoeda(valorSinal)}
+    </div>
 
+    <div style="margin-top:8px;">
+        <strong>Saldo restante:</strong>
+        ${formatarMoeda(saldoRestante)}
+    </div>
+</div>
            <div style="
     margin-top:25px;
     padding:15px 18px;

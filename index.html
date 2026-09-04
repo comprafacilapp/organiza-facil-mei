@@ -18,7 +18,7 @@ body {
 }
 
 header {
-    background: #1f6feb;
+    background: #1f6feb;f
     color: white;
     text-align: center;
     padding: 25px 15px;
@@ -4728,10 +4728,66 @@ if (!janela) {
         ">
         🖨️ Imprimir / Salvar PDF
     </button>
+<button
+    onclick="compartilharRecibo()"
+    style="
+        padding:12px 20px;
+        font-size:16px;
+        cursor:pointer;
+        margin-left:8px;
+    ">
+    📤 Compartilhar
+</button>
 
+<button
+    onclick="window.close()"
+    style="
+        padding:12px 20px;
+        font-size:16px;
+        cursor:pointer;
+        margin-left:8px;
+    ">
+    ✖️ Fechar
+</button>
 </div>
 
     </div>
+    <script>
+function compartilharRecibo() {
+
+    const texto = document.body.innerText
+        .replace("🖨️ Imprimir / Salvar PDF", "")
+        .replace("📤 Compartilhar", "")
+        .replace("✖️ Fechar", "")
+        .trim();
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "Recibo - ${nomeEmpresa}",
+            text: texto
+        }).catch(function() {});
+
+    } else {
+
+        navigator.clipboard.writeText(texto)
+            .then(function() {
+
+                alert(
+                    "Recibo copiado! Agora você pode colar no WhatsApp ou e-mail."
+                );
+
+            })
+            .catch(function() {
+
+                alert(
+                    "Este aparelho não permite o compartilhamento direto."
+                );
+
+            });
+    }
+}
+<\/script>
 
 </body>
 </html>

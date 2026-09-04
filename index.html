@@ -4479,6 +4479,13 @@ function mostrarListaFinanceiro(
                     onclick="editarFinanceiro(${indice})">
                     ✏️ Editar
                 </button>
+                ${lancamento.tipo === "entrada" ? `
+    <button
+        class="botao-editar"
+        onclick="event.stopPropagation(); gerarReciboFinanceiro(${indice})">
+        🧾 Recibo
+    </button>
+` : ""}
 
                 <button
                     class="botao-excluir"
@@ -4558,7 +4565,167 @@ botaoCompartilhar.onclick = function(event) {
             });
     }
 }
+function gerarReciboFinanceiro(indice) {
 
+    const financeiro =
+        JSON.parse(
+            localStorage.getItem(
+                "financeiro"
+            )
+        ) || [];
+
+    const lancamento =
+        financeiro[indice];
+
+    if (!lancamento) {
+        alert(
+            "Lançamento não encontrado."
+        );
+        return;
+    }
+
+    if (lancamento.tipo !== "entrada") {
+        alert(
+            "O recibo só pode ser gerado para uma entrada."
+        );
+        return;
+    }
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
+    const nomeEmpresa =
+    configuracoes.nome ||
+    "Organiza Fácil";
+
+const documentoEmpresa =
+    configuracoes.cnpj || "";
+
+const telefoneEmpresa =
+    configuracoes.telefone || "";
+
+const emailEmpresa =
+    configuracoes.email || "";
+
+const enderecoEmpresa =
+    configuracoes.endereco || "";
+
+const valor =
+    formatarMoeda(
+        Number(lancamento.valor) || 0
+    );
+
+const data =
+    formatarData(
+        lancamento.data
+    );
+
+const descricao =
+    lancamento.descricao ||
+    "Serviço prestado";
+const janela =
+    window.open(
+        "",
+        "_blank",
+        "width=800,height=900"
+    );
+
+if (!janela) {
+    alert(
+        "Não foi possível abrir o recibo. Verifique se o navegador bloqueou a janela."
+    );
+    return;
+}
+   janela.document.write(`
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Recibo - ${nomeEmpresa}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            color: #222;
+        }
+
+        .recibo {
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 35px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .valor {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            margin: 25px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="recibo">
+
+        <h1>🧾 RECIBO</h1>
+
+        <div class="valor">
+            ${valor}
+        </div>
+
+        <p>
+            Recebemos o valor acima referente a:
+            <strong>${descricao}</strong>.
+        </p>
+
+        <p>
+            <strong>Data:</strong> ${data}
+        </p>
+
+        <hr>
+
+        <p>
+            <strong>${nomeEmpresa}</strong>
+        </p>
+
+        ${documentoEmpresa
+            ? `<p>CNPJ/CPF: ${documentoEmpresa}</p>`
+            : ""}
+
+        ${telefoneEmpresa
+            ? `<p>Telefone: ${telefoneEmpresa}</p>`
+            : ""}
+
+        ${emailEmpresa
+            ? `<p>E-mail: ${emailEmpresa}</p>`
+            : ""}
+
+        ${enderecoEmpresa
+            ? `<p>Endereço: ${enderecoEmpresa}</p>`
+            : ""}
+
+    </div>
+
+</body>
+</html>
+`);
+
+janela.document.close(); 
+}
 
 function pesquisarFinanceiro() {
 

@@ -569,7 +569,20 @@ main {
                 onclick="salvarConfiguracoes()">
             💾 Salvar Configurações
         </button>
-      
+      <button class="botao-salvar"
+        onclick="fazerBackup()">
+    💾 Fazer Backup
+</button>
+
+<button class="botao-salvar"
+        onclick="restaurarBackup()">
+    📂 Restaurar Backup
+</button>
+        <input id="arquivoBackup"
+       type="file"
+       accept=".json,application/json"
+       style="display:none"
+       onchange="lerBackupSelecionado(this)">
 
         <button class="botao-voltar"
                 onclick="voltarInicio()">
@@ -613,7 +626,7 @@ main {
                 onclick="salvarCliente()">
             💾 Salvar Cliente
         </button>
-
+       
         <button class="botao-voltar"
                 onclick="voltarInicio()">
             ← Voltar
@@ -2476,7 +2489,142 @@ imagem.src = evento.target.result;
     alert("Configurações salvas com sucesso!");
 
 }
+    function fazerBackup() {
 
+    const backup = {};
+
+    for (let i = 0; i < localStorage.length; i++) {
+
+        const chave = localStorage.key(i);
+
+        backup[chave] =
+            localStorage.getItem(chave);
+    }
+
+    const dados =
+        JSON.stringify(
+            backup,
+            null,
+            2
+        );
+
+    const arquivo =
+        new Blob(
+            [dados],
+            {
+                type: "application/json"
+            }
+        );
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        URL.createObjectURL(arquivo);
+
+    const data =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+    link.download =
+        "backup-organiza-facil-" +
+        data +
+        ".json";
+
+    link.click();
+
+    URL.revokeObjectURL(
+        link.href
+    );
+
+    alert(
+        "Backup criado com sucesso!"
+    );
+}
+    function restaurarBackup() {
+
+    document.getElementById(
+        "arquivoBackup"
+    ).value = "";
+
+    document.getElementById(
+        "arquivoBackup"
+    ).click();
+}
+   
+function lerBackupSelecionado(input) {
+
+    const arquivo = input.files[0];
+
+    if (!arquivo) {
+        return;
+    }
+
+    const leitor = new FileReader();
+
+    leitor.onload = function(evento) {
+
+        try {
+
+            const backup =
+                JSON.parse(
+                    evento.target.result
+                );
+
+            if (
+                !backup ||
+                typeof backup !== "object" ||
+                Array.isArray(backup)
+            ) {
+                alert(
+                    "Arquivo de backup inválido."
+                );
+                return;
+            }
+            const confirmar = confirm(
+    "Restaurar este backup substituirá os dados atuais do Organiza Fácil. Deseja continuar?"
+);
+
+if (!confirmar) {
+    input.value = "";
+    return;
+}
+Object.keys(backup).forEach(
+    function(chave) {
+
+        if (
+            typeof backup[chave] === "string"
+        ) {
+            localStorage.setItem(
+                chave,
+                backup[chave]
+            );
+        }
+    }
+);
+
+localStorage.removeItem(
+    "indicePropostaEmEdicao"
+);
+
+input.value = "";
+
+alert(
+    "Backup restaurado com sucesso!"
+);
+
+location.reload();
+        } catch (erro) {
+
+            alert(
+                "Não foi possível ler este arquivo de backup."
+            );
+        }
+    };
+
+    leitor.readAsText(arquivo);
+}
 function mostrarConfiguracoes() {
 
     const configuracoes =

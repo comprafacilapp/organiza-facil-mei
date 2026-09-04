@@ -301,6 +301,10 @@ main {
             <span class="icone">💰</span>
             Financeiro
         </button>
+        <button onclick="abrirCobrancas()">
+    <span class="icone">💳</span>
+    Cobranças
+</button>
 
         <button onclick="abrirOrcamentos()">
             <span class="icone">🧾</span>
@@ -738,7 +742,65 @@ main {
     <div id="listaAgenda"></div>
 
 </div>
+<!-- COBRANÇAS -->
 
+<div id="telaCobrancas" class="tela">
+
+    <div class="formulario">
+
+        <h2 id="tituloCobrancas">
+            💳 Nova Cobrança
+        </h2>
+
+        <input id="clienteCobranca"
+               type="text"
+               placeholder="Cliente">
+
+        <input id="descricaoCobranca"
+               type="text"
+               placeholder="Descrição da cobrança">
+
+        <input id="valorCobranca"
+               type="text"
+               inputmode="decimal"
+               placeholder="R$ 0,00"
+               oninput="mascaraMoeda(this)">
+
+        <input id="vencimentoCobranca"
+               type="date">
+
+        <select id="statusCobranca">
+
+            <option value="pendente">
+                ⏳ Pendente
+            </option>
+
+            <option value="pago">
+                ✅ Pago
+            </option>
+
+        </select>
+
+        <button class="botao-salvar"
+                id="botaoCobranca"
+                onclick="salvarCobranca()">
+            💾 Salvar Cobrança
+        </button>
+
+        <button class="botao-voltar"
+                onclick="voltarInicio()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <h2 class="titulo-lista">
+        📋 Minhas Cobranças
+    </h2>
+
+    <div id="listaCobrancas"></div>
+
+</div>
 
 <!-- FINANCEIRO -->
 
@@ -1081,7 +1143,8 @@ function esconderTelas() {
 
     document.getElementById("telaAgenda")
         .classList.remove("ativa");
-
+document.getElementById("telaCobrancas")
+    .classList.remove("ativa");
     document.getElementById("telaFinanceiro")
         .classList.remove("ativa");
 
@@ -3669,7 +3732,19 @@ function excluirAgenda(indice) {
 
     mostrarAgenda();
 }
+/* =========================
+   COBRANÇAS
+========================= */
 
+function abrirCobrancas() {
+
+    esconderTelas();
+
+    document.getElementById(
+        "telaCobrancas"
+    ).classList.add("ativa");
+
+}
 
 /* =========================
    FINANCEIRO

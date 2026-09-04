@@ -2589,7 +2589,27 @@ function lerBackupSelecionado(input) {
 if (!confirmar) {
     input.value = "";
     return;
-}
+    }
+    const chavesOrganizaFacil = [
+    "clientes",
+    "anotacoes",
+    "agenda",
+    "financeiro",
+    "orcamentos",
+    "documentos",
+    "servicos",
+    "configuracoesEmpresa",
+    "propostasComerciais",
+    "orcamentosMensais",
+    "indicePropostaEmEdicao"
+];
+
+chavesOrganizaFacil.forEach(
+    function(chave) {
+        localStorage.removeItem(chave);
+    }
+);
+
 Object.keys(backup).forEach(
     function(chave) {
 

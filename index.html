@@ -3743,9 +3743,143 @@ function abrirCobrancas() {
     document.getElementById(
         "telaCobrancas"
     ).classList.add("ativa");
-
+mostrarCobrancas();
 }
+function salvarCobranca() {
 
+    const cliente =
+        document.getElementById(
+            "clienteCobranca"
+        ).value.trim();
+
+    const descricao =
+        document.getElementById(
+            "descricaoCobranca"
+        ).value.trim();
+
+    const valor =
+        valorParaNumero(
+            document.getElementById(
+                "valorCobranca"
+            ).value
+        );
+
+    const vencimento =
+        document.getElementById(
+            "vencimentoCobranca"
+        ).value;
+
+    const status =
+        document.getElementById(
+            "statusCobranca"
+        ).value;
+
+    if (cliente === "") {
+        alert("Digite o nome do cliente.");
+        return;
+    }
+
+    if (descricao === "") {
+        alert("Digite a descrição da cobrança.");
+        return;
+    }
+
+    if (valor <= 0) {
+        alert("Digite um valor válido.");
+        return;
+    }
+
+    if (vencimento === "") {
+        alert("Escolha o vencimento.");
+        return;
+    }
+
+    let cobrancas =
+        JSON.parse(
+            localStorage.getItem(
+                "cobrancas"
+            )
+        ) || [];
+
+    const cobranca = {
+        cliente,
+        descricao,
+        valor,
+        vencimento,
+        status
+    };
+
+    cobrancas.push(cobranca);
+
+    localStorage.setItem(
+        "cobrancas",
+        JSON.stringify(cobrancas)
+    );
+
+    alert(
+        "Cobrança salva com sucesso!"
+    );
+    mostrarCobrancas();
+}
+    function mostrarCobrancas() {
+
+    const cobrancas =
+        JSON.parse(
+            localStorage.getItem(
+                "cobrancas"
+            )
+        ) || [];
+
+    const lista =
+        document.getElementById(
+            "listaCobrancas"
+        );
+
+    lista.innerHTML = "";
+
+    cobrancas.forEach(
+        function(cobranca) {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "item";
+
+            div.innerHTML = `
+                <strong>
+                    ${cobranca.cliente}
+                </strong>
+
+                <br>
+
+                📝 ${cobranca.descricao}
+
+                <br>
+
+                💵 ${formatarMoeda(
+                    Number(cobranca.valor) || 0
+                )}
+
+                <br>
+
+                📅 Vencimento:
+                ${formatarData(
+                    cobranca.vencimento
+                )}
+
+                <br>
+
+                ${
+                    cobranca.status === "pago"
+                        ? "✅ Pago"
+                        : "⏳ Pendente"
+                }
+            `;
+
+            lista.appendChild(div);
+        }
+    );
+}
 /* =========================
    FINANCEIRO
 ========================= */

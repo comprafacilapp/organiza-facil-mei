@@ -3820,6 +3820,25 @@ function salvarCobranca() {
         "Cobrança salva com sucesso!"
     );
     mostrarCobrancas();
+    document.getElementById(
+    "clienteCobranca"
+).value = "";
+
+document.getElementById(
+    "descricaoCobranca"
+).value = "";
+
+document.getElementById(
+    "valorCobranca"
+).value = "";
+
+document.getElementById(
+    "vencimentoCobranca"
+).value = "";
+
+document.getElementById(
+    "statusCobranca"
+).value = "pendente";
 }
     function mostrarCobrancas() {
 

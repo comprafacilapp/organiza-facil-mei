@@ -3909,6 +3909,17 @@ document.getElementById(
 
   cobrancas.forEach(
     function(cobranca, indice) {
+        const hoje = new Date();
+hoje.setHours(0, 0, 0, 0);
+
+const dataVencimento =
+    new Date(
+        cobranca.vencimento + "T00:00:00"
+    );
+
+const estaVencida =
+    cobranca.status !== "pago" &&
+    dataVencimento < hoje;
 
             const div =
                 document.createElement("div");
@@ -3939,11 +3950,12 @@ document.getElementById(
 
                 <br>
 
-                ${
-                  
+               ${
     cobranca.status === "pago"
         ? "✅ Pago"
-        : "⏳ Pendente"
+        : estaVencida
+            ? "⚠️ Vencida"
+            : "⏳ Pendente"
 }
 
 <div class="acoes">

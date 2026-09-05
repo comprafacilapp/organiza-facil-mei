@@ -3923,7 +3923,11 @@ document.getElementById(
         onclick="editarCobranca(${indice})">
         ✏️ Editar
     </button>
-
+<button
+    class="botao-excluir"
+    onclick="excluirCobranca(${indice})">
+    🗑️ Excluir
+</button>
 </div>
 `;  
 
@@ -3985,6 +3989,40 @@ document.getElementById(
         behavior: "smooth",
         block: "start"
     });
+   }
+    function excluirCobranca(indice) {
+
+    const confirmar =
+        confirm(
+            "Deseja realmente excluir esta cobrança?"
+        );
+
+    if (!confirmar) {
+        return;
+    }
+
+    let cobrancas =
+        JSON.parse(
+            localStorage.getItem(
+                "cobrancas"
+            )
+        ) || [];
+
+    cobrancas.splice(
+        indice,
+        1
+    );
+
+    localStorage.setItem(
+        "cobrancas",
+        JSON.stringify(cobrancas)
+    );
+
+    mostrarCobrancas();
+
+    alert(
+        "Cobrança excluída com sucesso!"
+    ); 
 } 
 /* =========================
    FINANCEIRO

@@ -560,6 +560,9 @@ main {
         <input id="enderecoEmpresa"
                type="text"
                placeholder="Endereço">
+        <input id="pixEmpresa"
+       type="text"
+       placeholder="Chave Pix">
         <label for="logoEmpresa">
     🖼️ Logo da empresa
 </label>
@@ -2453,8 +2456,11 @@ document.getElementById("botaoSalvarConfiguracoes").innerText =
 
         email: document.getElementById("emailEmpresa").value.trim(),
 
-        endereco: document.getElementById("enderecoEmpresa").value.trim()
-    };
+endereco: document.getElementById("enderecoEmpresa").value.trim(),
+
+pix: document.getElementById("pixEmpresa").value.trim()
+};
+
 const configuracoesAntigas =
     JSON.parse(
         localStorage.getItem(
@@ -2748,6 +2754,7 @@ function mostrarConfiguracoes() {
         <p>📧 E-mail: ${configuracoes.email || "Não informado"}</p>
 
         <p>📍 Endereço: ${configuracoes.endereco || "Não informado"}</p>
+        <p>💠 Chave Pix: ${configuracoes.pix || "Não informado"}</p>
 
     <div class="acoes">
 
@@ -2795,6 +2802,8 @@ function editarConfiguracoes() {
 
     document.getElementById("enderecoEmpresa").value =
         configuracoes.endereco || "";
+    document.getElementById("pixEmpresa").value =
+    configuracoes.pix || "";
 
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "🔄 Atualizar Configurações";
@@ -2811,7 +2820,7 @@ function editarConfiguracoes() {
     document.getElementById("telefoneEmpresa").value = "";
     document.getElementById("emailEmpresa").value = "";
     document.getElementById("enderecoEmpresa").value = "";
-
+document.getElementById("pixEmpresa").value = "";
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "💾 Salvar Configurações";
 
@@ -3927,6 +3936,11 @@ document.getElementById(
     class="botao-excluir"
     onclick="excluirCobranca(${indice})">
     🗑️ Excluir
+</button>
+<button
+    class="botao-editar"
+    onclick="compartilharCobranca(${indice})">
+    📤 Compartilhar
 </button>
 </div>
 `;  

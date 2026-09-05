@@ -3809,7 +3809,24 @@ function salvarCobranca() {
         status
     };
 
+    const indiceEdicao =
+    localStorage.getItem(
+        "indiceCobrancaEmEdicao"
+    );
+
+if (indiceEdicao !== null) {
+
+    cobrancas[Number(indiceEdicao)] =
+        cobranca;
+
+} else {
+
     cobrancas.push(cobranca);
+}
+
+localStorage.removeItem(
+    "indiceCobrancaEmEdicao"
+);
 
     localStorage.setItem(
         "cobrancas",
@@ -3839,6 +3856,10 @@ document.getElementById(
 document.getElementById(
     "statusCobranca"
 ).value = "pendente";
+    document.getElementById(
+    "botaoCobranca"
+).innerText =
+    "💾 Salvar Cobrança";
 }
     function mostrarCobrancas() {
 
@@ -3856,8 +3877,8 @@ document.getElementById(
 
     lista.innerHTML = "";
 
-    cobrancas.forEach(
-        function(cobranca) {
+  cobrancas.forEach(
+    function(cobranca, indice) {
 
             const div =
                 document.createElement("div");
@@ -3889,16 +3910,82 @@ document.getElementById(
                 <br>
 
                 ${
-                    cobranca.status === "pago"
-                        ? "✅ Pago"
-                        : "⏳ Pendente"
-                }
-            `;
+                  
+    cobranca.status === "pago"
+        ? "✅ Pago"
+        : "⏳ Pendente"
+}
+
+<div class="acoes">
+
+    <button
+        class="botao-editar"
+        onclick="editarCobranca(${indice})">
+        ✏️ Editar
+    </button>
+
+</div>
+`;  
 
             lista.appendChild(div);
         }
     );
 }
+   function editarCobranca(indice) {
+
+    const cobrancas =
+        JSON.parse(
+            localStorage.getItem(
+                "cobrancas"
+            )
+        ) || [];
+
+    const cobranca =
+        cobrancas[indice];
+
+    if (!cobranca) {
+        return;
+    }
+
+    document.getElementById(
+        "clienteCobranca"
+    ).value = cobranca.cliente || "";
+
+    document.getElementById(
+        "descricaoCobranca"
+    ).value = cobranca.descricao || "";
+
+    document.getElementById(
+        "valorCobranca"
+    ).value = formatarMoeda(
+        Number(cobranca.valor) || 0
+    );
+
+    document.getElementById(
+        "vencimentoCobranca"
+    ).value = cobranca.vencimento || "";
+
+    document.getElementById(
+        "statusCobranca"
+    ).value = cobranca.status || "pendente";
+
+    localStorage.setItem(
+        "indiceCobrancaEmEdicao",
+        indice
+    );
+
+    document.getElementById(
+        "botaoCobranca"
+    ).innerText =
+        "🔄 Atualizar Cobrança";
+
+    document.getElementById(
+        "tituloCobrancas"
+    ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+} 
 /* =========================
    FINANCEIRO
 ========================= */

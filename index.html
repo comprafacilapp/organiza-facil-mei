@@ -2556,6 +2556,16 @@ imagem.src = evento.target.result;
     mostrarConfiguracoes();
 
     alert("Configurações salvas com sucesso!");
+    document.getElementById("nomeEmpresa").value = "";
+document.getElementById("cnpjEmpresa").value = "";
+document.getElementById("telefoneEmpresa").value = "";
+document.getElementById("emailEmpresa").value = "";
+document.getElementById("enderecoEmpresa").value = "";
+document.getElementById("pixEmpresa").value = "";
+document.getElementById("logoEmpresa").value = "";
+
+document.getElementById("botaoSalvarConfiguracoes").innerText =
+    "💾 Salvar Configurações";
 
 }
     function fazerBackup() {

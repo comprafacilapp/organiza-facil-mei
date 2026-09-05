@@ -264,6 +264,7 @@ main {
 
 </style>
 <link rel="manifest" href="manifest.json">
+    <script src="qrcode.min.js"></script>
 </head>
 
 <body>
@@ -3962,6 +3963,11 @@ document.getElementById(
     onclick="compartilharCobranca(${indice})">
     📤 Compartilhar
 </button>
+<button
+    class="botao-editar"
+    onclick="abrirQrCodeCobranca(${indice})">
+    💠 QR Code Pix
+</button>
 </div>
 `;  
 
@@ -4237,6 +4243,113 @@ document.getElementById(
 
     return payload + crc;
 }
+  function abrirQrCodeCobranca(indice) {
+
+    const cobrancas =
+        JSON.parse(
+            localStorage.getItem("cobrancas")
+        ) || [];
+
+    const cobranca =
+        cobrancas[indice];
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem("configuracoesEmpresa")
+        ) || {};
+
+    if (!cobranca) {
+        return;
+    }
+
+    if (
+        !configuracoes.pix ||
+        !configuracoes.nome ||
+        !configuracoes.cidadePix
+    ) {
+        alert(
+            "Cadastre Nome da empresa, Chave Pix e Cidade Pix nas Configurações."
+        );
+        return;
+    }
+
+    const codigoPix =
+        gerarPixCopiaECola(
+            configuracoes.pix,
+            configuracoes.nome,
+            configuracoes.cidadePix,
+            cobranca.valor
+        );
+
+    const janela =
+        window.open("", "_blank");
+
+    if (!janela) {
+        alert("Não foi possível abrir o QR Code.");
+        return;
+    }
+
+    janela.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <title>Pagamento Pix</title>
+        </head>
+
+        <body style="
+            font-family:Arial,sans-serif;
+            text-align:center;
+            padding:30px;
+        ">
+
+            <h2>💠 Pagamento via Pix</h2>
+
+            <p>
+                <strong>${cobranca.cliente}</strong>
+            </p>
+
+            <p>
+                ${formatarMoeda(
+                    Number(cobranca.valor) || 0
+                )}
+            </p>
+
+            <div id="qrcode"
+                 style="
+                    display:flex;
+                    justify-content:center;
+                    margin:25px;
+                 ">
+            </div>
+
+            <p>
+                Confira o recebedor antes de pagar:
+            </p>
+
+            <strong>
+                ${configuracoes.nome}
+            </strong>
+
+            <script src="qrcode.min.js"><\/script>
+
+            <script>
+                new QRCode(
+                    document.getElementById("qrcode"),
+                    {
+                        text: ${JSON.stringify(codigoPix)},
+                        width: 256,
+                        height: 256
+                    }
+                );
+            <\/script>
+
+        </body>
+        </html>
+    `);
+
+    janela.document.close();
+}  
 /* =========================
    FINANCEIRO
 ========================= */

@@ -3025,6 +3025,10 @@ function mostrarListaClientes(clientes) {
     }
 
     clientes.forEach(function(cliente, indice) {
+        const indiceCliente =
+    cliente.indiceOriginal !== undefined
+        ? cliente.indiceOriginal
+        : indice;
 
         const div =
             document.createElement("div");
@@ -3045,15 +3049,21 @@ function mostrarListaClientes(clientes) {
 
                 <button
                     class="botao-editar"
-                    onclick="editarCliente(${indice})">
+                 onclick="editarCliente(${indiceCliente})"> 
                     ✏️ Editar
                 </button>
 
+<button
+    class="botao-excluir"
+    onclick="excluirCliente(${indiceCliente})">
+    🗑️ Excluir
+</button>
+               
                 <button
-                    class="botao-excluir"
-                    onclick="excluirCliente(${indice})">
-                    🗑️ Excluir
-                </button>
+    class="botao-editar"
+    onclick="abrirWhatsAppCliente(${indiceCliente})">
+    💬 WhatsApp
+</button>
 
             </div>
         `;
@@ -3076,13 +3086,18 @@ function pesquisarClientes() {
             localStorage.getItem("clientes")
         ) || [];
 
-    const resultados =
-        clientes.filter(function(cliente) {
+ const resultados =
+    clientes.filter(function(cliente) {
 
-            return cliente.nome
-                .toLowerCase()
-                .includes(texto);
-        });
+        return cliente.nome
+            .toLowerCase()
+            .includes(texto);
+    });
+
+resultados.forEach(function(cliente) {
+    cliente.indiceOriginal =
+        clientes.indexOf(cliente);
+}); 
 
     mostrarListaClientes(resultados);
 }
@@ -3155,6 +3170,46 @@ function excluirCliente(indice) {
     mostrarClientes();
 }
 
+    function abrirWhatsAppCliente(indice) {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[indice];
+
+    if (!cliente) {
+        return;
+    }
+
+    if (!cliente.telefone) {
+        alert("Este cliente não possui telefone cadastrado.");
+        return;
+    }
+
+    let telefone =
+        cliente.telefone.replace(/\D/g, "");
+
+    if (
+        telefone.length === 10 ||
+        telefone.length === 11
+    ) {
+        telefone = "55" + telefone;
+    }
+
+    const mensagem =
+        "Olá, " + cliente.nome + "!";
+
+    const link =
+        "https://wa.me/" +
+        telefone +
+        "?text=" +
+        encodeURIComponent(mensagem);
+
+    window.open(link, "_blank");
+}
 
 /* =========================
    ANOTAÇÕES

@@ -1260,7 +1260,24 @@ function salvarDocumento() {
         observacao
     };
 
+    const indiceEdicao =
+    localStorage.getItem(
+        "indiceDocumentoEmEdicao"
+    );
+
+if (indiceEdicao !== null) {
+
+    documentos[Number(indiceEdicao)] =
+        documento;
+
+} else {
+
     documentos.push(documento);
+}
+
+localStorage.removeItem(
+    "indiceDocumentoEmEdicao"
+);
 
     localStorage.setItem(
         "documentos",
@@ -1275,9 +1292,8 @@ document.getElementById("tipoDocumento").value = "";
 document.getElementById("dataDocumento").value = "";
 document.getElementById("observacaoDocumento").value = "";
 
-document.querySelector("#telaDocumentos .botao-salvar").innerText =
+document.getElementById("botaoSalvarDocumento").innerText =
     "💾 Salvar Documento";
-
 mostrarDocumentos();
 }
    function salvarPropostaComercial() {
@@ -2419,12 +2435,10 @@ function editarDocumento(indice) {
     document.getElementById("observacaoDocumento").value =
         documento.observacao || "";
 
-    documentos.splice(indice, 1);
-
     localStorage.setItem(
-        "documentos",
-        JSON.stringify(documentos)
-    );
+    "indiceDocumentoEmEdicao",
+    indice
+);
 
     document.getElementById("botaoSalvarDocumento").innerText =
         "🔄 Atualizar Documento";

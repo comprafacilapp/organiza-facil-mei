@@ -4048,6 +4048,91 @@ document.getElementById(
         "Cobrança excluída com sucesso!"
     ); 
 } 
+    function compartilharCobranca(indice) {
+
+    const cobrancas =
+        JSON.parse(
+            localStorage.getItem(
+                "cobrancas"
+            )
+        ) || [];
+
+    const cobranca =
+        cobrancas[indice];
+
+    if (!cobranca) {
+        return;
+    }
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
+
+    const nomeEmpresa =
+        configuracoes.nome || "";
+
+    const pix =
+        configuracoes.pix || "";
+
+    const pagamento =
+        pix
+            ? "\n\n💠 PAGAMENTO VIA PIX" +
+              "\nChave Pix: " + pix +
+              (nomeEmpresa
+                  ? "\nRecebedor: " + nomeEmpresa
+                  : "")
+            : "";
+
+    const texto =
+        "💳 COBRANÇA" +
+        "\n\n" +
+        "👤 Cliente: " +
+        cobranca.cliente +
+        "\n" +
+        "📝 Referente a: " +
+        cobranca.descricao +
+        "\n" +
+        "💵 Valor: " +
+        formatarMoeda(
+            Number(cobranca.valor) || 0
+        ) +
+        "\n" +
+        "📅 Vencimento: " +
+        formatarData(
+            cobranca.vencimento
+        ) +
+        pagamento;
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "Cobrança",
+            text: texto
+        }).catch(function() {});
+
+    } else {
+
+        navigator.clipboard
+            .writeText(texto)
+            .then(function() {
+
+                alert(
+                    "Cobrança copiada! Agora você pode colar no WhatsApp ou e-mail."
+                );
+
+            })
+            .catch(function() {
+
+                alert(
+                    "Este aparelho não permite o compartilhamento direto."
+                );
+
+            });
+    }
+}
 /* =========================
    FINANCEIRO
 ========================= */

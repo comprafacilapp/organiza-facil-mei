@@ -3064,8 +3064,23 @@ function mostrarListaClientes(clientes) {
     onclick="abrirWhatsAppCliente(${indiceCliente})">
     💬 WhatsApp
 </button>
+</div>
+<div class="acoes">
 
-            </div>
+    <button
+        class="botao-editar"
+        onclick="criarOrcamentoCliente(${indiceCliente})">
+        🧾 Orçamento
+    </button>
+
+    <button
+        class="botao-editar"
+        onclick="criarCobrancaCliente(${indiceCliente})">
+        💳 Cobrança
+    </button>
+
+</div>
+
         `;
 
         lista.appendChild(div);
@@ -3211,6 +3226,58 @@ function excluirCliente(indice) {
     window.open(link, "_blank");
 }
 
+   function criarOrcamentoCliente(indice) {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[indice];
+
+    if (!cliente) {
+        return;
+    }
+
+    abrirOrcamentos();
+
+    document.getElementById(
+        "clienteOrcamento"
+    ).value =
+        cliente.nome || "";
+
+    document.getElementById(
+        "telefoneClienteOrcamento"
+    ).value =
+        cliente.telefone || "";
+
+    document.getElementById(
+        "enderecoClienteOrcamento"
+    ).value =
+        cliente.endereco || "";
+} 
+    function criarCobrancaCliente(indice) {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[indice];
+
+    if (!cliente) {
+        return;
+    }
+
+    abrirCobrancas();
+
+    document.getElementById(
+        "clienteCobranca"
+    ).value =
+        cliente.nome || "";
+}
 /* =========================
    ANOTAÇÕES
 ========================= */

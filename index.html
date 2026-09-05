@@ -563,6 +563,9 @@ main {
         <input id="pixEmpresa"
        type="text"
        placeholder="Chave Pix">
+        <input id="cidadePixEmpresa"
+       type="text"
+       placeholder="Cidade do recebedor Pix">
         <label for="logoEmpresa">
     🖼️ Logo da empresa
 </label>
@@ -2458,7 +2461,9 @@ document.getElementById("botaoSalvarConfiguracoes").innerText =
 
 endereco: document.getElementById("enderecoEmpresa").value.trim(),
 
-pix: document.getElementById("pixEmpresa").value.trim()
+pix: document.getElementById("pixEmpresa").value.trim(),
+
+cidadePix: document.getElementById("cidadePixEmpresa").value.trim()
 };
 
 const configuracoesAntigas =
@@ -2562,6 +2567,7 @@ document.getElementById("telefoneEmpresa").value = "";
 document.getElementById("emailEmpresa").value = "";
 document.getElementById("enderecoEmpresa").value = "";
 document.getElementById("pixEmpresa").value = "";
+    document.getElementById("cidadePixEmpresa").value = "";
 document.getElementById("logoEmpresa").value = "";
 
 document.getElementById("botaoSalvarConfiguracoes").innerText =
@@ -2765,6 +2771,7 @@ function mostrarConfiguracoes() {
 
         <p>📍 Endereço: ${configuracoes.endereco || "Não informado"}</p>
         <p>💠 Chave Pix: ${configuracoes.pix || "Não informado"}</p>
+        <p>🏙️ Cidade Pix: ${configuracoes.cidadePix || "Não informado"}</p>
 
     <div class="acoes">
 
@@ -2814,6 +2821,8 @@ function editarConfiguracoes() {
         configuracoes.endereco || "";
     document.getElementById("pixEmpresa").value =
     configuracoes.pix || "";
+    document.getElementById("cidadePixEmpresa").value =
+    configuracoes.cidadePix || "";
 
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "🔄 Atualizar Configurações";
@@ -2831,6 +2840,7 @@ function editarConfiguracoes() {
     document.getElementById("emailEmpresa").value = "";
     document.getElementById("enderecoEmpresa").value = "";
 document.getElementById("pixEmpresa").value = "";
+    document.getElementById("cidadePixEmpresa").value = "";
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "💾 Salvar Configurações";
 
@@ -4132,6 +4142,100 @@ document.getElementById(
 
             });
     }
+}
+   function campoPix(id, valor) {
+
+    const tamanho =
+        String(valor.length)
+            .padStart(2, "0");
+
+    return id + tamanho + valor;
+} 
+   function crc16Pix(texto) {
+
+    let resultado = 0xFFFF;
+
+    for (let i = 0; i < texto.length; i++) {
+
+        resultado ^=
+            texto.charCodeAt(i) << 8;
+
+        for (let j = 0; j < 8; j++) {
+
+            if (resultado & 0x8000) {
+
+                resultado =
+                    (resultado << 1) ^ 0x1021;
+
+            } else {
+
+                resultado =
+                    resultado << 1;
+            }
+
+            resultado &= 0xFFFF;
+        }
+    }
+
+    return resultado
+        .toString(16)
+        .toUpperCase()
+        .padStart(4, "0");
+} 
+    function gerarPixCopiaECola(chave, nome, cidade, valor) {
+
+    nome = nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .substring(0, 25);
+
+    cidade = cidade
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .substring(0, 15);
+
+    const gui =
+        campoPix(
+            "00",
+            "BR.GOV.BCB.PIX"
+        );
+
+    const chavePix =
+        campoPix(
+            "01",
+            chave
+        );
+
+    const conta =
+        campoPix(
+            "26",
+            gui + chavePix
+        );
+
+    let payload =
+        campoPix("00", "01") +
+        conta +
+        campoPix("52", "0000") +
+        campoPix("53", "986") +
+        campoPix(
+            "54",
+            Number(valor).toFixed(2)
+        ) +
+        campoPix("58", "BR") +
+        campoPix("59", nome) +
+        campoPix("60", cidade) +
+        campoPix(
+            "62",
+            campoPix("05", "***")
+        ) +
+        "6304";
+
+    const crc =
+        crc16Pix(payload);
+
+    return payload + crc;
 }
 /* =========================
    FINANCEIRO

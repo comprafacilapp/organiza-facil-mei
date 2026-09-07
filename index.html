@@ -2112,6 +2112,10 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         JSON.parse(
             localStorage.getItem("servicos")
         ) || [];
+     const indiceEdicao =
+    localStorage.getItem(
+        "indiceServicoEmEdicao"
+    );                     
 
     const servico = {
         nome,
@@ -2120,13 +2124,27 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         tempo
     };
 
+   if (indiceEdicao !== null) {
+
+    servicos[Number(indiceEdicao)] =
+        servico;
+
+} else {
+
     servicos.push(servico);
+}
 
     localStorage.setItem(
         "servicos",
         JSON.stringify(servicos)
     );
-
+     localStorage.removeItem(
+    "indiceServicoEmEdicao"
+);                     
+document.getElementById(
+    "botaoSalvarServico"
+).innerText =
+    "💾 Salvar Serviço";
     alert("Serviço salvo com sucesso!");
 
     document.getElementById("nomeServico").value = "";
@@ -2213,6 +2231,11 @@ function mostrarServicos() {
             );
 
         });
+    filtrados.forEach(function(servico) {
+
+    servico.indiceOriginal =
+        servicos.indexOf(servico);
+});
 
     mostrarListaServicos(filtrados);
 }
@@ -2232,6 +2255,10 @@ function mostrarListaServicos(servicos) {
     }
 
     servicos.forEach(function(servico, indice) {
+        const indiceServico =
+    servico.indiceOriginal !== undefined
+        ? servico.indiceOriginal
+        : indice;
 
         const item =
             document.createElement("div");
@@ -2244,9 +2271,21 @@ function mostrarListaServicos(servicos) {
             <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
 
-            <button onclick="excluirServico(${indice})">
-                🗑️ Excluir
-            </button>
+          <div class="acoes">
+
+    <button
+        class="botao-editar"
+        onclick="editarServico(${indiceServico})">
+        ✏️ Editar
+    </button>
+
+    <button
+        class="botao-excluir"
+        onclick="excluirServico(${indiceServico})">
+        🗑️ Excluir
+    </button>
+
+</div>
         `;
 
         lista.appendChild(item);
@@ -2299,12 +2338,11 @@ function mostrarListaServicos(servicos) {
     document.getElementById("tempoServico").value =
         servico.tempo || "";
 
-    servicos.splice(indice, 1);
-
+    
     localStorage.setItem(
-        "servicos",
-        JSON.stringify(servicos)
-    );
+    "indiceServicoEmEdicao",
+    indice
+);
 
    document.getElementById("botaoSalvarServico").innerText =
     "🔄 Atualizar Serviço";

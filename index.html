@@ -1190,6 +1190,7 @@ function voltarInicio() {
     limparAgenda();
     limparFinanceiro();
     limparOrcamento();
+      limparServico();
 }
 
 
@@ -2355,6 +2356,18 @@ function mostrarListaServicos(servicos) {
 });
 
 
+}
+    function limparServico() {
+
+    document.getElementById("nomeServico").value = "";
+    document.getElementById("descricaoServico").value = "";
+    document.getElementById("valorServico").value = "";
+    document.getElementById("tempoServico").value = "";
+
+    localStorage.removeItem("indiceServicoEmEdicao");
+
+    document.getElementById("botaoSalvarServico").innerText =
+        "💾 Salvar Serviço";
 }
 function mostrarListaDocumentos(documentos) {
 

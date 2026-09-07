@@ -3648,7 +3648,28 @@ function salvarAgenda() {
             "descricaoAgenda"
         ).value
         .trim();
+const indiceCliente =
+    document.getElementById(
+        "clienteCadastradoAgenda"
+    ).value;
 
+let telefone = "";
+
+if (indiceCliente !== "") {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const clienteSelecionado =
+        clientes[Number(indiceCliente)];
+
+    if (clienteSelecionado) {
+        telefone =
+            clienteSelecionado.telefone || "";
+    }
+}
     if (data === "") {
 
         alert("Escolha a data.");
@@ -3688,7 +3709,8 @@ function salvarAgenda() {
         data,
         hora,
         cliente,
-        descricao
+        descricao,
+        telefone
     };
 
     if (agendaEditando === -1) {
@@ -3733,7 +3755,9 @@ function limparAgenda() {
     document.getElementById(
         "clienteAgenda"
     ).value = "";
-
+document.getElementById(
+    "clienteCadastradoAgenda"
+).value = "";
     document.getElementById(
         "descricaoAgenda"
     ).value = "";
@@ -3843,7 +3867,14 @@ function mostrarListaAgenda(agenda) {
                     🗑️ Excluir
                 </button>
 
-            </div>
+
+    <button
+        class="botao-editar"
+        onclick="abrirWhatsAppAgenda(${indiceCompromisso})">
+        💬 WhatsApp
+    </button>
+
+</div>
         `;
 
         lista.appendChild(div);
@@ -3916,6 +3947,22 @@ function editarAgenda(indice) {
         "clienteAgenda"
     ).value =
         compromisso.cliente;
+    const clientes =
+    JSON.parse(
+        localStorage.getItem("clientes")
+    ) || [];
+
+const indiceCliente =
+    clientes.findIndex(function(cliente) {
+        return cliente.nome === compromisso.cliente;
+    });
+
+document.getElementById(
+    "clienteCadastradoAgenda"
+).value =
+    indiceCliente >= 0
+        ? String(indiceCliente)
+        : "";
 
     document.getElementById(
         "descricaoAgenda"
@@ -3969,6 +4016,54 @@ function excluirAgenda(indice) {
 
     mostrarAgenda();
 }
+  function abrirWhatsAppAgenda(indice) {
+
+    const agenda =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    const compromisso =
+        agenda[indice];
+
+    if (!compromisso) {
+        return;
+    }
+
+    if (!compromisso.telefone) {
+        alert(
+            "Este compromisso não possui telefone cadastrado."
+        );
+        return;
+    }
+
+    let telefone =
+        compromisso.telefone.replace(/\D/g, "");
+
+    if (
+        telefone.length === 10 ||
+        telefone.length === 11
+    ) {
+        telefone = "55" + telefone;
+    }
+
+    const mensagem =
+        "Olá, " +
+        compromisso.cliente +
+        "! Lembrando do nosso compromisso no dia " +
+        formatarData(compromisso.data) +
+        " às " +
+        compromisso.hora +
+        ".";
+
+    const link =
+        "https://wa.me/" +
+        telefone +
+        "?text=" +
+        encodeURIComponent(mensagem);
+
+    window.open(link, "_blank");
+}  
 /* =========================
    COBRANÇAS
 ========================= */

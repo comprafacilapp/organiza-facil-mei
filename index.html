@@ -715,6 +715,14 @@ main {
 
         <input id="horaAgenda"
                type="time">
+        <select id="clienteCadastradoAgenda"
+        onchange="selecionarClienteAgenda()">
+
+    <option value="">
+        👥 Selecionar cliente cadastrado
+    </option>
+
+</select>
 
         <input id="clienteAgenda"
                type="text"
@@ -3560,9 +3568,63 @@ function abrirAgenda() {
         .classList.add("ativa");
 
     mostrarAgenda();
+   carregarClientesAgenda(); 
 }
 
+function carregarClientesAgenda() {
 
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const select =
+        document.getElementById(
+            "clienteCadastradoAgenda"
+        );
+
+    select.innerHTML =
+        '<option value="">👥 Selecionar cliente cadastrado</option>';
+
+    clientes.forEach(function(cliente, indice) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = indice;
+        option.textContent = cliente.nome;
+
+        select.appendChild(option);
+    });
+}
+    function selecionarClienteAgenda() {
+
+    const indice =
+        document.getElementById(
+            "clienteCadastradoAgenda"
+        ).value;
+
+    if (indice === "") {
+        return;
+    }
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes[Number(indice)];
+
+    if (!cliente) {
+        return;
+    }
+
+    document.getElementById(
+        "clienteAgenda"
+    ).value =
+        cliente.nome || "";
+}
 function salvarAgenda() {
 
     const data =

@@ -3420,7 +3420,10 @@ function mostrarListaAnotacoes(anotacoes) {
         anotacao,
         indice
     ) {
-
+const indiceAnotacao =
+    anotacao.indiceOriginal !== undefined
+        ? anotacao.indiceOriginal
+        : indice;
         const div =
             document.createElement("div");
 
@@ -3436,13 +3439,13 @@ function mostrarListaAnotacoes(anotacoes) {
 
                 <button
                     class="botao-editar"
-                    onclick="editarAnotacao(${indice})">
+                    onclick="editarAnotacao(${indiceAnotacao})">
                     ✏️ Editar
                 </button>
 
                 <button
                     class="botao-excluir"
-                    onclick="excluirAnotacao(${indice})">
+                    onclick="excluirAnotacao(${indiceAnotacao})">
                     🗑️ Excluir
                 </button>
 
@@ -3482,7 +3485,11 @@ function pesquisarAnotacoes() {
                     .includes(texto)
             );
         });
+resultados.forEach(function(anotacao) {
 
+    anotacao.indiceOriginal =
+        anotacoes.indexOf(anotacao);
+});
     mostrarListaAnotacoes(resultados);
 }
 

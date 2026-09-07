@@ -3391,29 +3391,16 @@ function limparAnotacao() {
     anotacaoEditando = -1;
 }
 
-
 function mostrarAnotacoes() {
 
     let anotacoes =
         JSON.parse(
             localStorage.getItem("anotacoes")
         ) || [];
- const listaOrdenada =
-    anotacoes.map(function(anotacao, indice) {
 
-        return {
-            ...anotacao,
-            indiceOriginal: indice
-        };
-    });
-
-listaOrdenada.sort(function(a, b) {
-    return Number(b.fixada) - Number(a.fixada);
-});
-
-mostrarListaAnotacoes(listaOrdenada);
-  
+    mostrarListaAnotacoes(anotacoes);
 }
+
 
 
 function mostrarListaAnotacoes(anotacoes) {
@@ -3589,7 +3576,6 @@ function fixarAnotacao(indice) {
         JSON.parse(
             localStorage.getItem("anotacoes")
         ) || [];
-    
 
     const anotacao =
         anotacoes[indice];
@@ -3598,8 +3584,18 @@ function fixarAnotacao(indice) {
         return;
     }
 
-    anotacao.fixada =
-        !anotacao.fixada;
+    if (!anotacao.fixada) {
+
+        anotacao.fixada = true;
+
+        anotacoes.splice(indice, 1);
+
+        anotacoes.unshift(anotacao);
+
+    } else {
+
+        anotacao.fixada = false;
+    }
 
     localStorage.setItem(
         "anotacoes",

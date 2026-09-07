@@ -3799,6 +3799,10 @@ function mostrarListaAgenda(agenda) {
         compromisso,
         indice
     ) {
+        const indiceCompromisso =
+    compromisso.indiceOriginal !== undefined
+        ? compromisso.indiceOriginal
+        : indice;
 
         const div =
             document.createElement("div");
@@ -3829,13 +3833,13 @@ function mostrarListaAgenda(agenda) {
 
                 <button
                     class="botao-editar"
-                    onclick="editarAgenda(${indice})">
+                   onclick="editarAgenda(${indiceCompromisso})">
                     ✏️ Editar
                 </button>
 
                 <button
                     class="botao-excluir"
-                    onclick="excluirAgenda(${indice})">
+                   onclick="excluirAgenda(${indiceCompromisso})">
                     🗑️ Excluir
                 </button>
 
@@ -3878,6 +3882,11 @@ function pesquisarAgenda() {
                     .includes(texto)
             );
         });
+    resultados.forEach(function(compromisso) {
+
+    compromisso.indiceOriginal =
+        agenda.indexOf(compromisso);
+});
 
     mostrarListaAgenda(resultados);
 }

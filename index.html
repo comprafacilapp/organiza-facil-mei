@@ -3330,10 +3330,14 @@ function salvarAnotacao() {
             localStorage.getItem("anotacoes")
         ) || [];
 
-    const anotacao = {
-        titulo,
-        texto
-    };
+  const anotacao = {
+    titulo,
+    texto,
+    fixada:
+        anotacaoEditando !== -1
+            ? anotacoes[anotacaoEditando].fixada || false
+            : false
+};
 
     if (anotacaoEditando === -1) {
 
@@ -3394,8 +3398,21 @@ function mostrarAnotacoes() {
         JSON.parse(
             localStorage.getItem("anotacoes")
         ) || [];
+ const listaOrdenada =
+    anotacoes.map(function(anotacao, indice) {
 
-    mostrarListaAnotacoes(anotacoes);
+        return {
+            ...anotacao,
+            indiceOriginal: indice
+        };
+    });
+
+listaOrdenada.sort(function(a, b) {
+    return Number(b.fixada) - Number(a.fixada);
+});
+
+mostrarListaAnotacoes(listaOrdenada);
+  
 }
 
 
@@ -3448,7 +3465,11 @@ const indiceAnotacao =
                     onclick="excluirAnotacao(${indiceAnotacao})">
                     🗑️ Excluir
                 </button>
-
+<button
+    class="botao-editar"
+    onclick="fixarAnotacao(${indiceAnotacao})">
+    ${anotacao.fixada ? "📌 Desafixar" : "📌 Fixar"}
+</button>
             </div>
         `;
 
@@ -3562,7 +3583,31 @@ function excluirAnotacao(indice) {
     mostrarAnotacoes();
 }
 
+function fixarAnotacao(indice) {
 
+    let anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+    
+
+    const anotacao =
+        anotacoes[indice];
+
+    if (!anotacao) {
+        return;
+    }
+
+    anotacao.fixada =
+        !anotacao.fixada;
+
+    localStorage.setItem(
+        "anotacoes",
+        JSON.stringify(anotacoes)
+    );
+
+    mostrarAnotacoes();
+}
 /* =========================
    AGENDA
 ========================= */

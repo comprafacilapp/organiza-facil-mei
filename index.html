@@ -3063,7 +3063,7 @@ function mascaraTelefone(campo) {
 
     campo.value = numero;
 }
-function salvarCliente() {
+async function salvarCliente() {
 
     const nome =
         document.getElementById("nomeCliente")
@@ -3084,11 +3084,10 @@ function salvarCliente() {
     if (nome === "") {
 
         alert("Digite o nome do cliente.");
-
         return;
     }
 
-    let clientes =
+    const clientes =
         JSON.parse(
             localStorage.getItem("clientes")
         ) || [];
@@ -3100,38 +3099,56 @@ function salvarCliente() {
         observacao
     };
 
-    if (clienteEditando === -1) {
+    try {
 
-        clientes.push(cliente);
+        if (clienteEditando === -1) {
+
+            await window.salvarClienteNaNuvem(
+                cliente
+            );
+
+            alert(
+                "Cliente " +
+                nome +
+                " salvo com sucesso!"
+            );
+
+        } else {
+
+            const clienteAnterior =
+                clientes[clienteEditando];
+
+            if (!clienteAnterior?.idFirebase) {
+
+                alert(
+                    "Este cliente ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarClienteNaNuvem(
+                cliente,
+                clienteAnterior.idFirebase
+            );
+
+            alert(
+                "Cliente atualizado com sucesso!"
+            );
+        }
+
+        limparCliente();
+
+    } catch (erro) {
+
+        console.error(erro);
 
         alert(
-            "Cliente " +
-            nome +
-            " salvo com sucesso!"
-        );
-
-    } else {
-
-        clientes[clienteEditando] = cliente;
-
-        alert(
-            "Cliente atualizado com sucesso!"
+            "Não foi possível salvar o cliente na nuvem."
         );
     }
-
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-    );
-
-    limparCliente();
-
-    mostrarClientes();
 }
-
-
-function limparCliente() {
-
+    function limparCliente() {
     document.getElementById("nomeCliente").value = "";
     document.getElementById("telefoneCliente").value = "";
     document.getElementById("enderecoCliente").value = "";
@@ -3306,32 +3323,55 @@ document.getElementById(
 }
 
 
-function excluirCliente(indice) {
+async function excluirCliente(indice) {
 
-    let clientes =
+    const clientes =
         JSON.parse(
             localStorage.getItem("clientes")
         ) || [];
 
-    if (!confirm(
-        "Deseja realmente excluir este cliente?"
-    )) {
+    const cliente =
+        clientes[indice];
+
+    if (!cliente) {
+        return;
+    }
+
+    if (
+        !confirm(
+            "Deseja realmente excluir este cliente?"
+        )
+    ) {
+        return;
+    }
+
+    if (!cliente.idFirebase) {
+
+        alert(
+            "Este cliente ainda não possui vínculo com a nuvem."
+        );
 
         return;
     }
 
-    clientes.splice(indice, 1);
+    try {
 
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-    );
+        await window.excluirClienteDaNuvem(
+            cliente.idFirebase
+        );
 
-    alert(
-        "Cliente excluído com sucesso!"
-    );
+        alert(
+            "Cliente excluído com sucesso!"
+        );
 
-    mostrarClientes();
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir o cliente."
+        );
+    }
 }
 
     function abrirWhatsAppCliente(indice) {
@@ -7405,7 +7445,138 @@ window.excluirServicoDaNuvem = async function(idFirebase) {
         )
     );
 };
+    window.salvarClienteNaNuvem = async function(cliente, idFirebase = null) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error("Usuário não está conectado.");
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "clientes",
+                idFirebase
+            ),
+            {
+                nome: cliente.nome,
+                telefone: cliente.telefone,
+                endereco: cliente.endereco,
+                observacao: cliente.observacao
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "clientes"
+            ),
+            cliente
+        );
+    }
+};
+    window.excluirClienteDaNuvem = async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error("Cliente ou usuário inválido.");
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "clientes",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
+   let cancelarSincronizacaoClientes = null;
+
+window.iniciarSincronizacaoClientes = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const clientesLocais =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupClientesAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupClientesAntesFirebase",
+            JSON.stringify(clientesLocais)
+        );
+    }
+
+    if (cancelarSincronizacaoClientes) {
+        cancelarSincronizacaoClientes();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "clientes"
+    );
+
+    cancelarSincronizacaoClientes =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const clientes = [];
+
+                consulta.forEach(function(documento) {
+
+                    clientes.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                localStorage.setItem(
+                    "clientes",
+                    JSON.stringify(clientes)
+                );
+
+                if (
+                    typeof window.mostrarClientes === "function"
+                ) {
+                    window.mostrarClientes();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização dos clientes:",
+                    erro
+                );
+            }
+        );
+}; 
 
 window.iniciarSincronizacaoServicos = function() {
 
@@ -7506,11 +7677,17 @@ onAuthStateChanged(auth, function(usuario) {
         statusLogin.innerText =
             "✅ Usuário conectado";
 window.iniciarSincronizacaoServicos();
+ window.iniciarSincronizacaoClientes();       
     } else {
 if (cancelarSincronizacaoServicos) {
     cancelarSincronizacaoServicos();
     cancelarSincronizacaoServicos = null;
 }
+    if (cancelarSincronizacaoClientes) {
+    cancelarSincronizacaoClientes();
+    cancelarSincronizacaoClientes = null;
+}
+
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

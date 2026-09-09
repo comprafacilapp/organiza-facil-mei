@@ -2151,8 +2151,7 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         valor,
         tempo
     };
-
-   if (indiceEdicao !== null) {
+if (indiceEdicao !== null) {
 
     servicos[Number(indiceEdicao)] =
         servico;
@@ -2160,6 +2159,12 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
 } else {
 
     servicos.push(servico);
+
+    if (
+        typeof window.salvarServicoNaNuvem === "function"
+    ) {
+        window.salvarServicoNaNuvem(servico);
+    }
 }
 
     localStorage.setItem(
@@ -7261,6 +7266,12 @@ if ("serviceWorker" in navigator) {
     signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+   import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyARQjliIQIvod_cwpbIt3KlhGQU-Nuvl6o",
     authDomain: "organiza-facil-761b2.firebaseapp.com",
@@ -7272,6 +7283,40 @@ if ("serviceWorker" in navigator) {
 
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+    window.salvarServicoNaNuvem = async function(servico) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        console.log("Usuário não está conectado.");
+        return;
+    }
+
+    try {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "servicos"
+            ),
+            servico
+        );
+
+        console.log(
+            "Serviço salvo no Firebase com sucesso."
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar serviço no Firebase:",
+            erro
+        );
+    }
+};
 const formLogin =
     document.getElementById("formLogin");
 

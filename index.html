@@ -3482,7 +3482,7 @@ function abrirAnotacoes() {
 }
 
 
-function salvarAnotacao() {
+async function salvarAnotacao() {
 
     const titulo =
         document.getElementById("tituloAnotacaoInput")
@@ -3493,59 +3493,75 @@ function salvarAnotacao() {
         .value.trim();
 
     if (titulo === "") {
-
         alert("Digite um título.");
-
         return;
     }
 
     if (texto === "") {
-
         alert("Digite o texto da anotação.");
-
         return;
     }
 
-    let anotacoes =
+    const anotacoes =
         JSON.parse(
             localStorage.getItem("anotacoes")
         ) || [];
 
-  const anotacao = {
-    titulo,
-    texto,
-    fixada:
-        anotacaoEditando !== -1
-            ? anotacoes[anotacaoEditando].fixada || false
-            : false
-};
+    const anotacao = {
+        titulo,
+        texto,
+        fixada:
+            anotacaoEditando !== -1
+                ? anotacoes[anotacaoEditando]?.fixada || false
+                : false
+    };
 
-    if (anotacaoEditando === -1) {
+    try {
 
-        anotacoes.push(anotacao);
+        if (anotacaoEditando === -1) {
+
+            await window.salvarAnotacaoNaNuvem(
+                anotacao
+            );
+
+            alert(
+                "Anotação salva com sucesso!"
+            );
+
+        } else {
+
+            const anotacaoAnterior =
+                anotacoes[anotacaoEditando];
+
+            if (!anotacaoAnterior?.idFirebase) {
+
+                alert(
+                    "Esta anotação ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarAnotacaoNaNuvem(
+                anotacao,
+                anotacaoAnterior.idFirebase
+            );
+
+            alert(
+                "Anotação atualizada com sucesso!"
+            );
+        }
+
+        limparAnotacao();
+
+    } catch (erro) {
+
+        console.error(erro);
 
         alert(
-            "Anotação salva com sucesso!"
-        );
-
-    } else {
-
-        anotacoes[anotacaoEditando] =
-            anotacao;
-
-        alert(
-            "Anotação atualizada com sucesso!"
+            "Não foi possível salvar a anotação na nuvem."
         );
     }
-
-    localStorage.setItem(
-        "anotacoes",
-        JSON.stringify(anotacoes)
-    );
-
-    limparAnotacao();
-
-    mostrarAnotacoes();
 }
 
 
@@ -3723,37 +3739,9 @@ function editarAnotacao(indice) {
 }
 
 
-function excluirAnotacao(indice) {
+async function excluirAnotacao(indice) {
 
-    let anotacoes =
-        JSON.parse(
-            localStorage.getItem("anotacoes")
-        ) || [];
-
-    if (!confirm(
-        "Deseja realmente excluir esta anotação?"
-    )) {
-
-        return;
-    }
-
-    anotacoes.splice(indice, 1);
-
-    localStorage.setItem(
-        "anotacoes",
-        JSON.stringify(anotacoes)
-    );
-
-    alert(
-        "Anotação excluída com sucesso!"
-    );
-
-    mostrarAnotacoes();
-}
-
-function fixarAnotacao(indice) {
-
-    let anotacoes =
+    const anotacoes =
         JSON.parse(
             localStorage.getItem("anotacoes")
         ) || [];
@@ -3765,25 +3753,85 @@ function fixarAnotacao(indice) {
         return;
     }
 
-    if (!anotacao.fixada) {
-
-        anotacao.fixada = true;
-
-        anotacoes.splice(indice, 1);
-
-        anotacoes.unshift(anotacao);
-
-    } else {
-
-        anotacao.fixada = false;
+    if (!confirm(
+        "Deseja realmente excluir esta anotação?"
+    )) {
+        return;
     }
 
-    localStorage.setItem(
-        "anotacoes",
-        JSON.stringify(anotacoes)
-    );
+    if (!anotacao.idFirebase) {
 
-    mostrarAnotacoes();
+        alert(
+            "Esta anotação ainda não possui vínculo com a nuvem."
+        );
+
+        return;
+    }
+
+    try {
+
+        await window.excluirAnotacaoDaNuvem(
+            anotacao.idFirebase
+        );
+
+        alert(
+            "Anotação excluída com sucesso!"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir a anotação."
+        );
+    }
+}
+
+async function fixarAnotacao(indice) {
+
+    const anotacoes =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    const anotacao =
+        anotacoes[indice];
+
+    if (!anotacao) {
+        return;
+    }
+
+    if (!anotacao.idFirebase) {
+
+        alert(
+            "Esta anotação ainda não possui vínculo com a nuvem."
+        );
+
+        return;
+    }
+
+    const anotacaoAtualizada = {
+        titulo: anotacao.titulo,
+        texto: anotacao.texto,
+        fixada: !anotacao.fixada
+    };
+
+    try {
+
+        await window.salvarAnotacaoNaNuvem(
+            anotacaoAtualizada,
+            anotacao.idFirebase
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível alterar a anotação fixada."
+        );
+    }
 }
 /* =========================
    AGENDA
@@ -7484,8 +7532,8 @@ window.excluirServicoDaNuvem = async function(idFirebase) {
         );
     }
 };
-    window.excluirClienteDaNuvem = async function(idFirebase) {
-
+  
+window.excluirClienteDaNuvem = async function(idFirebase) {
     const usuario = auth.currentUser;
 
     if (!usuario || !idFirebase) {
@@ -7502,8 +7550,65 @@ window.excluirServicoDaNuvem = async function(idFirebase) {
         )
     );
 };
+   window.salvarAnotacaoNaNuvem = async function(anotacao, idFirebase = null) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error("Usuário não está conectado.");
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "anotacoes",
+                idFirebase
+            ),
+            {
+                titulo: anotacao.titulo,
+                texto: anotacao.texto,
+                fixada: anotacao.fixada
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "anotacoes"
+            ),
+            anotacao
+        );
+    }
+}; 
+   window.excluirAnotacaoDaNuvem = async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error("Anotação ou usuário inválido.");
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "anotacoes",
+            idFirebase
+        )
+    );
+}; 
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
+    let cancelarSincronizacaoAnotacoes = null;
 
 window.iniciarSincronizacaoClientes = function() {
 
@@ -7577,7 +7682,82 @@ window.iniciarSincronizacaoClientes = function() {
             }
         );
 }; 
+window.iniciarSincronizacaoAnotacoes = function() {
 
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const anotacoesLocais =
+        JSON.parse(
+            localStorage.getItem("anotacoes")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupAnotacoesAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupAnotacoesAntesFirebase",
+            JSON.stringify(anotacoesLocais)
+        );
+    }
+
+    if (cancelarSincronizacaoAnotacoes) {
+        cancelarSincronizacaoAnotacoes();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "anotacoes"
+    );
+
+    cancelarSincronizacaoAnotacoes =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const anotacoes = [];
+
+                consulta.forEach(function(documento) {
+
+                    anotacoes.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                anotacoes.sort(function(a, b) {
+                    return Number(b.fixada) - Number(a.fixada);
+                });
+
+                localStorage.setItem(
+                    "anotacoes",
+                    JSON.stringify(anotacoes)
+                );
+
+                if (
+                    typeof window.mostrarAnotacoes === "function"
+                ) {
+                    window.mostrarAnotacoes();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização das anotações:",
+                    erro
+                );
+            }
+        );
+};
 window.iniciarSincronizacaoServicos = function() {
 
     const usuario = auth.currentUser;
@@ -7674,19 +7854,29 @@ onAuthStateChanged(auth, function(usuario) {
         emailLogin.value = "";
         senhaLogin.value = "";
 
-        statusLogin.innerText =
-            "✅ Usuário conectado";
+           statusLogin.innerText =
+    "✅ Usuário conectado";
+
 window.iniciarSincronizacaoServicos();
- window.iniciarSincronizacaoClientes();       
-    } else {
-if (cancelarSincronizacaoServicos) {
-    cancelarSincronizacaoServicos();
-    cancelarSincronizacaoServicos = null;
-}
+window.iniciarSincronizacaoClientes();
+window.iniciarSincronizacaoAnotacoes();
+
+} else {
+
+    if (cancelarSincronizacaoServicos) {
+        cancelarSincronizacaoServicos();
+        cancelarSincronizacaoServicos = null;
+    }
+
     if (cancelarSincronizacaoClientes) {
-    cancelarSincronizacaoClientes();
-    cancelarSincronizacaoClientes = null;
-}
+        cancelarSincronizacaoClientes();
+        cancelarSincronizacaoClientes = null;
+    }
+
+    if (cancelarSincronizacaoAnotacoes) {
+        cancelarSincronizacaoAnotacoes();
+        cancelarSincronizacaoAnotacoes = null;
+    }
 
         formLogin.style.display = "block";
         botaoSair.style.display = "none";

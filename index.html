@@ -7317,6 +7317,54 @@ if ("serviceWorker" in navigator) {
         );
     }
 };
+    window.carregarServicosDaNuvem = async function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    try {
+
+        const consulta = await getDocs(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "servicos"
+            )
+        );
+
+        const servicos = [];
+
+        consulta.forEach(function(documento) {
+            servicos.push(documento.data());
+        });
+
+        localStorage.setItem(
+            "servicos",
+            JSON.stringify(servicos)
+        );
+
+        if (
+            typeof window.mostrarServicos === "function"
+        ) {
+            window.mostrarServicos();
+        }
+
+        console.log(
+            "Serviços carregados do Firebase."
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar serviços do Firebase:",
+            erro
+        );
+    }
+};
 const formLogin =
     document.getElementById("formLogin");
 
@@ -7344,7 +7392,7 @@ onAuthStateChanged(auth, function(usuario) {
 
         statusLogin.innerText =
             "✅ Usuário conectado";
-
+window.carregarServicosDaNuvem();
     } else {
 
         formLogin.style.display = "block";

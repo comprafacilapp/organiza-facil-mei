@@ -281,20 +281,28 @@ main {
 
 <div id="menuPrincipal" class="tela ativa">
 <div id="areaLogin" style="text-align:center; margin-bottom:20px;">
-    <input id="emailLogin"
-           type="email"
-           placeholder="E-mail">
 
-    <input id="senhaLogin"
-           type="password"
-           placeholder="Senha">
+    <div id="formLogin">
+        <input id="emailLogin"
+               type="email"
+               placeholder="E-mail">
 
-    <button id="botaoEntrar">
-        🔐 Entrar
-    </button>
+        <input id="senhaLogin"
+               type="password"
+               placeholder="Senha">
 
-    <button id="botaoCriarConta">
-        👤 Criar conta
+        <button id="botaoEntrar">
+            🔐 Entrar
+        </button>
+
+        <button id="botaoCriarConta">
+            👤 Criar conta
+        </button>
+    </div>
+
+    <button id="botaoSair"
+            style="display:none;">
+        🚪 Sair
     </button>
 
     <p id="statusLogin"></p>
@@ -7246,11 +7254,13 @@ if ("serviceWorker" in navigator) {
     
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-  import {
+ import {
     getAuth,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
-  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyARQjliIQIvod_cwpbIt3KlhGQU-Nuvl6o",
     authDomain: "organiza-facil-761b2.firebaseapp.com",
@@ -7262,7 +7272,57 @@ if ("serviceWorker" in navigator) {
 
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+const formLogin =
+    document.getElementById("formLogin");
 
+const botaoSair =
+    document.getElementById("botaoSair");
+
+const emailLogin =
+    document.getElementById("emailLogin");
+
+const senhaLogin =
+    document.getElementById("senhaLogin");
+
+const statusLogin =
+    document.getElementById("statusLogin");
+
+onAuthStateChanged(auth, function(usuario) {
+
+    if (usuario) {
+
+        formLogin.style.display = "none";
+        botaoSair.style.display = "inline-block";
+
+        emailLogin.value = "";
+        senhaLogin.value = "";
+
+        statusLogin.innerText =
+            "✅ Usuário conectado";
+
+    } else {
+
+        formLogin.style.display = "block";
+        botaoSair.style.display = "none";
+
+        emailLogin.value = "";
+        senhaLogin.value = "";
+
+        statusLogin.innerText = "";
+    }
+});
+
+botaoSair.addEventListener("click", async function() {
+
+    try {
+
+        await signOut(auth);
+
+    } catch (erro) {
+
+        console.error(erro);
+    }
+});
 document.getElementById("botaoCriarConta")
     .addEventListener("click", async function() {
 

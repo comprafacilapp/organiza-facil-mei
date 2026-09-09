@@ -2110,8 +2110,7 @@ function mostrarDocumentos() {
 
     });
 }
-function salvarServico() {document.getElementById("botaoSalvarServico").innerText =
-    "💾 Salvar Serviço";
+async function salvarServico() {
 
     const nome =
         document.getElementById("nomeServico").value.trim();
@@ -2120,11 +2119,9 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         document.getElementById("descricaoServico").value.trim();
 
     const valor =
-    valorParaNumero(
-        document.getElementById(
-            "valorServico"
-        ).value
-    );
+        valorParaNumero(
+            document.getElementById("valorServico").value
+        );
 
     const tempo =
         document.getElementById("tempoServico").value.trim();
@@ -2132,18 +2129,18 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
     if (nome === "") {
 
         alert("Digite o nome do serviço.");
-
         return;
     }
 
-    let servicos =
+    const servicos =
         JSON.parse(
             localStorage.getItem("servicos")
         ) || [];
-     const indiceEdicao =
-    localStorage.getItem(
-        "indiceServicoEmEdicao"
-    );                     
+
+    const indiceEdicao =
+        localStorage.getItem(
+            "indiceServicoEmEdicao"
+        );
 
     const servico = {
         nome,
@@ -2151,41 +2148,59 @@ function salvarServico() {document.getElementById("botaoSalvarServico").innerTex
         valor,
         tempo
     };
-if (indiceEdicao !== null) {
 
-    servicos[Number(indiceEdicao)] =
-        servico;
+    try {
 
-} else {
+        if (indiceEdicao !== null) {
 
-    servicos.push(servico);
+            const servicoAnterior =
+                servicos[Number(indiceEdicao)];
 
-    if (
-        typeof window.salvarServicoNaNuvem === "function"
-    ) {
-        window.salvarServicoNaNuvem(servico);
+            if (!servicoAnterior?.idFirebase) {
+
+                alert(
+                    "Este serviço ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarServicoNaNuvem(
+                servico,
+                servicoAnterior.idFirebase
+            );
+
+        } else {
+
+            await window.salvarServicoNaNuvem(
+                servico
+            );
+        }
+
+        localStorage.removeItem(
+            "indiceServicoEmEdicao"
+        );
+
+        document.getElementById(
+            "botaoSalvarServico"
+        ).innerText =
+            "💾 Salvar Serviço";
+
+        document.getElementById("nomeServico").value = "";
+        document.getElementById("descricaoServico").value = "";
+        document.getElementById("valorServico").value = "";
+        document.getElementById("tempoServico").value = "";
+
+        alert("Serviço salvo com sucesso!");
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível salvar o serviço na nuvem."
+        );
     }
-}
-
-    localStorage.setItem(
-        "servicos",
-        JSON.stringify(servicos)
-    );
-     localStorage.removeItem(
-    "indiceServicoEmEdicao"
-);                     
-document.getElementById(
-    "botaoSalvarServico"
-).innerText =
-    "💾 Salvar Serviço";
-    alert("Serviço salvo com sucesso!");
-
-    document.getElementById("nomeServico").value = "";
-    document.getElementById("descricaoServico").value = "";
-    document.getElementById("valorServico").value = "";
-    document.getElementById("tempoServico").value = "";
-
-  mostrarServicos();
 }
 function mostrarServicos() {
 
@@ -2324,26 +2339,54 @@ function mostrarListaServicos(servicos) {
         lista.appendChild(item);
 
     });
-}function excluirServico(indice) {
+}
+ async function excluirServico(indice) {
 
-    let servicos =
+    const servicos =
         JSON.parse(
             localStorage.getItem("servicos")
         ) || [];
 
-    if (!confirm("Tem certeza que deseja excluir este serviço?")) {
+    const servico =
+        servicos[indice];
+
+    if (!servico) {
         return;
     }
 
-    servicos.splice(indice, 1);
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este serviço?"
+        )
+    ) {
+        return;
+    }
 
-    localStorage.setItem(
-        "servicos",
-        JSON.stringify(servicos)
-    );
+    if (!servico.idFirebase) {
 
-    mostrarServicos();
-}function editarServico(indice) {
+        alert(
+            "Este serviço ainda não possui vínculo com a nuvem."
+        );
+
+        return;
+    }
+
+    try {
+
+        await window.excluirServicoDaNuvem(
+            servico.idFirebase
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir o serviço."
+        );
+    }
+}   
+function editarServico(indice) {
 
     let servicos =
         JSON.parse(
@@ -7266,11 +7309,14 @@ if ("serviceWorker" in navigator) {
     signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-   import {
+  import {
     getFirestore,
     collection,
     addDoc,
-    getDocs
+    doc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyARQjliIQIvod_cwpbIt3KlhGQU-Nuvl6o",
@@ -7284,16 +7330,33 @@ if ("serviceWorker" in navigator) {
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    window.salvarServicoNaNuvem = async function(servico) {
+   window.salvarServicoNaNuvem = async function(servico, idFirebase = null) {
 
     const usuario = auth.currentUser;
 
     if (!usuario) {
-        console.log("Usuário não está conectado.");
-        return;
+        throw new Error("Usuário não está conectado.");
     }
 
-    try {
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "servicos",
+                idFirebase
+            ),
+            {
+                nome: servico.nome,
+                descricao: servico.descricao,
+                valor: servico.valor,
+                tempo: servico.tempo
+            }
+        );
+
+    } else {
 
         await addDoc(
             collection(
@@ -7304,67 +7367,100 @@ if ("serviceWorker" in navigator) {
             ),
             servico
         );
-
-        console.log(
-            "Serviço salvo no Firebase com sucesso."
-        );
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao salvar serviço no Firebase:",
-            erro
-        );
     }
 };
-    window.carregarServicosDaNuvem = async function() {
+
+window.excluirServicoDaNuvem = async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error("Serviço ou usuário inválido.");
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "servicos",
+            idFirebase
+        )
+    );
+};
+let cancelarSincronizacaoServicos = null;
+
+window.iniciarSincronizacaoServicos = function() {
 
     const usuario = auth.currentUser;
 
     if (!usuario) {
         return;
     }
+const servicosLocais =
+    JSON.parse(
+        localStorage.getItem("servicos")
+    ) || [];
 
-    try {
-
-        const consulta = await getDocs(
-            collection(
-                db,
-                "usuarios",
-                usuario.uid,
-                "servicos"
-            )
-        );
-
-        const servicos = [];
-
-        consulta.forEach(function(documento) {
-            servicos.push(documento.data());
-        });
-
-        localStorage.setItem(
-            "servicos",
-            JSON.stringify(servicos)
-        );
-
-        if (
-            typeof window.mostrarServicos === "function"
-        ) {
-            window.mostrarServicos();
-        }
-
-        console.log(
-            "Serviços carregados do Firebase."
-        );
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar serviços do Firebase:",
-            erro
-        );
+if (
+    !localStorage.getItem(
+        "backupServicosAntesFirebase"
+    )
+) {
+    localStorage.setItem(
+        "backupServicosAntesFirebase",
+        JSON.stringify(servicosLocais)
+    );
+}
+    if (cancelarSincronizacaoServicos) {
+        cancelarSincronizacaoServicos();
     }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "servicos"
+    );
+
+    cancelarSincronizacaoServicos =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const servicos = [];
+
+                consulta.forEach(function(documento) {
+
+                    servicos.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                localStorage.setItem(
+                    "servicos",
+                    JSON.stringify(servicos)
+                );
+
+                if (
+                    typeof window.mostrarServicos === "function"
+                ) {
+                    window.mostrarServicos();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização dos serviços:",
+                    erro
+                );
+            }
+        );
 };
+  
 const formLogin =
     document.getElementById("formLogin");
 
@@ -7392,9 +7488,12 @@ onAuthStateChanged(auth, function(usuario) {
 
         statusLogin.innerText =
             "✅ Usuário conectado";
-window.carregarServicosDaNuvem();
+window.iniciarSincronizacaoServicos();
     } else {
-
+if (cancelarSincronizacaoServicos) {
+    cancelarSincronizacaoServicos();
+    cancelarSincronizacaoServicos = null;
+}
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

@@ -280,7 +280,25 @@ main {
 <!-- MENU -->
 
 <div id="menuPrincipal" class="tela ativa">
+<div id="areaLogin" style="text-align:center; margin-bottom:20px;">
+    <input id="emailLogin"
+           type="email"
+           placeholder="E-mail">
 
+    <input id="senhaLogin"
+           type="password"
+           placeholder="Senha">
+
+    <button id="botaoEntrar">
+        🔐 Entrar
+    </button>
+
+    <button id="botaoCriarConta">
+        👤 Criar conta
+    </button>
+
+    <p id="statusLogin"></p>
+</div>
     <div class="menu">
 
         <button onclick="abrirClientes()">
@@ -7228,7 +7246,11 @@ if ("serviceWorker" in navigator) {
     
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyARQjliIQIvod_cwpbIt3KlhGQU-Nuvl6o",
     authDomain: "organiza-facil-761b2.firebaseapp.com",
@@ -7239,6 +7261,72 @@ if ("serviceWorker" in navigator) {
   };
 
   const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+document.getElementById("botaoCriarConta")
+    .addEventListener("click", async function() {
+
+        const email =
+            document.getElementById("emailLogin").value.trim();
+
+        const senha =
+            document.getElementById("senhaLogin").value;
+
+        const status =
+            document.getElementById("statusLogin");
+
+        try {
+
+            await createUserWithEmailAndPassword(
+                auth,
+                email,
+                senha
+            );
+
+            status.innerText =
+                "✅ Conta criada com sucesso!";
+
+        } catch (erro) {
+
+            status.innerText =
+                "❌ Não foi possível criar a conta.";
+
+            console.error(erro);
+        }
+    });
+
+
+document.getElementById("botaoEntrar")
+    .addEventListener("click", async function() {
+
+        const email =
+            document.getElementById("emailLogin").value.trim();
+
+        const senha =
+            document.getElementById("senhaLogin").value;
+
+        const status =
+            document.getElementById("statusLogin");
+
+        try {
+
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                senha
+            );
+
+            status.innerText =
+                "✅ Login realizado com sucesso!";
+
+        } catch (erro) {
+
+            status.innerText =
+                "❌ E-mail ou senha inválidos.";
+
+            console.error(erro);
+        }
+    });
 </script>
 </body>
 </html

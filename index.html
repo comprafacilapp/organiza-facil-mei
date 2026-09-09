@@ -2142,12 +2142,17 @@ async function salvarServico() {
             "indiceServicoEmEdicao"
         );
 
-    const servico = {
-        nome,
-        descricao,
-        valor,
-        tempo
-    };
+   const servico = {
+    nome,
+    descricao,
+    valor,
+    tempo,
+    dataCadastro:
+        indiceEdicao !== null
+            ? servicos[Number(indiceEdicao)]?.dataCadastro
+              || new Date().toISOString()
+            : new Date().toISOString()
+};
 
     try {
 
@@ -2234,6 +2239,11 @@ function mostrarServicos() {
             <p>📝 ${servico.descricao || "Sem descrição"}</p>
             <p>💰 Valor: ${formatarMoeda(Number(servico.valor) || 0)}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
+            <p>📅 Data de cadastro: ${
+    servico.dataCadastro
+        ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
+        : "Não informada"
+}</p>
 
 <div class="acoes">
 
@@ -2318,6 +2328,11 @@ function mostrarListaServicos(servicos) {
             <p>📝 ${servico.descricao || "Sem descrição"}</p>
             <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
+            <p>📅 Data de cadastro: ${
+    servico.dataCadastro
+        ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
+        : "Não informada"
+}</p>
 
           <div class="acoes">
 
@@ -7348,12 +7363,14 @@ if ("serviceWorker" in navigator) {
                 "servicos",
                 idFirebase
             ),
-            {
-                nome: servico.nome,
-                descricao: servico.descricao,
-                valor: servico.valor,
-                tempo: servico.tempo
-            }
+            
+             {
+    nome: servico.nome,
+    descricao: servico.descricao,
+    valor: servico.valor,
+    tempo: servico.tempo,
+    dataCadastro: servico.dataCadastro
+}
         );
 
     } else {

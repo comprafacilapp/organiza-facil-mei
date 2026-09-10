@@ -3902,7 +3902,7 @@ function carregarClientesAgenda() {
     ).value =
         cliente.nome || "";
 }
-function salvarAgenda() {
+async function salvarAgenda() {
 
     const data =
         document.getElementById(
@@ -3925,59 +3925,53 @@ function salvarAgenda() {
             "descricaoAgenda"
         ).value
         .trim();
-const indiceCliente =
-    document.getElementById(
-        "clienteCadastradoAgenda"
-    ).value;
 
-let telefone = "";
+    const indiceCliente =
+        document.getElementById(
+            "clienteCadastradoAgenda"
+        ).value;
 
-if (indiceCliente !== "") {
+    let telefone = "";
 
-    const clientes =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
+    if (indiceCliente !== "") {
 
-    const clienteSelecionado =
-        clientes[Number(indiceCliente)];
+        const clientes =
+            JSON.parse(
+                localStorage.getItem("clientes")
+            ) || [];
 
-    if (clienteSelecionado) {
-        telefone =
-            clienteSelecionado.telefone || "";
+        const clienteSelecionado =
+            clientes[Number(indiceCliente)];
+
+        if (clienteSelecionado) {
+            telefone =
+                clienteSelecionado.telefone || "";
+        }
     }
-}
+
     if (data === "") {
-
         alert("Escolha a data.");
-
         return;
     }
 
     if (hora === "") {
-
         alert("Escolha o horário.");
-
         return;
     }
 
     if (cliente === "") {
-
         alert("Digite o nome do cliente.");
-
         return;
     }
 
     if (descricao === "") {
-
         alert(
             "Digite a descrição do compromisso."
         );
-
         return;
     }
 
-    let agenda =
+    const agenda =
         JSON.parse(
             localStorage.getItem("agenda")
         ) || [];
@@ -3990,35 +3984,53 @@ if (indiceCliente !== "") {
         telefone
     };
 
-    if (agendaEditando === -1) {
+    try {
 
-        agenda.push(compromisso);
+        if (agendaEditando === -1) {
+
+            await window.salvarAgendaNaNuvem(
+                compromisso
+            );
+
+            alert(
+                "Compromisso salvo com sucesso!"
+            );
+
+        } else {
+
+            const compromissoAnterior =
+                agenda[agendaEditando];
+
+            if (!compromissoAnterior?.idFirebase) {
+
+                alert(
+                    "Este compromisso ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarAgendaNaNuvem(
+                compromisso,
+                compromissoAnterior.idFirebase
+            );
+
+            alert(
+                "Compromisso atualizado com sucesso!"
+            );
+        }
+
+        limparAgenda();
+
+    } catch (erro) {
+
+        console.error(erro);
 
         alert(
-            "Compromisso salvo com sucesso!"
-        );
-
-    } else {
-
-        agenda[agendaEditando] =
-            compromisso;
-
-        alert(
-            "Compromisso atualizado com sucesso!"
+            "Não foi possível salvar o compromisso na nuvem."
         );
     }
-
-    localStorage.setItem(
-        "agenda",
-        JSON.stringify(agenda)
-    );
-
-    limparAgenda();
-
-    mostrarAgenda();
 }
-
-
 function limparAgenda() {
 
     document.getElementById(
@@ -4265,34 +4277,55 @@ document.getElementById(
 });
 }
 
+async function excluirAgenda(indice) {
 
-function excluirAgenda(indice) {
-
-    let agenda =
+    const agenda =
         JSON.parse(
             localStorage.getItem("agenda")
         ) || [];
 
+    const compromisso =
+        agenda[indice];
+
+    if (!compromisso) {
+        return;
+    }
+
     if (!confirm(
         "Deseja realmente excluir este compromisso?"
     )) {
+        return;
+    }
+
+    if (!compromisso.idFirebase) {
+
+        alert(
+            "Este compromisso ainda não possui vínculo com a nuvem."
+        );
 
         return;
     }
 
-    agenda.splice(indice, 1);
+    try {
 
-    localStorage.setItem(
-        "agenda",
-        JSON.stringify(agenda)
-    );
+        await window.excluirAgendaDaNuvem(
+            compromisso.idFirebase
+        );
 
-    alert(
-        "Compromisso excluído com sucesso!"
-    );
+        alert(
+            "Compromisso excluído com sucesso!"
+        );
 
-    mostrarAgenda();
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir o compromisso."
+        );
+    }
 }
+
   function abrirWhatsAppAgenda(indice) {
 
     const agenda =
@@ -7588,7 +7621,7 @@ window.excluirClienteDaNuvem = async function(idFirebase) {
         );
     }
 }; 
-   window.excluirAnotacaoDaNuvem = async function(idFirebase) {
+  window.excluirAnotacaoDaNuvem = async function(idFirebase) {
 
     const usuario = auth.currentUser;
 
@@ -7605,11 +7638,154 @@ window.excluirClienteDaNuvem = async function(idFirebase) {
             idFirebase
         )
     );
-}; 
+};
+
+window.salvarAgendaNaNuvem = async function(compromisso, idFirebase = null) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error("Usuário não está conectado.");
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "agenda",
+                idFirebase
+            ),
+            {
+                data: compromisso.data,
+                hora: compromisso.hora,
+                cliente: compromisso.cliente,
+                descricao: compromisso.descricao,
+                telefone: compromisso.telefone
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "agenda"
+            ),
+            compromisso
+        );
+    }
+};
+
+window.excluirAgendaDaNuvem = async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error("Compromisso ou usuário inválido.");
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "agenda",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
+let cancelarSincronizacaoAgenda = null;
+   window.iniciarSincronizacaoAgenda = function() {
 
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const agendaLocal =
+        JSON.parse(
+            localStorage.getItem("agenda")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupAgendaAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupAgendaAntesFirebase",
+            JSON.stringify(agendaLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoAgenda) {
+        cancelarSincronizacaoAgenda();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "agenda"
+    );
+
+    cancelarSincronizacaoAgenda =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const agenda = [];
+
+                consulta.forEach(function(documento) {
+
+                    agenda.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                agenda.sort(function(a, b) {
+
+                    const dataHoraA =
+                        `${a.data || ""} ${a.hora || ""}`;
+
+                    const dataHoraB =
+                        `${b.data || ""} ${b.hora || ""}`;
+
+                    return dataHoraA.localeCompare(dataHoraB);
+                });
+
+                localStorage.setItem(
+                    "agenda",
+                    JSON.stringify(agenda)
+                );
+
+                if (
+                    typeof window.mostrarAgenda === "function"
+                ) {
+                    window.mostrarAgenda();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização da agenda:",
+                    erro
+                );
+            }
+        );
+}; 
 window.iniciarSincronizacaoClientes = function() {
 
     const usuario = auth.currentUser;
@@ -7860,7 +8036,7 @@ onAuthStateChanged(auth, function(usuario) {
 window.iniciarSincronizacaoServicos();
 window.iniciarSincronizacaoClientes();
 window.iniciarSincronizacaoAnotacoes();
-
+window.iniciarSincronizacaoAgenda();
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -7877,7 +8053,10 @@ window.iniciarSincronizacaoAnotacoes();
         cancelarSincronizacaoAnotacoes();
         cancelarSincronizacaoAnotacoes = null;
     }
-
+if (cancelarSincronizacaoAgenda) {
+    cancelarSincronizacaoAgenda();
+    cancelarSincronizacaoAgenda = null;
+}
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

@@ -1258,10 +1258,20 @@ function abrirPropostaComercial() {
 
     esconderTelas();
 
+    localStorage.removeItem(
+        "indicePropostaEmEdicao"
+    );
+
+    document.querySelector(
+        "#telaPropostaComercial .botao-salvar"
+    ).innerText =
+        "💾 Salvar Proposta";
+
     document.getElementById(
         "telaPropostaComercial"
     ).classList.add("ativa");
-   mostrarPropostasComerciais(); 
+
+    mostrarPropostasComerciais();
 }
 function abrirServicos() {
 
@@ -1370,7 +1380,7 @@ document.getElementById("botaoSalvarDocumento").innerText =
     "💾 Salvar Documento";
 mostrarDocumentos();
 }
-   function salvarPropostaComercial() {
+  async function salvarPropostaComercial() {
 
     const cliente =
         document.getElementById(
@@ -1478,31 +1488,61 @@ mostrarDocumentos();
         "indicePropostaEmEdicao"
     );
 
-if (indiceEdicao !== null) {
+try {
 
-    propostas[Number(indiceEdicao)] =
-        proposta;
+    if (indiceEdicao === null) {
 
-} else {
+        await window.salvarPropostaNaNuvem(
+            proposta
+        );
 
-    propostas.push(proposta);
+        alert(
+            "Proposta comercial salva com sucesso!"
+        );
 
-} 
+    } else {
 
-    localStorage.setItem(
-        "propostasComerciais",
-        JSON.stringify(propostas)
+        const propostaAnterior =
+            propostas[Number(indiceEdicao)];
+
+        if (!propostaAnterior?.idFirebase) {
+
+            alert(
+                "Esta proposta ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarPropostaNaNuvem(
+            proposta,
+            propostaAnterior.idFirebase
+        );
+
+        alert(
+            "Proposta comercial atualizada com sucesso!"
+        );
+    }
+
+    localStorage.removeItem(
+        "indicePropostaEmEdicao"
     );
-localStorage.removeItem(
-    "indicePropostaEmEdicao"
-);
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar a proposta na nuvem."
+    );
+
+    return;
+}
 
 document.querySelector(
     "#telaPropostaComercial .botao-salvar"
 ).innerText = "💾 Salvar Proposta";
-    alert(
-        "Proposta comercial salva com sucesso!"
-    );
+    
        document.getElementById("clienteProposta").value = "";
 document.getElementById("responsavelProposta").value = "";
 document.getElementById("telefoneProposta").value = "";
@@ -1518,8 +1558,9 @@ document.getElementById("validadeProposta").value = "15";
 document.getElementById("observacaoProposta").value = "";
        mostrarPropostasComerciais();
    }
-     function mostrarPropostasComerciais() {
+    
 
+function mostrarPropostasComerciais() {
     const propostas =
         JSON.parse(
             localStorage.getItem(
@@ -1676,7 +1717,56 @@ localStorage.setItem(
     block: "start"
 });
 }
+async function excluirPropostaComercial(indice) {
 
+    const propostas =
+        JSON.parse(
+            localStorage.getItem(
+                "propostasComerciais"
+            )
+        ) || [];
+
+    const proposta =
+        propostas[indice];
+
+    if (!proposta) {
+        return;
+    }
+
+    if (!confirm(
+        "Deseja realmente excluir esta proposta?"
+    )) {
+        return;
+    }
+
+    if (!proposta.idFirebase) {
+
+        alert(
+            "Esta proposta ainda não possui vínculo com a nuvem."
+        );
+
+        return;
+    }
+
+    try {
+
+        await window.excluirPropostaDaNuvem(
+            proposta.idFirebase
+        );
+
+        alert(
+            "Proposta excluída com sucesso!"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir a proposta."
+        );
+    }
+}
 function gerarPropostaComercial() {
 
     const configuracoes =
@@ -8183,6 +8273,82 @@ async function(idFirebase) {
         )
     );
 }; 
+    window.salvarPropostaNaNuvem = async function(
+    proposta,
+    idFirebase = null
+) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "propostasComerciais",
+                idFirebase
+            ),
+            {
+                cliente: proposta.cliente,
+                responsavel: proposta.responsavel,
+                telefone: proposta.telefone,
+                email: proposta.email,
+                data: proposta.data,
+                servico: proposta.servico,
+                descricao: proposta.descricao,
+                condicoes: proposta.condicoes,
+                valor: proposta.valor,
+                formaCobranca: proposta.formaCobranca,
+                pagamento: proposta.pagamento,
+                validade: proposta.validade,
+                observacao: proposta.observacao
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "propostasComerciais"
+            ),
+            proposta
+        );
+    }
+};
+
+
+window.excluirPropostaDaNuvem =
+async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error(
+            "Proposta ou usuário inválido."
+        );
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "propostasComerciais",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
@@ -8191,6 +8357,7 @@ let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoOrcamentos = null;
     let cancelarSincronizacaoCobrancas = null;
     let cancelarSincronizacaoDocumentos = null;
+    let cancelarSincronizacaoPropostas = null;
     window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
@@ -8499,6 +8666,87 @@ let cancelarSincronizacaoAgenda = null;
 
                 console.error(
                     "Erro na sincronização dos documentos:",
+                    erro
+                );
+            }
+     );
+};
+
+window.iniciarSincronizacaoPropostas = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const propostasLocal =
+        JSON.parse(
+            localStorage.getItem(
+                "propostasComerciais"
+            )
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupPropostasAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupPropostasAntesFirebase",
+            JSON.stringify(propostasLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoPropostas) {
+        cancelarSincronizacaoPropostas();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "propostasComerciais"
+    );
+
+    cancelarSincronizacaoPropostas =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const propostas = [];
+
+                consulta.forEach(function(documento) {
+
+                    propostas.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                propostas.sort(function(a, b) {
+
+                    return (b.data || "")
+                        .localeCompare(a.data || "");
+                });
+
+                localStorage.setItem(
+                    "propostasComerciais",
+                    JSON.stringify(propostas)
+                );
+
+                if (
+                    typeof window.mostrarPropostasComerciais === "function"
+                ) {
+                    window.mostrarPropostasComerciais();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização das propostas:",
                     erro
                 );
             }
@@ -8841,7 +9089,8 @@ window.iniciarSincronizacaoAgenda();
 window.iniciarSincronizacaoFinanceiro(); 
 window.iniciarSincronizacaoOrcamentos(); 
 window.iniciarSincronizacaoCobrancas(); 
-window.iniciarSincronizacaoDocumentos();        
+window.iniciarSincronizacaoDocumentos();
+ window.iniciarSincronizacaoPropostas();       
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -8877,7 +9126,12 @@ if (cancelarSincronizacaoAgenda) {
   if (cancelarSincronizacaoDocumentos) {
     cancelarSincronizacaoDocumentos();
     cancelarSincronizacaoDocumentos = null;
-}      
+      
+}  
+     if (cancelarSincronizacaoPropostas) {
+    cancelarSincronizacaoPropostas();
+    cancelarSincronizacaoPropostas = null;
+}   
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

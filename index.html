@@ -1240,6 +1240,15 @@ function abrirDocumentos() {
 
     esconderTelas();
 
+    localStorage.removeItem(
+        "indiceDocumentoEmEdicao"
+    );
+
+    document.getElementById(
+        "botaoSalvarDocumento"
+    ).innerText =
+        "💾 Salvar Documento";
+
     document.getElementById("telaDocumentos")
         .classList.add("ativa");
 

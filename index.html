@@ -8,7 +8,7 @@
 <style>
 * {
     box-sizing: border-box;
-}F
+}
 
 body {
     margin: 0;
@@ -2770,7 +2770,7 @@ function editarDocumento(indice) {
 
 }
  
-function salvarConfiguracoes() {
+async function salvarConfiguracoes() {
    
 document.getElementById("botaoSalvarConfiguracoes").innerText =
     "💾 Salvar Configurações";
@@ -2814,7 +2814,7 @@ configuracoes.logo =
 
     const imagem = new Image();
 
-    imagem.onload = function() {
+   imagem.onload = async function() {
 
         const canvas =
             document.createElement("canvas");
@@ -2863,16 +2863,33 @@ configuracoes.logo =
                 0.8
             ); 
 
-        localStorage.setItem(
-            "configuracoesEmpresa",
-            JSON.stringify(configuracoes)
-        );
+        try {
 
-        mostrarConfiguracoes();
+    await window.salvarConfiguracoesNaNuvem(
+        configuracoes
+    );
 
-        alert(
-            "Configurações e logo salvas com sucesso!"
-        );
+    localStorage.setItem(
+        "configuracoesEmpresa",
+        JSON.stringify(configuracoes)
+    );
+
+    mostrarConfiguracoes();
+
+    alert(
+        "Configurações e logo salvas com sucesso!"
+    );
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar as configurações e a logo na nuvem."
+    );
+
+    return;
+}
     };
 imagem.src = evento.target.result;
 
@@ -2883,6 +2900,12 @@ imagem.src = evento.target.result;
 
     return;
 }
+  try {
+
+    await window.salvarConfiguracoesNaNuvem(
+        configuracoes
+    );
+
     localStorage.setItem(
         "configuracoesEmpresa",
         JSON.stringify(configuracoes)
@@ -2890,7 +2913,20 @@ imagem.src = evento.target.result;
 
     mostrarConfiguracoes();
 
-    alert("Configurações salvas com sucesso!");
+    alert(
+        "Configurações salvas com sucesso!"
+    );
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar as configurações na nuvem."
+    );
+
+    return;
+} 
     document.getElementById("nomeEmpresa").value = "";
 document.getElementById("cnpjEmpresa").value = "";
 document.getElementById("telefoneEmpresa").value = "";
@@ -3156,12 +3192,26 @@ function editarConfiguracoes() {
 
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "🔄 Atualizar Configurações";
-}function excluirConfiguracoes() {
+}
+    async function excluirConfiguracoes() {
 
     if (!confirm("Tem certeza que deseja excluir as configurações da empresa?")) {
         return;
     }
+try {
 
+    await window.excluirConfiguracoesDaNuvem();
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível excluir as configurações da nuvem."
+    );
+
+    return;
+}
     localStorage.removeItem("configuracoesEmpresa");
 
     document.getElementById("nomeEmpresa").value = "";
@@ -7748,6 +7798,7 @@ if ("serviceWorker" in navigator) {
     collection,
     addDoc,
     doc,
+    setDoc, 
     updateDoc,
     deleteDoc,
     onSnapshot
@@ -8349,6 +8400,48 @@ async function(idFirebase) {
         )
     );
 };
+    window.salvarConfiguracoesNaNuvem = async function(configuracoes) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    await setDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "configuracoes",
+            "empresa"
+        ),
+        configuracoes
+    );
+};
+    window.excluirConfiguracoesDaNuvem =
+async function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "configuracoes",
+            "empresa"
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
@@ -8358,6 +8451,70 @@ let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoCobrancas = null;
     let cancelarSincronizacaoDocumentos = null;
     let cancelarSincronizacaoPropostas = null;
+    let cancelarSincronizacaoConfiguracoes = null;
+    window.iniciarSincronizacaoConfiguracoes = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    if (cancelarSincronizacaoConfiguracoes) {
+        cancelarSincronizacaoConfiguracoes();
+    }
+
+    const referencia = doc(
+        db,
+        "usuarios",
+        usuario.uid,
+        "configuracoes",
+        "empresa"
+    );
+
+    cancelarSincronizacaoConfiguracoes =
+        onSnapshot(
+            referencia,
+            function(documento) {
+
+               if (!documento.exists()) {
+
+    localStorage.removeItem(
+        "configuracoesEmpresa"
+    );
+
+    if (
+        typeof window.mostrarConfiguracoes === "function"
+    ) {
+        window.mostrarConfiguracoes();
+    }
+
+    return;
+}
+
+                const configuracoes =
+                    documento.data();
+
+                localStorage.setItem(
+                    "configuracoesEmpresa",
+                    JSON.stringify(configuracoes)
+                );
+
+                if (
+                    typeof window.mostrarConfiguracoes === "function"
+                ) {
+                    window.mostrarConfiguracoes();
+                }
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização das configurações:",
+                    erro
+                );
+            }
+        );
+};
     window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
@@ -9090,7 +9247,8 @@ window.iniciarSincronizacaoFinanceiro();
 window.iniciarSincronizacaoOrcamentos(); 
 window.iniciarSincronizacaoCobrancas(); 
 window.iniciarSincronizacaoDocumentos();
- window.iniciarSincronizacaoPropostas();       
+ window.iniciarSincronizacaoPropostas();
+ window.iniciarSincronizacaoConfiguracoes();       
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -9131,8 +9289,12 @@ if (cancelarSincronizacaoAgenda) {
      if (cancelarSincronizacaoPropostas) {
     cancelarSincronizacaoPropostas();
     cancelarSincronizacaoPropostas = null;
-}   
-        formLogin.style.display = "block";
+}  
+        
+  if (cancelarSincronizacaoConfiguracoes) {
+    cancelarSincronizacaoConfiguracoes();
+    cancelarSincronizacaoConfiguracoes = null;
+}      formLogin.style.display = "block";
         botaoSair.style.display = "none";
 
         emailLogin.value = "";

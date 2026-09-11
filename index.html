@@ -6333,7 +6333,7 @@ document.getElementById(
 }
 
 
-function salvarOrcamento() {
+async function salvarOrcamento() {
 
     const data =
         document.getElementById(
@@ -6494,9 +6494,15 @@ if (orcamentoEditando !== -1) {
         orcamentos[orcamentoEditando].numero ||
         numeroOrcamento;
 }
+
+try {
+   
+
     if (orcamentoEditando === -1) {
 
-        orcamentos.push(orcamento);
+        await window.salvarOrcamentoNaNuvem(
+            orcamento
+        );
 
         alert(
             "Orçamento salvo com sucesso!"
@@ -6504,24 +6510,37 @@ if (orcamentoEditando !== -1) {
 
     } else {
 
-        orcamentos[orcamentoEditando] =
-            orcamento;
+        const orcamentoAnterior =
+            orcamentos[orcamentoEditando];
+
+        if (!orcamentoAnterior?.idFirebase) {
+
+            alert(
+                "Este orçamento ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarOrcamentoNaNuvem(
+            orcamento,
+            orcamentoAnterior.idFirebase
+        );
 
         alert(
             "Orçamento atualizado com sucesso!"
         );
     }
 
-
-    localStorage.setItem(
-        "orcamentos",
-        JSON.stringify(orcamentos)
-    );
-
-
     limparOrcamento();
 
-    mostrarOrcamentos();
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar o orçamento na nuvem."
+    );
 }
 
 
@@ -6639,7 +6658,10 @@ function mostrarListaOrcamentos(
         orcamento,
         indice
     ) {
-
+const indiceOrcamento =
+    orcamento.indiceOriginal !== undefined
+        ? orcamento.indiceOriginal
+        : indice;
         const div =
             document.createElement("div");
 
@@ -6724,13 +6746,13 @@ ${
 <div class="acoes">
                 <button
                     class="botao-editar"
-                    onclick="editarOrcamento(${indice})">
+                    onclick="editarOrcamento(${indiceOrcamento})">
                     ✏️ Editar
                 </button>
 
                 <button
                     class="botao-excluir"
-                    onclick="excluirOrcamento(${indice})">
+                  onclick="excluirOrcamento(${indiceOrcamento})">
                     🗑️ Excluir
                 </button>
 
@@ -6782,7 +6804,11 @@ function pesquisarOrcamentos() {
             );
 
         });
+resultados.forEach(function(orcamento) {
 
+    orcamento.indiceOriginal =
+        orcamentos.indexOf(orcamento);
+});
 
     mostrarListaOrcamentos(
         resultados
@@ -7411,45 +7437,55 @@ function compartilharOrcamento() {
     janela.document.close();
 }
 
+async function excluirOrcamento(indice) {
 
-function excluirOrcamento(indice) {
-
-    let orcamentos =
+    const orcamentos =
         JSON.parse(
             localStorage.getItem(
                 "orcamentos"
             )
         ) || [];
 
+    const orcamento =
+        orcamentos[indice];
+
+    if (!orcamento) {
+        return;
+    }
 
     if (!confirm(
         "Deseja realmente excluir este orçamento?"
     )) {
+        return;
+    }
+
+    if (!orcamento.idFirebase) {
+
+        alert(
+            "Este orçamento ainda não possui vínculo com a nuvem."
+        );
 
         return;
     }
 
+    try {
 
-    orcamentos.splice(
-        indice,
-        1
-    );
+        await window.excluirOrcamentoDaNuvem(
+            orcamento.idFirebase
+        );
 
+        alert(
+            "Orçamento excluído com sucesso!"
+        );
 
-    localStorage.setItem(
-        "orcamentos",
-        JSON.stringify(
-            orcamentos
-        )
-    );
+    } catch (erro) {
 
+        console.error(erro);
 
-    alert(
-        "Orçamento excluído com sucesso!"
-    );
-
-
-    mostrarOrcamentos();
+        alert(
+            "Não foi possível excluir o orçamento."
+        );
+    }
 }
 
 </script>
@@ -7790,11 +7826,94 @@ window.excluirFinanceiroDaNuvem = async function(idFirebase) {
         )
     );
 };
+    window.salvarOrcamentoNaNuvem = async function(
+    orcamento,
+    idFirebase = null
+) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "orcamentos",
+                idFirebase
+            ),
+            {
+                numero: orcamento.numero,
+                data: orcamento.data,
+                cliente: orcamento.cliente,
+                telefoneCliente:
+                    orcamento.telefoneCliente,
+                enderecoCliente:
+                    orcamento.enderecoCliente,
+                servico: orcamento.servico,
+                quantidade:
+                    orcamento.quantidade,
+                valorUnitario:
+                    orcamento.valorUnitario,
+                total: orcamento.total,
+                validade: orcamento.validade,
+                percentualSinal:
+                    orcamento.percentualSinal,
+                status: orcamento.status,
+                observacao:
+                    orcamento.observacao
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "orcamentos"
+            ),
+            orcamento
+        );
+    }
+};
+
+
+window.excluirOrcamentoDaNuvem =
+async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error(
+            "Orçamento ou usuário inválido."
+        );
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "orcamentos",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
 let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoFinanceiro = null;
+    let cancelarSincronizacaoOrcamentos = null;
     window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
@@ -7867,6 +7986,84 @@ let cancelarSincronizacaoAgenda = null;
 
                 console.error(
                     "Erro na sincronização do financeiro:",
+                    erro
+                );
+            }
+        );
+};
+    window.iniciarSincronizacaoOrcamentos = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const orcamentosLocal =
+        JSON.parse(
+            localStorage.getItem("orcamentos")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupOrcamentosAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupOrcamentosAntesFirebase",
+            JSON.stringify(orcamentosLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoOrcamentos) {
+        cancelarSincronizacaoOrcamentos();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "orcamentos"
+    );
+
+    cancelarSincronizacaoOrcamentos =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const orcamentos = [];
+
+                consulta.forEach(function(documento) {
+
+                    orcamentos.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                orcamentos.sort(function(a, b) {
+
+                    return (b.data || "")
+                        .localeCompare(a.data || "");
+                });
+
+                localStorage.setItem(
+                    "orcamentos",
+                    JSON.stringify(orcamentos)
+                );
+
+                if (
+                    typeof window.mostrarOrcamentos === "function"
+                ) {
+                    window.mostrarOrcamentos();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização dos orçamentos:",
                     erro
                 );
             }
@@ -8206,7 +8403,8 @@ window.iniciarSincronizacaoServicos();
 window.iniciarSincronizacaoClientes();
 window.iniciarSincronizacaoAnotacoes();
 window.iniciarSincronizacaoAgenda();
-window.iniciarSincronizacaoFinanceiro();        
+window.iniciarSincronizacaoFinanceiro(); 
+window.iniciarSincronizacaoOrcamentos();        
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -8231,6 +8429,10 @@ if (cancelarSincronizacaoAgenda) {
     cancelarSincronizacaoFinanceiro();
     cancelarSincronizacaoFinanceiro = null;
 }  
+        if (cancelarSincronizacaoOrcamentos) {
+    cancelarSincronizacaoOrcamentos();
+    cancelarSincronizacaoOrcamentos = null;
+}
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

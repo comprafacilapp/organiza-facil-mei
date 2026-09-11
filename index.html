@@ -4387,7 +4387,7 @@ function abrirCobrancas() {
     ).classList.add("ativa");
 mostrarCobrancas();
 }
-function salvarCobranca() {
+async function salvarCobranca() {
 
     const cliente =
         document.getElementById(
@@ -4451,35 +4451,62 @@ function salvarCobranca() {
         status
     };
 
-    const indiceEdicao =
+   const indiceEdicao =
     localStorage.getItem(
         "indiceCobrancaEmEdicao"
     );
 
-if (indiceEdicao !== null) {
+try {
 
-    cobrancas[Number(indiceEdicao)] =
-        cobranca;
+    if (indiceEdicao === null) {
 
-} else {
+        await window.salvarCobrancaNaNuvem(
+            cobranca
+        );
 
-    cobrancas.push(cobranca);
-}
+        alert(
+            "Cobrança salva com sucesso!"
+        );
 
-localStorage.removeItem(
-    "indiceCobrancaEmEdicao"
-);
+    } else {
 
-    localStorage.setItem(
-        "cobrancas",
-        JSON.stringify(cobrancas)
+        const cobrancaAnterior =
+            cobrancas[Number(indiceEdicao)];
+
+        if (!cobrancaAnterior?.idFirebase) {
+
+            alert(
+                "Esta cobrança ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarCobrancaNaNuvem(
+            cobranca,
+            cobrancaAnterior.idFirebase
+        );
+
+        alert(
+            "Cobrança atualizada com sucesso!"
+        );
+    }
+
+    localStorage.removeItem(
+        "indiceCobrancaEmEdicao"
     );
+
+} catch (erro) {
+
+    console.error(erro);
 
     alert(
-        "Cobrança salva com sucesso!"
+        "Não foi possível salvar a cobrança na nuvem."
     );
-    mostrarCobrancas();
-    document.getElementById(
+
+    return;
+}
+document.getElementById(
     "clienteCobranca"
 ).value = "";
 
@@ -4498,7 +4525,8 @@ document.getElementById(
 document.getElementById(
     "statusCobranca"
 ).value = "pendente";
-    document.getElementById(
+
+document.getElementById(
     "botaoCobranca"
 ).innerText =
     "💾 Salvar Cobrança";
@@ -4518,20 +4546,26 @@ document.getElementById(
         );
 
     lista.innerHTML = "";
-
-  cobrancas.forEach(
+cobrancas.forEach(
     function(cobranca, indice) {
-        const hoje = new Date();
-hoje.setHours(0, 0, 0, 0);
 
-const dataVencimento =
-    new Date(
-        cobranca.vencimento + "T00:00:00"
-    );
+        const indiceCobranca =
+            cobranca.indiceOriginal !== undefined
+                ? cobranca.indiceOriginal
+                : indice;
 
-const estaVencida =
-    cobranca.status !== "pago" &&
-    dataVencimento < hoje;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            const dataVencimento =
+                new Date(
+                    cobranca.vencimento +
+                    "T00:00:00"
+                );
+
+            const estaVencida =
+                cobranca.status !== "pago" &&
+                dataVencimento < hoje;
 
             const div =
                 document.createElement("div");
@@ -4562,44 +4596,50 @@ const estaVencida =
 
                 <br>
 
-               ${
-    cobranca.status === "pago"
-        ? "✅ Pago"
-        : estaVencida
-            ? "⚠️ Vencida"
-            : "⏳ Pendente"
-}
+                ${
+                    cobranca.status === "pago"
+                        ? "✅ Pago"
+                        : estaVencida
+                            ? "⚠️ Vencida"
+                            : "⏳ Pendente"
+                }
 
-<div class="acoes">
+                <div class="acoes">
 
-    <button
-        class="botao-editar"
-        onclick="editarCobranca(${indice})">
-        ✏️ Editar
-    </button>
-<button
-    class="botao-excluir"
-    onclick="excluirCobranca(${indice})">
-    🗑️ Excluir
-</button>
-<button
-    class="botao-editar"
-    onclick="compartilharCobranca(${indice})">
-    📤 Compartilhar
-</button>
-<button
-    class="botao-editar"
-    onclick="abrirQrCodeCobranca(${indice})">
-    💠 QR Code Pix
-</button>
-</div>
-`;  
+                    <button
+                        class="botao-editar"
+                        onclick="editarCobranca(${indiceCobranca})">
+                        ✏️ Editar
+                    </button>
+
+                    <button
+                        class="botao-excluir"
+                       onclick="excluirCobranca(${indiceCobranca})"> 
+                        🗑️ Excluir
+                    </button>
+
+                    <button
+                        class="botao-editar"
+                        onclick="compartilharCobranca(${indiceCobranca})">
+                        📤 Compartilhar
+                    </button>
+
+                    <button
+                        class="botao-editar"
+                        onclick="abrirQrCodeCobranca(${indiceCobranca})">
+                        💠 QR Code Pix
+                    </button>
+
+                </div>
+            `;
 
             lista.appendChild(div);
         }
     );
 }
-   function editarCobranca(indice) {
+
+
+function editarCobranca(indice) {
 
     const cobrancas =
         JSON.parse(
@@ -4617,25 +4657,30 @@ const estaVencida =
 
     document.getElementById(
         "clienteCobranca"
-    ).value = cobranca.cliente || "";
+    ).value =
+        cobranca.cliente || "";
 
     document.getElementById(
         "descricaoCobranca"
-    ).value = cobranca.descricao || "";
+    ).value =
+        cobranca.descricao || "";
 
     document.getElementById(
         "valorCobranca"
-    ).value = formatarMoeda(
-        Number(cobranca.valor) || 0
-    );
+    ).value =
+        formatarMoeda(
+            Number(cobranca.valor) || 0
+        );
 
     document.getElementById(
         "vencimentoCobranca"
-    ).value = cobranca.vencimento || "";
+    ).value =
+        cobranca.vencimento || "";
 
     document.getElementById(
         "statusCobranca"
-    ).value = cobranca.status || "pendente";
+    ).value =
+        cobranca.status || "pendente";
 
     localStorage.setItem(
         "indiceCobrancaEmEdicao",
@@ -4653,41 +4698,60 @@ const estaVencida =
         behavior: "smooth",
         block: "start"
     });
-   }
-    function excluirCobranca(indice) {
+}
 
-    const confirmar =
-        confirm(
-            "Deseja realmente excluir esta cobrança?"
-        );
 
-    if (!confirmar) {
-        return;
-    }
+async function excluirCobranca(indice) {
 
-    let cobrancas =
+    const cobrancas =
         JSON.parse(
             localStorage.getItem(
                 "cobrancas"
             )
         ) || [];
 
-    cobrancas.splice(
-        indice,
-        1
-    );
+    const cobranca =
+        cobrancas[indice];
 
-    localStorage.setItem(
-        "cobrancas",
-        JSON.stringify(cobrancas)
-    );
+    if (!cobranca) {
+        return;
+    }
 
-    mostrarCobrancas();
+    if (!confirm(
+        "Deseja realmente excluir esta cobrança?"
+    )) {
+        return;
+    }
 
-    alert(
-        "Cobrança excluída com sucesso!"
-    ); 
-} 
+    if (!cobranca.idFirebase) {
+
+        alert(
+            "Esta cobrança ainda não possui vínculo com a nuvem."
+        );
+
+        return;
+    }
+
+    try {
+
+        await window.excluirCobrancaDaNuvem(
+            cobranca.idFirebase
+        );
+
+        alert(
+            "Cobrança excluída com sucesso!"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir a cobrança."
+        );
+    }
+}
+  
     function compartilharCobranca(indice) {
 
     const cobrancas =
@@ -7908,12 +7972,81 @@ async function(idFirebase) {
         )
     );
 };
+    window.salvarCobrancaNaNuvem = async function(
+    cobranca,
+    idFirebase = null
+) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "cobrancas",
+                idFirebase
+            ),
+            {
+                cliente: cobranca.cliente,
+                descricao: cobranca.descricao,
+                valor: cobranca.valor,
+                vencimento: cobranca.vencimento,
+                status: cobranca.status
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "cobrancas"
+            ),
+            cobranca
+        );
+    }
+};
+
+
+window.excluirCobrancaDaNuvem =
+async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error(
+            "Cobrança ou usuário inválido."
+        );
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "cobrancas",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
 let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoFinanceiro = null;
     let cancelarSincronizacaoOrcamentos = null;
+    let cancelarSincronizacaoCobrancas = null;
     window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
@@ -8064,6 +8197,86 @@ let cancelarSincronizacaoAgenda = null;
 
                 console.error(
                     "Erro na sincronização dos orçamentos:",
+                    erro
+                );
+            }
+        );
+};
+    window.iniciarSincronizacaoCobrancas = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const cobrancasLocal =
+        JSON.parse(
+            localStorage.getItem("cobrancas")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupCobrancasAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupCobrancasAntesFirebase",
+            JSON.stringify(cobrancasLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoCobrancas) {
+        cancelarSincronizacaoCobrancas();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "cobrancas"
+    );
+
+    cancelarSincronizacaoCobrancas =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const cobrancas = [];
+
+                consulta.forEach(function(documento) {
+
+                    cobrancas.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                cobrancas.sort(function(a, b) {
+
+                    return (a.vencimento || "")
+                        .localeCompare(
+                            b.vencimento || ""
+                        );
+                });
+
+                localStorage.setItem(
+                    "cobrancas",
+                    JSON.stringify(cobrancas)
+                );
+
+                if (
+                    typeof window.mostrarCobrancas === "function"
+                ) {
+                    window.mostrarCobrancas();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização das cobranças:",
                     erro
                 );
             }
@@ -8404,7 +8617,8 @@ window.iniciarSincronizacaoClientes();
 window.iniciarSincronizacaoAnotacoes();
 window.iniciarSincronizacaoAgenda();
 window.iniciarSincronizacaoFinanceiro(); 
-window.iniciarSincronizacaoOrcamentos();        
+window.iniciarSincronizacaoOrcamentos(); 
+window.iniciarSincronizacaoCobrancas();        
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -8433,6 +8647,11 @@ if (cancelarSincronizacaoAgenda) {
     cancelarSincronizacaoOrcamentos();
     cancelarSincronizacaoOrcamentos = null;
 }
+        if (cancelarSincronizacaoCobrancas) {
+    cancelarSincronizacaoCobrancas();
+    cancelarSincronizacaoCobrancas = null;
+}
+        
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

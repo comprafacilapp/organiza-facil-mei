@@ -1263,7 +1263,7 @@ function abrirServicos() {
     mostrarServicos();
 }
 
-function salvarDocumento() {
+async function salvarDocumento() {
 
     const nome =
         document.getElementById("nomeDocumento").value.trim();
@@ -1296,32 +1296,61 @@ function salvarDocumento() {
         observacao
     };
 
-    const indiceEdicao =
+   const indiceEdicao =
     localStorage.getItem(
         "indiceDocumentoEmEdicao"
     );
 
-if (indiceEdicao !== null) {
+try {
 
-    documentos[Number(indiceEdicao)] =
-        documento;
+    if (indiceEdicao === null) {
 
-} else {
+        await window.salvarDocumentoNaNuvem(
+            documento
+        );
 
-    documentos.push(documento);
-}
+        alert(
+            "Documento salvo com sucesso!"
+        );
 
-localStorage.removeItem(
-    "indiceDocumentoEmEdicao"
-);
+    } else {
 
-    localStorage.setItem(
-        "documentos",
-        JSON.stringify(documentos)
+        const documentoAnterior =
+            documentos[Number(indiceEdicao)];
+
+        if (!documentoAnterior?.idFirebase) {
+
+            alert(
+                "Este documento ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarDocumentoNaNuvem(
+            documento,
+            documentoAnterior.idFirebase
+        );
+
+        alert(
+            "Documento atualizado com sucesso!"
+        );
+    }
+
+    localStorage.removeItem(
+        "indiceDocumentoEmEdicao"
     );
 
-    alert("Documento salvo com sucesso!");
+} catch (erro) {
 
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar o documento na nuvem."
+    );
+
+    return;
+}
 
 document.getElementById("nomeDocumento").value = "";
 document.getElementById("tipoDocumento").value = "";
@@ -2475,7 +2504,10 @@ function mostrarListaDocumentos(documentos) {
     }
 
     documentos.forEach(function(documento, indice) {
-
+const indiceDocumento =
+    documento.indiceOriginal !== undefined
+        ? documento.indiceOriginal
+        : indice;
         const item =
             document.createElement("div");
 
@@ -2490,11 +2522,11 @@ function mostrarListaDocumentos(documentos) {
 
             <p>📝 ${documento.observacao || "Sem observações"}</p>
 
-            <button onclick="editarDocumento(${indice})">
+            <button onclick="editarDocumento(${indiceDocumento})">
                 ✏️ Editar
             </button>
 
-            <button onclick="excluirDocumento(${indice})">
+            <button onclick="excluirDocumento(${indiceDocumento})">
                 🗑️ Excluir
             </button>
         `;
@@ -2519,7 +2551,16 @@ function pesquisarDocumentos() {
         ) || [];
 
     const filtrados =
-        documentos.filter(function(documento) {
+    documentos
+        .map(function(documento, indice) {
+
+            return {
+                ...documento,
+                indiceOriginal: indice
+            };
+
+        })
+        .filter(function(documento) {
 
             return (
                 documento.nome.toLowerCase().includes(pesquisa) ||
@@ -2534,27 +2575,53 @@ function pesquisarDocumentos() {
 }
 
 
-function excluirDocumento(indice) {
+async function excluirDocumento(indice) {
 
-    let documentos =
+    const documentos =
         JSON.parse(
             localStorage.getItem("documentos")
         ) || [];
 
-    if (!confirm("Deseja realmente excluir este documento?")) {
+    const documento =
+        documentos[indice];
+
+    if (!documento) {
         return;
     }
 
-    documentos.splice(indice, 1);
+    if (!confirm(
+        "Deseja realmente excluir este documento?"
+    )) {
+        return;
+    }
 
-    localStorage.setItem(
-        "documentos",
-        JSON.stringify(documentos)
-    );
+    if (!documento.idFirebase) {
 
-    mostrarDocumentos();
+        alert(
+            "Este documento ainda não possui vínculo com a nuvem."
+        );
 
-    alert("Documento excluído com sucesso!");
+        return;
+    }
+
+    try {
+
+        await window.excluirDocumentoDaNuvem(
+            documento.idFirebase
+        );
+
+        alert(
+            "Documento excluído com sucesso!"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível excluir o documento."
+        );
+    }
 }
 
 
@@ -8040,6 +8107,73 @@ async function(idFirebase) {
         )
     );
 };
+   window.salvarDocumentoNaNuvem = async function(
+    documento,
+    idFirebase = null
+) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error(
+            "Usuário não está conectado."
+        );
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "documentos",
+                idFirebase
+            ),
+            {
+                nome: documento.nome,
+                tipo: documento.tipo,
+                data: documento.data,
+                observacao: documento.observacao
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "documentos"
+            ),
+            documento
+        );
+    }
+};
+
+
+window.excluirDocumentoDaNuvem =
+async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error(
+            "Documento ou usuário inválido."
+        );
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "documentos",
+            idFirebase
+        )
+    );
+}; 
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
@@ -8047,6 +8181,7 @@ let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoFinanceiro = null;
     let cancelarSincronizacaoOrcamentos = null;
     let cancelarSincronizacaoCobrancas = null;
+    let cancelarSincronizacaoDocumentos = null;
     window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
@@ -8277,6 +8412,84 @@ let cancelarSincronizacaoAgenda = null;
 
                 console.error(
                     "Erro na sincronização das cobranças:",
+                    erro
+                );
+            }
+        );
+};
+    window.iniciarSincronizacaoDocumentos = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const documentosLocal =
+        JSON.parse(
+            localStorage.getItem("documentos")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupDocumentosAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupDocumentosAntesFirebase",
+            JSON.stringify(documentosLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoDocumentos) {
+        cancelarSincronizacaoDocumentos();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "documentos"
+    );
+
+    cancelarSincronizacaoDocumentos =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const documentos = [];
+
+                consulta.forEach(function(documento) {
+
+                    documentos.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                documentos.sort(function(a, b) {
+
+                    return (b.data || "")
+                        .localeCompare(a.data || "");
+                });
+
+                localStorage.setItem(
+                    "documentos",
+                    JSON.stringify(documentos)
+                );
+
+                if (
+                    typeof window.mostrarDocumentos === "function"
+                ) {
+                    window.mostrarDocumentos();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização dos documentos:",
                     erro
                 );
             }
@@ -8618,7 +8831,8 @@ window.iniciarSincronizacaoAnotacoes();
 window.iniciarSincronizacaoAgenda();
 window.iniciarSincronizacaoFinanceiro(); 
 window.iniciarSincronizacaoOrcamentos(); 
-window.iniciarSincronizacaoCobrancas();        
+window.iniciarSincronizacaoCobrancas(); 
+window.iniciarSincronizacaoDocumentos();        
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -8651,7 +8865,10 @@ if (cancelarSincronizacaoAgenda) {
     cancelarSincronizacaoCobrancas();
     cancelarSincronizacaoCobrancas = null;
 }
-        
+  if (cancelarSincronizacaoDocumentos) {
+    cancelarSincronizacaoDocumentos();
+    cancelarSincronizacaoDocumentos = null;
+}      
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

@@ -4990,7 +4990,7 @@ function abrirFinanceiro() {
 }
 
 
-function salvarFinanceiro() {
+async function salvarFinanceiro() {
 
     const tipo =
         document.getElementById(
@@ -5007,48 +5007,38 @@ function salvarFinanceiro() {
             "descricaoFinanceiro"
         ).value
         .trim();
+
     const categoria =
-    document.getElementById(
-        "categoriaFinanceiro"
-    ).value;
+        document.getElementById(
+            "categoriaFinanceiro"
+        ).value;
 
     const valor =
-    valorParaNumero(
-        document.getElementById(
-            "valorFinanceiro"
-        ).value
-    );
-
+        valorParaNumero(
+            document.getElementById(
+                "valorFinanceiro"
+            ).value
+        );
 
     if (data === "") {
-
         alert("Escolha a data.");
-
         return;
     }
-
 
     if (descricao === "") {
-
         alert("Digite a descrição.");
-
         return;
     }
-
 
     if (isNaN(valor) || valor <= 0) {
-
         alert("Digite um valor válido.");
-
         return;
     }
 
-
-    let financeiro =
+    const financeiro =
         JSON.parse(
             localStorage.getItem("financeiro")
         ) || [];
-
 
     const lancamento = {
         tipo,
@@ -5058,38 +5048,53 @@ function salvarFinanceiro() {
         valor
     };
 
+    try {
 
-    if (financeiroEditando === -1) {
+        if (financeiroEditando === -1) {
 
-        financeiro.push(lancamento);
+            await window.salvarFinanceiroNaNuvem(
+                lancamento
+            );
+
+            alert(
+                "Lançamento salvo com sucesso!"
+            );
+
+        } else {
+
+            const lancamentoAnterior =
+                financeiro[financeiroEditando];
+
+            if (!lancamentoAnterior?.idFirebase) {
+
+                alert(
+                    "Este lançamento ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarFinanceiroNaNuvem(
+                lancamento,
+                lancamentoAnterior.idFirebase
+            );
+
+            alert(
+                "Lançamento atualizado com sucesso!"
+            );
+        }
+
+        limparFinanceiro();
+
+    } catch (erro) {
+
+        console.error(erro);
 
         alert(
-            "Lançamento salvo com sucesso!"
-        );
-
-    } else {
-
-        financeiro[financeiroEditando] =
-            lancamento;
-
-        alert(
-            "Lançamento atualizado com sucesso!"
+            "Não foi possível salvar o lançamento na nuvem."
         );
     }
-
-
-    localStorage.setItem(
-        "financeiro",
-        JSON.stringify(financeiro)
-    );
-
-
-    limparFinanceiro();
-
-    mostrarFinanceiro();
 }
-
-
 function limparFinanceiro() {
 
     document.getElementById(
@@ -5222,6 +5227,13 @@ function mostrarFinanceiro() {
         JSON.parse(
             localStorage.getItem("financeiro")
         ) || [];
+    financeiro.forEach(function(
+    lancamento,
+    indice
+) {
+    lancamento.indiceOriginal =
+        indice;
+});
 const mesSelecionado =
     document.getElementById(
         "mesFinanceiro"
@@ -5248,7 +5260,7 @@ if (mesSelecionado !== "") {
     financeiro.forEach(function(
         lancamento
     ) {
-
+       
         if (
             lancamento.tipo ===
             "entrada"
@@ -5703,6 +5715,10 @@ function mostrarListaFinanceiro(
         lancamento,
         indice
     ) {
+        const indiceLancamento =
+    lancamento.indiceOriginal !== undefined
+        ? lancamento.indiceOriginal
+        : indice;
 
         const div =
             document.createElement("div");
@@ -5779,20 +5795,20 @@ function mostrarListaFinanceiro(
 
                 <button
                     class="botao-editar"
-                    onclick="editarFinanceiro(${indice})">
+                   onclick="editarFinanceiro(${indiceLancamento})">
                     ✏️ Editar
                 </button>
                 ${lancamento.tipo === "entrada" ? `
     <button
         class="botao-editar"
-        onclick="event.stopPropagation(); gerarReciboFinanceiro(${indice})">
+       onclick="event.stopPropagation(); gerarReciboFinanceiro(${indiceLancamento})">
         🧾 Recibo
     </button>
 ` : ""}
 
                 <button
                     class="botao-excluir"
-                    onclick="excluirFinanceiro(${indice})">
+                    onclick="excluirFinanceiro(${indiceLancamento})">
                     🗑️ Excluir
                 </button>
 
@@ -6132,7 +6148,11 @@ function pesquisarFinanceiro() {
 
         });
 
+resultados.forEach(function(lancamento) {
 
+    lancamento.indiceOriginal =
+        financeiro.indexOf(lancamento);
+});
     mostrarListaFinanceiro(
         resultados
     );
@@ -6205,42 +6225,54 @@ function editarFinanceiro(indice) {
 
 
 
-function excluirFinanceiro(indice) {
+async function excluirFinanceiro(indice) {
 
-    let financeiro =
+    const financeiro =
         JSON.parse(
             localStorage.getItem("financeiro")
         ) || [];
 
+    const lancamento =
+        financeiro[indice];
+
+    if (!lancamento) {
+        return;
+    }
 
     if (!confirm(
         "Deseja realmente excluir este lançamento?"
     )) {
+        return;
+    }
+
+    if (!lancamento.idFirebase) {
+
+        alert(
+            "Este lançamento ainda não possui vínculo com a nuvem."
+        );
 
         return;
     }
 
+    try {
 
-    financeiro.splice(
-        indice,
-        1
-    );
+        await window.excluirFinanceiroDaNuvem(
+            lancamento.idFirebase
+        );
 
+        alert(
+            "Lançamento excluído com sucesso!"
+        );
 
-    localStorage.setItem(
-        "financeiro",
-        JSON.stringify(financeiro)
-    );
+    } catch (erro) {
 
+        console.error(erro);
 
-    alert(
-        "Lançamento excluído com sucesso!"
-    );
-
-
-    mostrarFinanceiro();
+        alert(
+            "Não foi possível excluir o lançamento."
+        );
+    }
 }
-
 
 /* =========================
    ORÇAMENTOS
@@ -7699,10 +7731,147 @@ window.excluirAgendaDaNuvem = async function(idFirebase) {
         )
     );
 };
+    window.salvarFinanceiroNaNuvem = async function(lancamento, idFirebase = null) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        throw new Error("Usuário não está conectado.");
+    }
+
+    if (idFirebase) {
+
+        await updateDoc(
+            doc(
+                db,
+                "usuarios",
+                usuario.uid,
+                "financeiro",
+                idFirebase
+            ),
+            {
+                tipo: lancamento.tipo,
+                data: lancamento.data,
+                descricao: lancamento.descricao,
+                categoria: lancamento.categoria,
+                valor: lancamento.valor
+            }
+        );
+
+    } else {
+
+        await addDoc(
+            collection(
+                db,
+                "usuarios",
+                usuario.uid,
+                "financeiro"
+            ),
+            lancamento
+        );
+    }
+};
+
+window.excluirFinanceiroDaNuvem = async function(idFirebase) {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario || !idFirebase) {
+        throw new Error("Lançamento ou usuário inválido.");
+    }
+
+    await deleteDoc(
+        doc(
+            db,
+            "usuarios",
+            usuario.uid,
+            "financeiro",
+            idFirebase
+        )
+    );
+};
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
 let cancelarSincronizacaoAgenda = null;
+    let cancelarSincronizacaoFinanceiro = null;
+    window.iniciarSincronizacaoFinanceiro = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    const financeiroLocal =
+        JSON.parse(
+            localStorage.getItem("financeiro")
+        ) || [];
+
+    if (
+        !localStorage.getItem(
+            "backupFinanceiroAntesFirebase"
+        )
+    ) {
+        localStorage.setItem(
+            "backupFinanceiroAntesFirebase",
+            JSON.stringify(financeiroLocal)
+        );
+    }
+
+    if (cancelarSincronizacaoFinanceiro) {
+        cancelarSincronizacaoFinanceiro();
+    }
+
+    const referencia = collection(
+        db,
+        "usuarios",
+        usuario.uid,
+        "financeiro"
+    );
+
+    cancelarSincronizacaoFinanceiro =
+        onSnapshot(
+            referencia,
+            function(consulta) {
+
+                const financeiro = [];
+
+                consulta.forEach(function(documento) {
+
+                    financeiro.push({
+                        idFirebase: documento.id,
+                        ...documento.data()
+                    });
+
+                });
+
+                financeiro.sort(function(a, b) {
+                    return (b.data || "")
+                        .localeCompare(a.data || "");
+                });
+
+                localStorage.setItem(
+                    "financeiro",
+                    JSON.stringify(financeiro)
+                );
+
+                if (
+                    typeof window.mostrarFinanceiro === "function"
+                ) {
+                    window.mostrarFinanceiro();
+                }
+
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro na sincronização do financeiro:",
+                    erro
+                );
+            }
+        );
+};
    window.iniciarSincronizacaoAgenda = function() {
 
     const usuario = auth.currentUser;
@@ -8037,6 +8206,7 @@ window.iniciarSincronizacaoServicos();
 window.iniciarSincronizacaoClientes();
 window.iniciarSincronizacaoAnotacoes();
 window.iniciarSincronizacaoAgenda();
+window.iniciarSincronizacaoFinanceiro();        
 } else {
 
     if (cancelarSincronizacaoServicos) {
@@ -8057,6 +8227,10 @@ if (cancelarSincronizacaoAgenda) {
     cancelarSincronizacaoAgenda();
     cancelarSincronizacaoAgenda = null;
 }
+      if (cancelarSincronizacaoFinanceiro) {
+    cancelarSincronizacaoFinanceiro();
+    cancelarSincronizacaoFinanceiro = null;
+}  
         formLogin.style.display = "block";
         botaoSair.style.display = "none";
 

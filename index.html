@@ -2270,18 +2270,58 @@ async function salvarServico() {
             "indiceServicoEmEdicao"
         );
 
-   const servico = {
-    nome,
-    descricao,
-    valor,
-    tempo,
-    dataCadastro:
-        indiceEdicao !== null
-            ? servicos[Number(indiceEdicao)]?.dataCadastro
-              || new Date().toISOString()
-            : new Date().toISOString()
-};
+    const servico = {
+        nome,
+        descricao,
+        valor,
+        tempo,
+        dataCadastro:
+            indiceEdicao !== null
+                ? servicos[Number(indiceEdicao)]?.dataCadastro
+                  || new Date().toISOString()
+                : new Date().toISOString()
+    };
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        if (indiceEdicao !== null) {
+
+            servicos[Number(indiceEdicao)] =
+                servico;
+
+        } else {
+
+            servicos.push(servico);
+        }
+
+        localStorage.setItem(
+            "servicos",
+            JSON.stringify(servicos)
+        );
+
+        localStorage.removeItem(
+            "indiceServicoEmEdicao"
+        );
+
+        document.getElementById(
+            "botaoSalvarServico"
+        ).innerText =
+            "💾 Salvar Serviço";
+
+        document.getElementById("nomeServico").value = "";
+        document.getElementById("descricaoServico").value = "";
+        document.getElementById("valorServico").value = "";
+        document.getElementById("tempoServico").value = "";
+
+        mostrarServicos();
+
+        alert("Serviço salvo com sucesso!");
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     try {
 
         if (indiceEdicao !== null) {

@@ -3964,6 +3964,21 @@ function mostrarAnotacoes() {
             localStorage.getItem("anotacoes")
         ) || [];
 
+    anotacoes =
+        anotacoes.map(function(anotacao, indice) {
+
+            return {
+                ...anotacao,
+                indiceOriginal: indice
+            };
+        });
+
+    anotacoes.sort(function(a, b) {
+
+        return Number(b.fixada) -
+               Number(a.fixada);
+    });
+
     mostrarListaAnotacoes(anotacoes);
 }
 

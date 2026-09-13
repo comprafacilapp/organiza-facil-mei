@@ -4107,7 +4107,6 @@ function editarAnotacao(indice) {
 });
 }
 
-
 async function excluirAnotacao(indice) {
 
     const anotacoes =
@@ -4128,6 +4127,26 @@ async function excluirAnotacao(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        anotacoes.splice(indice, 1);
+
+        localStorage.setItem(
+            "anotacoes",
+            JSON.stringify(anotacoes)
+        );
+
+        mostrarAnotacoes();
+
+        alert(
+            "Anotação excluída com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!anotacao.idFirebase) {
 
         alert(
@@ -4171,6 +4190,29 @@ async function fixarAnotacao(indice) {
         return;
     }
 
+    const anotacaoAtualizada = {
+        titulo: anotacao.titulo,
+        texto: anotacao.texto,
+        fixada: !anotacao.fixada
+    };
+
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        anotacoes[indice] =
+            anotacaoAtualizada;
+
+        localStorage.setItem(
+            "anotacoes",
+            JSON.stringify(anotacoes)
+        );
+
+        mostrarAnotacoes();
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!anotacao.idFirebase) {
 
         alert(
@@ -4179,12 +4221,6 @@ async function fixarAnotacao(indice) {
 
         return;
     }
-
-    const anotacaoAtualizada = {
-        titulo: anotacao.titulo,
-        texto: anotacao.texto,
-        fixada: !anotacao.fixada
-    };
 
     try {
 
@@ -4202,6 +4238,7 @@ async function fixarAnotacao(indice) {
         );
     }
 }
+
 /* =========================
    AGENDA
 ========================= */

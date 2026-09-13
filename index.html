@@ -5585,54 +5585,87 @@ async function salvarFinanceiro() {
         categoria,
         valor
     };
+/* PLANO GRÁTIS */
+if (!window.usuarioPremium()) {
 
-    try {
+    if (financeiroEditando === -1) {
 
-        if (financeiroEditando === -1) {
-
-            await window.salvarFinanceiroNaNuvem(
-                lancamento
-            );
-
-            alert(
-                "Lançamento salvo com sucesso!"
-            );
-
-        } else {
-
-            const lancamentoAnterior =
-                financeiro[financeiroEditando];
-
-            if (!lancamentoAnterior?.idFirebase) {
-
-                alert(
-                    "Este lançamento ainda não possui vínculo com a nuvem."
-                );
-
-                return;
-            }
-
-            await window.salvarFinanceiroNaNuvem(
-                lancamento,
-                lancamentoAnterior.idFirebase
-            );
-
-            alert(
-                "Lançamento atualizado com sucesso!"
-            );
-        }
-
-        limparFinanceiro();
-
-    } catch (erro) {
-
-        console.error(erro);
+        financeiro.push(lancamento);
 
         alert(
-            "Não foi possível salvar o lançamento na nuvem."
+            "Lançamento salvo com sucesso!"
+        );
+
+    } else {
+
+        financeiro[financeiroEditando] =
+            lancamento;
+
+        alert(
+            "Lançamento atualizado com sucesso!"
         );
     }
+
+    localStorage.setItem(
+        "financeiro",
+        JSON.stringify(financeiro)
+    );
+
+    limparFinanceiro();
+
+    mostrarFinanceiro();
+
+    return;
 }
+
+/* PLANO PREMIUM */
+try {
+
+    if (financeiroEditando === -1) {
+
+        await window.salvarFinanceiroNaNuvem(
+            lancamento
+        );
+
+        alert(
+            "Lançamento salvo com sucesso!"
+        );
+
+    } else {
+
+        const lancamentoAnterior =
+            financeiro[financeiroEditando];
+
+        if (!lancamentoAnterior?.idFirebase) {
+
+            alert(
+                "Este lançamento ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarFinanceiroNaNuvem(
+            lancamento,
+            lancamentoAnterior.idFirebase
+        );
+
+        alert(
+            "Lançamento atualizado com sucesso!"
+        );
+    }
+
+    limparFinanceiro();
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar o lançamento na nuvem."
+    );
+}
+} 
 function limparFinanceiro() {
 
     document.getElementById(
@@ -6783,6 +6816,26 @@ async function excluirFinanceiro(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        financeiro.splice(indice, 1);
+
+        localStorage.setItem(
+            "financeiro",
+            JSON.stringify(financeiro)
+        );
+
+        mostrarFinanceiro();
+
+        alert(
+            "Lançamento excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!lancamento.idFirebase) {
 
         alert(

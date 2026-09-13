@@ -3597,6 +3597,26 @@ async function excluirCliente(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        clientes.splice(indice, 1);
+
+        localStorage.setItem(
+            "clientes",
+            JSON.stringify(clientes)
+        );
+
+        mostrarClientes();
+
+        alert(
+            "Cliente excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!cliente.idFirebase) {
 
         alert(

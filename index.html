@@ -4405,52 +4405,85 @@ async function salvarAgenda() {
         telefone
     };
 
-    try {
+   /* PLANO GRÁTIS */
+if (!window.usuarioPremium()) {
 
-        if (agendaEditando === -1) {
+    if (agendaEditando === -1) {
 
-            await window.salvarAgendaNaNuvem(
-                compromisso
-            );
-
-            alert(
-                "Compromisso salvo com sucesso!"
-            );
-
-        } else {
-
-            const compromissoAnterior =
-                agenda[agendaEditando];
-
-            if (!compromissoAnterior?.idFirebase) {
-
-                alert(
-                    "Este compromisso ainda não possui vínculo com a nuvem."
-                );
-
-                return;
-            }
-
-            await window.salvarAgendaNaNuvem(
-                compromisso,
-                compromissoAnterior.idFirebase
-            );
-
-            alert(
-                "Compromisso atualizado com sucesso!"
-            );
-        }
-
-        limparAgenda();
-
-    } catch (erro) {
-
-        console.error(erro);
+        agenda.push(compromisso);
 
         alert(
-            "Não foi possível salvar o compromisso na nuvem."
+            "Compromisso salvo com sucesso!"
+        );
+
+    } else {
+
+        agenda[agendaEditando] =
+            compromisso;
+
+        alert(
+            "Compromisso atualizado com sucesso!"
         );
     }
+
+    localStorage.setItem(
+        "agenda",
+        JSON.stringify(agenda)
+    );
+
+    limparAgenda();
+
+    mostrarAgenda();
+
+    return;
+}
+
+/* PLANO PREMIUM */
+try {
+
+    if (agendaEditando === -1) {
+
+        await window.salvarAgendaNaNuvem(
+            compromisso
+        );
+
+        alert(
+            "Compromisso salvo com sucesso!"
+        );
+
+    } else {
+
+        const compromissoAnterior =
+            agenda[agendaEditando];
+
+        if (!compromissoAnterior?.idFirebase) {
+
+            alert(
+                "Este compromisso ainda não possui vínculo com a nuvem."
+            );
+
+            return;
+        }
+
+        await window.salvarAgendaNaNuvem(
+            compromisso,
+            compromissoAnterior.idFirebase
+        );
+
+        alert(
+            "Compromisso atualizado com sucesso!"
+        );
+    }
+
+    limparAgenda();
+
+} catch (erro) {
+
+    console.error(erro);
+
+    alert(
+        "Não foi possível salvar o compromisso na nuvem."
+    );
 }
 function limparAgenda() {
 
@@ -4697,7 +4730,6 @@ document.getElementById(
     block: "start"
 });
 }
-
 async function excluirAgenda(indice) {
 
     const agenda =
@@ -4718,6 +4750,26 @@ async function excluirAgenda(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        agenda.splice(indice, 1);
+
+        localStorage.setItem(
+            "agenda",
+            JSON.stringify(agenda)
+        );
+
+        mostrarAgenda();
+
+        alert(
+            "Compromisso excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!compromisso.idFirebase) {
 
         alert(

@@ -3316,7 +3316,7 @@ async function salvarCliente() {
     };
 
     /* PLANO GRÁTIS */
-    if (!usuarioPremium()) {
+ if (!window.usuarioPremium()) {
 
         if (clienteEditando === -1) {
 
@@ -8480,9 +8480,9 @@ async function() {
 };
     let planoAtual = "gratis";
 let cancelarSincronizacaoPlano = null;
-   function usuarioPremium() {
+  window.usuarioPremium = function() {
     return planoAtual === "premium";
-} 
+};
     window.iniciarSincronizacoesPremium = function() {
 
     window.iniciarSincronizacaoServicos();
@@ -8595,7 +8595,7 @@ let cancelarSincronizacaoAgenda = null;
                     "Plano atual:",
                     planoAtual
                 );
-             if (usuarioPremium()) {
+          if (window.usuarioPremium()) {
 
     window.iniciarSincronizacoesPremium();
 

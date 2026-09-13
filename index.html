@@ -8442,6 +8442,76 @@ async function() {
         )
     );
 };
+    let planoAtual = "gratis";
+let cancelarSincronizacaoPlano = null;
+   function usuarioPremium() {
+    return planoAtual === "premium";
+} 
+    window.iniciarSincronizacoesPremium = function() {
+
+    window.iniciarSincronizacaoServicos();
+    window.iniciarSincronizacaoClientes();
+    window.iniciarSincronizacaoAnotacoes();
+    window.iniciarSincronizacaoAgenda();
+    window.iniciarSincronizacaoFinanceiro();
+    window.iniciarSincronizacaoOrcamentos();
+    window.iniciarSincronizacaoCobrancas();
+    window.iniciarSincronizacaoDocumentos();
+    window.iniciarSincronizacaoPropostas();
+    window.iniciarSincronizacaoConfiguracoes();
+};
+   window.pararSincronizacoesPremium = function() {
+
+    if (cancelarSincronizacaoServicos) {
+        cancelarSincronizacaoServicos();
+        cancelarSincronizacaoServicos = null;
+    }
+
+    if (cancelarSincronizacaoClientes) {
+        cancelarSincronizacaoClientes();
+        cancelarSincronizacaoClientes = null;
+    }
+
+    if (cancelarSincronizacaoAnotacoes) {
+        cancelarSincronizacaoAnotacoes();
+        cancelarSincronizacaoAnotacoes = null;
+    }
+
+    if (cancelarSincronizacaoAgenda) {
+        cancelarSincronizacaoAgenda();
+        cancelarSincronizacaoAgenda = null;
+    }
+
+    if (cancelarSincronizacaoFinanceiro) {
+        cancelarSincronizacaoFinanceiro();
+        cancelarSincronizacaoFinanceiro = null;
+    }
+
+    if (cancelarSincronizacaoOrcamentos) {
+        cancelarSincronizacaoOrcamentos();
+        cancelarSincronizacaoOrcamentos = null;
+    }
+
+    if (cancelarSincronizacaoCobrancas) {
+        cancelarSincronizacaoCobrancas();
+        cancelarSincronizacaoCobrancas = null;
+    }
+
+    if (cancelarSincronizacaoDocumentos) {
+        cancelarSincronizacaoDocumentos();
+        cancelarSincronizacaoDocumentos = null;
+    }
+
+    if (cancelarSincronizacaoPropostas) {
+        cancelarSincronizacaoPropostas();
+        cancelarSincronizacaoPropostas = null;
+    }
+
+    if (cancelarSincronizacaoConfiguracoes) {
+        cancelarSincronizacaoConfiguracoes();
+        cancelarSincronizacaoConfiguracoes = null;
+    }
+}; 
 let cancelarSincronizacaoServicos = null;
    let cancelarSincronizacaoClientes = null;
     let cancelarSincronizacaoAnotacoes = null;
@@ -8452,6 +8522,64 @@ let cancelarSincronizacaoAgenda = null;
     let cancelarSincronizacaoDocumentos = null;
     let cancelarSincronizacaoPropostas = null;
     let cancelarSincronizacaoConfiguracoes = null;
+    window.iniciarSincronizacaoPlano = function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return;
+    }
+
+    if (cancelarSincronizacaoPlano) {
+        cancelarSincronizacaoPlano();
+    }
+
+   const referencia = doc(
+    db,
+    "planos",
+    usuario.uid
+);
+
+    cancelarSincronizacaoPlano =
+        onSnapshot(
+            referencia,
+            function(documento) {
+
+                if (documento.exists()) {
+
+                    planoAtual =
+                        documento.data().plano || "gratis";
+
+                } else {
+
+                    planoAtual = "gratis";
+                }
+
+                console.log(
+                    "Plano atual:",
+                    planoAtual
+                );
+             if (usuarioPremium()) {
+
+    window.iniciarSincronizacoesPremium();
+
+} else {
+
+    window.pararSincronizacoesPremium();
+}
+            },
+            function(erro) {
+
+                console.error(
+                    "Erro ao verificar plano:",
+                    erro
+                );
+
+                planoAtual = "gratis";
+                 window.pararSincronizacoesPremium();
+            }
+        );
+};
     window.iniciarSincronizacaoConfiguracoes = function() {
 
     const usuario = auth.currentUser;
@@ -9238,19 +9366,15 @@ onAuthStateChanged(auth, function(usuario) {
 
            statusLogin.innerText =
     "✅ Usuário conectado";
-
-window.iniciarSincronizacaoServicos();
-window.iniciarSincronizacaoClientes();
-window.iniciarSincronizacaoAnotacoes();
-window.iniciarSincronizacaoAgenda();
-window.iniciarSincronizacaoFinanceiro(); 
-window.iniciarSincronizacaoOrcamentos(); 
-window.iniciarSincronizacaoCobrancas(); 
-window.iniciarSincronizacaoDocumentos();
- window.iniciarSincronizacaoPropostas();
- window.iniciarSincronizacaoConfiguracoes();       
+window.iniciarSincronizacaoPlano();
+    
 } else {
+        if (cancelarSincronizacaoPlano) {
+    cancelarSincronizacaoPlano();
+    cancelarSincronizacaoPlano = null;
+}
 
+planoAtual = "gratis";
     if (cancelarSincronizacaoServicos) {
         cancelarSincronizacaoServicos();
         cancelarSincronizacaoServicos = null;

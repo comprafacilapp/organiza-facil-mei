@@ -2886,174 +2886,253 @@ function editarDocumento(indice) {
 }
  
 async function salvarConfiguracoes() {
-   
-document.getElementById("botaoSalvarConfiguracoes").innerText =
-    "💾 Salvar Configurações";
-    const arquivoLogo =
+
     document.getElementById(
-        "logoEmpresa"
-    ).files[0];
+        "botaoSalvarConfiguracoes"
+    ).innerText =
+        "💾 Salvar Configurações";
+
+    const arquivoLogo =
+        document.getElementById(
+            "logoEmpresa"
+        ).files[0];
 
     const configuracoes = {
 
-        nome: document.getElementById("nomeEmpresa").value.trim(),
+        nome:
+            document.getElementById(
+                "nomeEmpresa"
+            ).value.trim(),
 
-        cnpj: document.getElementById("cnpjEmpresa").value.trim(),
+        cnpj:
+            document.getElementById(
+                "cnpjEmpresa"
+            ).value.trim(),
 
-        telefone: document.getElementById("telefoneEmpresa").value.trim(),
+        telefone:
+            document.getElementById(
+                "telefoneEmpresa"
+            ).value.trim(),
 
-        email: document.getElementById("emailEmpresa").value.trim(),
+        email:
+            document.getElementById(
+                "emailEmpresa"
+            ).value.trim(),
 
-endereco: document.getElementById("enderecoEmpresa").value.trim(),
+        endereco:
+            document.getElementById(
+                "enderecoEmpresa"
+            ).value.trim(),
 
-pix: document.getElementById("pixEmpresa").value.trim(),
+        pix:
+            document.getElementById(
+                "pixEmpresa"
+            ).value.trim(),
 
-cidadePix: document.getElementById("cidadePixEmpresa").value.trim()
-};
+        cidadePix:
+            document.getElementById(
+                "cidadePixEmpresa"
+            ).value.trim()
+    };
 
-const configuracoesAntigas =
-    JSON.parse(
-        localStorage.getItem(
-            "configuracoesEmpresa"
-        )
-    ) || {};
+    const configuracoesAntigas =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesEmpresa"
+            )
+        ) || {};
 
-configuracoes.logo =
-    configuracoesAntigas.logo || "";
-    if (arquivoLogo) {
+    configuracoes.logo =
+        configuracoesAntigas.logo || "";
 
-    const leitor =
-        new FileReader();
+    async function salvarConfiguracoesFinal() {
 
-   leitor.onload = function(evento) {
+        /* PLANO GRÁTIS */
+        if (!window.usuarioPremium()) {
 
-    const imagem = new Image();
+            localStorage.setItem(
+                "configuracoesEmpresa",
+                JSON.stringify(configuracoes)
+            );
 
-   imagem.onload = async function() {
+            mostrarConfiguracoes();
 
-        const canvas =
-            document.createElement("canvas");
+            alert(
+                arquivoLogo
+                    ? "Configurações e logo salvas com sucesso!"
+                    : "Configurações salvas com sucesso!"
+            );
 
-        const maximo = 500;
+        } else {
 
-        let largura = imagem.width;
-        let altura = imagem.height;
+            /* PLANO PREMIUM */
+            try {
 
-        if (largura > altura && largura > maximo) {
-
-            altura =
-                Math.round(
-                    altura * maximo / largura
+                await window.salvarConfiguracoesNaNuvem(
+                    configuracoes
                 );
 
-            largura = maximo;
-
-        } else if (altura > maximo) {
-
-            largura =
-                Math.round(
-                    largura * maximo / altura
+                localStorage.setItem(
+                    "configuracoesEmpresa",
+                    JSON.stringify(configuracoes)
                 );
 
-            altura = maximo;
+                mostrarConfiguracoes();
+
+                alert(
+                    arquivoLogo
+                        ? "Configurações e logo salvas com sucesso!"
+                        : "Configurações salvas com sucesso!"
+                );
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                alert(
+                    arquivoLogo
+                        ? "Não foi possível salvar as configurações e a logo na nuvem."
+                        : "Não foi possível salvar as configurações na nuvem."
+                );
+
+                return;
+            }
         }
 
-        canvas.width = largura;
-        canvas.height = altura;
+        document.getElementById(
+            "nomeEmpresa"
+        ).value = "";
 
-        const contexto =
-            canvas.getContext("2d");
+        document.getElementById(
+            "cnpjEmpresa"
+        ).value = "";
 
-        contexto.drawImage(
-            imagem,
-            0,
-            0,
-            largura,
-            altura
+        document.getElementById(
+            "telefoneEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "emailEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "enderecoEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "pixEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "cidadePixEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "logoEmpresa"
+        ).value = "";
+
+        document.getElementById(
+            "botaoSalvarConfiguracoes"
+        ).innerText =
+            "💾 Salvar Configurações";
+    }
+
+    if (arquivoLogo) {
+
+        const leitor =
+            new FileReader();
+
+        leitor.onload = function(evento) {
+
+            const imagem =
+                new Image();
+
+            imagem.onload =
+                async function() {
+
+                    const canvas =
+                        document.createElement(
+                            "canvas"
+                        );
+
+                    const maximo = 500;
+
+                    let largura =
+                        imagem.width;
+
+                    let altura =
+                        imagem.height;
+
+                    if (
+                        largura > altura &&
+                        largura > maximo
+                    ) {
+
+                        altura =
+                            Math.round(
+                                altura *
+                                maximo /
+                                largura
+                            );
+
+                        largura =
+                            maximo;
+
+                    } else if (
+                        altura > maximo
+                    ) {
+
+                        largura =
+                            Math.round(
+                                largura *
+                                maximo /
+                                altura
+                            );
+
+                        altura =
+                            maximo;
+                    }
+
+                    canvas.width =
+                        largura;
+
+                    canvas.height =
+                        altura;
+
+                    const contexto =
+                        canvas.getContext(
+                            "2d"
+                        );
+
+                    contexto.drawImage(
+                        imagem,
+                        0,
+                        0,
+                        largura,
+                        altura
+                    );
+
+                    configuracoes.logo =
+                        canvas.toDataURL(
+                            "image/webp",
+                            0.8
+                        );
+
+                    await salvarConfiguracoesFinal();
+                };
+
+            imagem.src =
+                evento.target.result;
+        };
+
+        leitor.readAsDataURL(
+            arquivoLogo
         );
 
-        configuracoes.logo =
-            canvas.toDataURL(
-                "image/webp",
-                0.8
-            ); 
+        return;
+    }
 
-        try {
-
-    await window.salvarConfiguracoesNaNuvem(
-        configuracoes
-    );
-
-    localStorage.setItem(
-        "configuracoesEmpresa",
-        JSON.stringify(configuracoes)
-    );
-
-    mostrarConfiguracoes();
-
-    alert(
-        "Configurações e logo salvas com sucesso!"
-    );
-
-} catch (erro) {
-
-    console.error(erro);
-
-    alert(
-        "Não foi possível salvar as configurações e a logo na nuvem."
-    );
-
-    return;
-}
-    };
-imagem.src = evento.target.result;
-
-};
-    leitor.readAsDataURL(
-        arquivoLogo
-    );
-
-    return;
-}
-  try {
-
-    await window.salvarConfiguracoesNaNuvem(
-        configuracoes
-    );
-
-    localStorage.setItem(
-        "configuracoesEmpresa",
-        JSON.stringify(configuracoes)
-    );
-
-    mostrarConfiguracoes();
-
-    alert(
-        "Configurações salvas com sucesso!"
-    );
-
-} catch (erro) {
-
-    console.error(erro);
-
-    alert(
-        "Não foi possível salvar as configurações na nuvem."
-    );
-
-    return;
-} 
-    document.getElementById("nomeEmpresa").value = "";
-document.getElementById("cnpjEmpresa").value = "";
-document.getElementById("telefoneEmpresa").value = "";
-document.getElementById("emailEmpresa").value = "";
-document.getElementById("enderecoEmpresa").value = "";
-document.getElementById("pixEmpresa").value = "";
-    document.getElementById("cidadePixEmpresa").value = "";
-document.getElementById("logoEmpresa").value = "";
-
-document.getElementById("botaoSalvarConfiguracoes").innerText =
-    "💾 Salvar Configurações";
-
+    await salvarConfiguracoesFinal();
 }
     function fazerBackup() {
 
@@ -3308,40 +3387,86 @@ function editarConfiguracoes() {
     document.getElementById("botaoSalvarConfiguracoes").innerText =
         "🔄 Atualizar Configurações";
 }
-    async function excluirConfiguracoes() {
+   async function excluirConfiguracoes() {
 
-    if (!confirm("Tem certeza que deseja excluir as configurações da empresa?")) {
+    if (!confirm(
+        "Tem certeza que deseja excluir as configurações da empresa?"
+    )) {
         return;
     }
-try {
 
-    await window.excluirConfiguracoesDaNuvem();
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
 
-} catch (erro) {
+        localStorage.removeItem(
+            "configuracoesEmpresa"
+        );
 
-    console.error(erro);
+    } else {
 
-    alert(
-        "Não foi possível excluir as configurações da nuvem."
-    );
+        /* PLANO PREMIUM */
+        try {
 
-    return;
-}
-    localStorage.removeItem("configuracoesEmpresa");
+            await window.excluirConfiguracoesDaNuvem();
 
-    document.getElementById("nomeEmpresa").value = "";
-    document.getElementById("cnpjEmpresa").value = "";
-    document.getElementById("telefoneEmpresa").value = "";
-    document.getElementById("emailEmpresa").value = "";
-    document.getElementById("enderecoEmpresa").value = "";
-document.getElementById("pixEmpresa").value = "";
-    document.getElementById("cidadePixEmpresa").value = "";
-    document.getElementById("botaoSalvarConfiguracoes").innerText =
+        } catch (erro) {
+
+            console.error(erro);
+
+            alert(
+                "Não foi possível excluir as configurações da nuvem."
+            );
+
+            return;
+        }
+
+        localStorage.removeItem(
+            "configuracoesEmpresa"
+        );
+    }
+
+    document.getElementById(
+        "nomeEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "cnpjEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "telefoneEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "emailEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "enderecoEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "pixEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "cidadePixEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "logoEmpresa"
+    ).value = "";
+
+    document.getElementById(
+        "botaoSalvarConfiguracoes"
+    ).innerText =
         "💾 Salvar Configurações";
 
     mostrarConfiguracoes();
 
-    alert("Configurações excluídas com sucesso!");
+    alert(
+        "Configurações excluídas com sucesso!"
+    );
 }
 
 function abrirClientes() {

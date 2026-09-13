@@ -2523,7 +2523,7 @@ function mostrarListaServicos(servicos) {
 
     });
 }
- async function excluirServico(indice) {
+async function excluirServico(indice) {
 
     const servicos =
         JSON.parse(
@@ -2545,6 +2545,26 @@ function mostrarListaServicos(servicos) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        servicos.splice(indice, 1);
+
+        localStorage.setItem(
+            "servicos",
+            JSON.stringify(servicos)
+        );
+
+        mostrarServicos();
+
+        alert(
+            "Serviço excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!servico.idFirebase) {
 
         alert(
@@ -2560,6 +2580,10 @@ function mostrarListaServicos(servicos) {
             servico.idFirebase
         );
 
+        alert(
+            "Serviço excluído com sucesso!"
+        );
+
     } catch (erro) {
 
         console.error(erro);
@@ -2568,7 +2592,7 @@ function mostrarListaServicos(servicos) {
             "Não foi possível excluir o serviço."
         );
     }
-}   
+}
 function editarServico(indice) {
 
     let servicos =

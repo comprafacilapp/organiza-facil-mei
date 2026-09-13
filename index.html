@@ -3852,6 +3852,40 @@ async function salvarAnotacao() {
                 : false
     };
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        if (anotacaoEditando === -1) {
+
+            anotacoes.push(anotacao);
+
+            alert(
+                "Anotação salva com sucesso!"
+            );
+
+        } else {
+
+            anotacoes[anotacaoEditando] =
+                anotacao;
+
+            alert(
+                "Anotação atualizada com sucesso!"
+            );
+        }
+
+        localStorage.setItem(
+            "anotacoes",
+            JSON.stringify(anotacoes)
+        );
+
+        limparAnotacao();
+
+        mostrarAnotacoes();
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     try {
 
         if (anotacaoEditando === -1) {
@@ -3899,7 +3933,6 @@ async function salvarAnotacao() {
         );
     }
 }
-
 
 function limparAnotacao() {
 

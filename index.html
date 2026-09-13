@@ -1254,7 +1254,20 @@ function abrirDocumentos() {
 
     mostrarDocumentos();
 }
-function abrirPropostaComercial() {
+
+    function abrirPropostaComercial() {
+
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        alert(
+            "📑 Proposta Comercial é um recurso exclusivo do plano Premium."
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
 
     esconderTelas();
 

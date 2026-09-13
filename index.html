@@ -4929,14 +4929,12 @@ async function salvarCobranca() {
     localStorage.getItem(
         "indiceCobrancaEmEdicao"
     );
-
-try {
+/* PLANO GRÁTIS */
+if (!window.usuarioPremium()) {
 
     if (indiceEdicao === null) {
 
-        await window.salvarCobrancaNaNuvem(
-            cobranca
-        );
+        cobrancas.push(cobranca);
 
         alert(
             "Cobrança salva com sucesso!"
@@ -4944,42 +4942,80 @@ try {
 
     } else {
 
-        const cobrancaAnterior =
-            cobrancas[Number(indiceEdicao)];
-
-        if (!cobrancaAnterior?.idFirebase) {
-
-            alert(
-                "Esta cobrança ainda não possui vínculo com a nuvem."
-            );
-
-            return;
-        }
-
-        await window.salvarCobrancaNaNuvem(
-            cobranca,
-            cobrancaAnterior.idFirebase
-        );
+        cobrancas[Number(indiceEdicao)] =
+            cobranca;
 
         alert(
             "Cobrança atualizada com sucesso!"
         );
     }
 
+    localStorage.setItem(
+        "cobrancas",
+        JSON.stringify(cobrancas)
+    );
+
     localStorage.removeItem(
         "indiceCobrancaEmEdicao"
     );
 
-} catch (erro) {
+    mostrarCobrancas();
 
-    console.error(erro);
+} else {
 
-    alert(
-        "Não foi possível salvar a cobrança na nuvem."
-    );
+    /* PLANO PREMIUM */
+    try {
 
-    return;
+        if (indiceEdicao === null) {
+
+            await window.salvarCobrancaNaNuvem(
+                cobranca
+            );
+
+            alert(
+                "Cobrança salva com sucesso!"
+            );
+
+        } else {
+
+            const cobrancaAnterior =
+                cobrancas[Number(indiceEdicao)];
+
+            if (!cobrancaAnterior?.idFirebase) {
+
+                alert(
+                    "Esta cobrança ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarCobrancaNaNuvem(
+                cobranca,
+                cobrancaAnterior.idFirebase
+            );
+
+            alert(
+                "Cobrança atualizada com sucesso!"
+            );
+        }
+
+        localStorage.removeItem(
+            "indiceCobrancaEmEdicao"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível salvar a cobrança na nuvem."
+        );
+
+        return;
+    }
 }
+
 document.getElementById(
     "clienteCobranca"
 ).value = "";
@@ -5174,7 +5210,6 @@ function editarCobranca(indice) {
     });
 }
 
-
 async function excluirCobranca(indice) {
 
     const cobrancas =
@@ -5197,6 +5232,26 @@ async function excluirCobranca(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        cobrancas.splice(indice, 1);
+
+        localStorage.setItem(
+            "cobrancas",
+            JSON.stringify(cobrancas)
+        );
+
+        mostrarCobrancas();
+
+        alert(
+            "Cobrança excluída com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!cobranca.idFirebase) {
 
         alert(
@@ -5225,6 +5280,7 @@ async function excluirCobranca(indice) {
         );
     }
 }
+
   
     function compartilharCobranca(indice) {
 

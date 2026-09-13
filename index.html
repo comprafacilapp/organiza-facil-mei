@@ -3315,6 +3315,42 @@ async function salvarCliente() {
         observacao
     };
 
+    /* PLANO GRÁTIS */
+    if (!usuarioPremium()) {
+
+        if (clienteEditando === -1) {
+
+            clientes.push(cliente);
+
+            alert(
+                "Cliente " +
+                nome +
+                " salvo com sucesso!"
+            );
+
+        } else {
+
+            clientes[clienteEditando] =
+                cliente;
+
+            alert(
+                "Cliente atualizado com sucesso!"
+            );
+        }
+
+        localStorage.setItem(
+            "clientes",
+            JSON.stringify(clientes)
+        );
+
+        limparCliente();
+
+        mostrarClientes();
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     try {
 
         if (clienteEditando === -1) {

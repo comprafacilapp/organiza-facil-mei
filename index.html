@@ -1320,13 +1320,12 @@ async function salvarDocumento() {
         "indiceDocumentoEmEdicao"
     );
 
-try {
+/* PLANO GRÁTIS */
+if (!window.usuarioPremium()) {
 
     if (indiceEdicao === null) {
 
-        await window.salvarDocumentoNaNuvem(
-            documento
-        );
+        documentos.push(documento);
 
         alert(
             "Documento salvo com sucesso!"
@@ -1334,43 +1333,77 @@ try {
 
     } else {
 
-        const documentoAnterior =
-            documentos[Number(indiceEdicao)];
-
-        if (!documentoAnterior?.idFirebase) {
-
-            alert(
-                "Este documento ainda não possui vínculo com a nuvem."
-            );
-
-            return;
-        }
-
-        await window.salvarDocumentoNaNuvem(
-            documento,
-            documentoAnterior.idFirebase
-        );
+        documentos[Number(indiceEdicao)] =
+            documento;
 
         alert(
             "Documento atualizado com sucesso!"
         );
     }
 
+    localStorage.setItem(
+        "documentos",
+        JSON.stringify(documentos)
+    );
+
     localStorage.removeItem(
         "indiceDocumentoEmEdicao"
     );
 
-} catch (erro) {
+} else {
 
-    console.error(erro);
+    /* PLANO PREMIUM */
+    try {
 
-    alert(
-        "Não foi possível salvar o documento na nuvem."
-    );
+        if (indiceEdicao === null) {
 
-    return;
+            await window.salvarDocumentoNaNuvem(
+                documento
+            );
+
+            alert(
+                "Documento salvo com sucesso!"
+            );
+
+        } else {
+
+            const documentoAnterior =
+                documentos[Number(indiceEdicao)];
+
+            if (!documentoAnterior?.idFirebase) {
+
+                alert(
+                    "Este documento ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarDocumentoNaNuvem(
+                documento,
+                documentoAnterior.idFirebase
+            );
+
+            alert(
+                "Documento atualizado com sucesso!"
+            );
+        }
+
+        localStorage.removeItem(
+            "indiceDocumentoEmEdicao"
+        );
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível salvar o documento na nuvem."
+        );
+
+        return;
+    }
 }
-
 document.getElementById("nomeDocumento").value = "";
 document.getElementById("tipoDocumento").value = "";
 document.getElementById("dataDocumento").value = "";
@@ -2737,7 +2770,6 @@ function pesquisarDocumentos() {
 
 }
 
-
 async function excluirDocumento(indice) {
 
     const documentos =
@@ -2758,6 +2790,26 @@ async function excluirDocumento(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        documentos.splice(indice, 1);
+
+        localStorage.setItem(
+            "documentos",
+            JSON.stringify(documentos)
+        );
+
+        mostrarDocumentos();
+
+        alert(
+            "Documento excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!documento.idFirebase) {
 
         alert(
@@ -2786,7 +2838,6 @@ async function excluirDocumento(indice) {
         );
     }
 }
-
 
 function editarDocumento(indice) {
 

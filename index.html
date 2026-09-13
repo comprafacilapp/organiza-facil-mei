@@ -7086,8 +7086,41 @@ if (orcamentoEditando !== -1) {
         numeroOrcamento;
 }
 
+/* PLANO GRÁTIS */
+if (!window.usuarioPremium()) {
+
+    if (orcamentoEditando === -1) {
+
+        orcamentos.push(orcamento);
+
+        alert(
+            "Orçamento salvo com sucesso!"
+        );
+
+    } else {
+
+        orcamentos[orcamentoEditando] =
+            orcamento;
+
+        alert(
+            "Orçamento atualizado com sucesso!"
+        );
+    }
+
+    localStorage.setItem(
+        "orcamentos",
+        JSON.stringify(orcamentos)
+    );
+
+    limparOrcamento();
+
+    mostrarOrcamentos();
+
+    return;
+}
+
+/* PLANO PREMIUM */
 try {
-   
 
     if (orcamentoEditando === -1) {
 
@@ -7133,8 +7166,7 @@ try {
         "Não foi possível salvar o orçamento na nuvem."
     );
 }
-}
-
+}   
 function limparOrcamento() {
 
     document.getElementById(
@@ -8050,6 +8082,26 @@ async function excluirOrcamento(indice) {
         return;
     }
 
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
+
+        orcamentos.splice(indice, 1);
+
+        localStorage.setItem(
+            "orcamentos",
+            JSON.stringify(orcamentos)
+        );
+
+        mostrarOrcamentos();
+
+        alert(
+            "Orçamento excluído com sucesso!"
+        );
+
+        return;
+    }
+
+    /* PLANO PREMIUM */
     if (!orcamento.idFirebase) {
 
         alert(
@@ -8078,7 +8130,6 @@ async function excluirOrcamento(indice) {
         );
     }
 }
-
 </script>
 <script>
     mostrarConfiguracoes();

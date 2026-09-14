@@ -279,8 +279,7 @@ main {
 
 <!-- MENU -->
 
-<div id="menuPrincipal" class="tela ativa">
-<div id="areaLogin" style="text-align:center; margin-bottom:20px;">
+   <div id="areaLogin" style="text-align:center; margin-bottom:20px;">
 
     <div id="formLogin">
         <input id="emailLogin"
@@ -306,7 +305,9 @@ main {
     </button>
 
     <p id="statusLogin"></p>
-</div>
+</div> 
+<div id="menuPrincipal" class="tela">
+
     <div class="menu">
 
         <button onclick="abrirClientes()">
@@ -9963,70 +9964,66 @@ const statusLogin =
 
 onAuthStateChanged(auth, function(usuario) {
 
+    const menuPrincipal =
+        document.getElementById(
+            "menuPrincipal"
+        );
+
+    const areaLogin =
+        document.getElementById(
+            "areaLogin"
+        );
+
     if (usuario) {
 
         formLogin.style.display = "none";
-        botaoSair.style.display = "inline-block";
+
+        botaoSair.style.display =
+            "inline-block";
 
         emailLogin.value = "";
         senhaLogin.value = "";
 
-           statusLogin.innerText =
-    "✅ Usuário conectado";
-window.iniciarSincronizacaoPlano();
-    
-} else {
+        statusLogin.innerText =
+            "✅ Usuário conectado";
+
+        areaLogin.style.display =
+            "block";
+
+        menuPrincipal.classList.add(
+            "ativa"
+        );
+
+        window.iniciarSincronizacaoPlano();
+
+    } else {
+
         if (cancelarSincronizacaoPlano) {
-    cancelarSincronizacaoPlano();
-    cancelarSincronizacaoPlano = null;
-}
 
-planoAtual = "gratis";
-    if (cancelarSincronizacaoServicos) {
-        cancelarSincronizacaoServicos();
-        cancelarSincronizacaoServicos = null;
-    }
+            cancelarSincronizacaoPlano();
 
-    if (cancelarSincronizacaoClientes) {
-        cancelarSincronizacaoClientes();
-        cancelarSincronizacaoClientes = null;
-    }
+            cancelarSincronizacaoPlano =
+                null;
+        }
 
-    if (cancelarSincronizacaoAnotacoes) {
-        cancelarSincronizacaoAnotacoes();
-        cancelarSincronizacaoAnotacoes = null;
-    }
-if (cancelarSincronizacaoAgenda) {
-    cancelarSincronizacaoAgenda();
-    cancelarSincronizacaoAgenda = null;
-}
-      if (cancelarSincronizacaoFinanceiro) {
-    cancelarSincronizacaoFinanceiro();
-    cancelarSincronizacaoFinanceiro = null;
-}  
-        if (cancelarSincronizacaoOrcamentos) {
-    cancelarSincronizacaoOrcamentos();
-    cancelarSincronizacaoOrcamentos = null;
-}
-        if (cancelarSincronizacaoCobrancas) {
-    cancelarSincronizacaoCobrancas();
-    cancelarSincronizacaoCobrancas = null;
-}
-  if (cancelarSincronizacaoDocumentos) {
-    cancelarSincronizacaoDocumentos();
-    cancelarSincronizacaoDocumentos = null;
-      
-}  
-     if (cancelarSincronizacaoPropostas) {
-    cancelarSincronizacaoPropostas();
-    cancelarSincronizacaoPropostas = null;
-}  
-        
-  if (cancelarSincronizacaoConfiguracoes) {
-    cancelarSincronizacaoConfiguracoes();
-    cancelarSincronizacaoConfiguracoes = null;
-}      formLogin.style.display = "block";
-        botaoSair.style.display = "none";
+        planoAtual = "gratis";
+
+        window.pararSincronizacoesPremium();
+
+        esconderTelas();
+
+        menuPrincipal.classList.remove(
+            "ativa"
+        );
+
+        areaLogin.style.display =
+            "block";
+
+        formLogin.style.display =
+            "block";
+
+        botaoSair.style.display =
+            "none";
 
         emailLogin.value = "";
         senhaLogin.value = "";
@@ -10034,7 +10031,6 @@ if (cancelarSincronizacaoAgenda) {
         statusLogin.innerText = "";
     }
 });
-
 botaoSair.addEventListener("click", async function() {
 
     try {

@@ -3533,6 +3533,18 @@ function mascaraTelefone(campo) {
 
     campo.value = numero;
 }
+function chaveClientes() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        return "clientes";
+    }
+
+    return "clientes_" + usuario.uid;
+}
+
+
 async function salvarCliente() {
 
     const nome =
@@ -3559,7 +3571,7 @@ async function salvarCliente() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+          localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente = {
@@ -3592,13 +3604,12 @@ async function salvarCliente() {
             );
         }
 
-        localStorage.setItem(
-            "clientes",
-            JSON.stringify(clientes)
-        );
+      localStorage.setItem(
+    chaveClientes(),
+    JSON.stringify(clientes)
+);
 
-        limparCliente();
-
+limparCliente();
         mostrarClientes();
 
         return;
@@ -3674,7 +3685,7 @@ function mostrarClientes() {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     mostrarListaClientes(clientes);
@@ -3770,7 +3781,7 @@ function pesquisarClientes() {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
  const resultados =
@@ -3794,7 +3805,7 @@ function editarCliente(indice) {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -3833,7 +3844,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -3856,10 +3867,10 @@ async function excluirCliente(indice) {
 
         clientes.splice(indice, 1);
 
-        localStorage.setItem(
-            "clientes",
-            JSON.stringify(clientes)
-        );
+       localStorage.setItem(
+    chaveClientes(),
+    JSON.stringify(clientes)
+);
 
         mostrarClientes();
 
@@ -3903,9 +3914,9 @@ async function excluirCliente(indice) {
     function abrirWhatsAppCliente(indice) {
 
     const clientes =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
+    JSON.parse(
+        localStorage.getItem(chaveClientes())
+    ) || [];
 
     const cliente =
         clientes[indice];
@@ -3943,10 +3954,10 @@ async function excluirCliente(indice) {
 
    function criarOrcamentoCliente(indice) {
 
-    const clientes =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
+   const clientes =
+    JSON.parse(
+        localStorage.getItem(chaveClientes())
+    ) || [];
 
     const cliente =
         clientes[indice];
@@ -3974,11 +3985,10 @@ async function excluirCliente(indice) {
 } 
     function criarCobrancaCliente(indice) {
 
-    const clientes =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
-
+   const clientes =
+    JSON.parse(
+        localStorage.getItem(chaveClientes())
+    ) || [];
     const cliente =
         clientes[indice];
 
@@ -4463,7 +4473,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     const select =
@@ -4498,7 +4508,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -4548,7 +4558,7 @@ async function salvarAgenda() {
 
         const clientes =
             JSON.parse(
-                localStorage.getItem("clientes")
+                localStorage.getItem(chaveClientes())
             ) || [];
 
         const clienteSelecionado =
@@ -4883,7 +4893,8 @@ function editarAgenda(indice) {
         compromisso.cliente;
     const clientes =
     JSON.parse(
-        localStorage.getItem("clientes")
+       localStorage.getItem(chaveClientes())
+        
     ) || [];
 
 const indiceCliente =
@@ -7785,7 +7796,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const seletor =
@@ -7820,7 +7831,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -7889,7 +7900,7 @@ document.getElementById(
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const jaExiste =
@@ -9738,7 +9749,7 @@ window.iniciarSincronizacaoClientes = function() {
 
     const clientesLocais =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     if (
@@ -9780,9 +9791,9 @@ window.iniciarSincronizacaoClientes = function() {
                 });
 
                 localStorage.setItem(
-                    "clientes",
-                    JSON.stringify(clientes)
-                );
+    chaveClientes(),
+    JSON.stringify(clientes)
+);
 
                 if (
                     typeof window.mostrarClientes === "function"

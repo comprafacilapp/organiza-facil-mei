@@ -3530,25 +3530,9 @@ function mascaraTelefone(campo) {
             "($1"
         );
     }
+
     campo.value = numero;
-  };
-
-
-function chaveClientes() {
-
-    const uid =
-        typeof window.uidUsuarioAtual === "function"
-            ? window.uidUsuarioAtual()
-            : null;
-
-    if (!uid) {
-        return "clientes";
-    }
-
-    return "clientes_" + uid;
 }
-
-
 async function salvarCliente() {
 
     const nome =
@@ -3575,7 +3559,7 @@ async function salvarCliente() {
 
     const clientes =
         JSON.parse(
-          localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const cliente = {
@@ -3608,12 +3592,13 @@ async function salvarCliente() {
             );
         }
 
-      localStorage.setItem(
-    chaveClientes(),
-    JSON.stringify(clientes)
-);
+        localStorage.setItem(
+            "clientes",
+            JSON.stringify(clientes)
+        );
 
-limparCliente();
+        limparCliente();
+
         mostrarClientes();
 
         return;
@@ -3689,7 +3674,7 @@ function mostrarClientes() {
 
     let clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     mostrarListaClientes(clientes);
@@ -3785,7 +3770,7 @@ function pesquisarClientes() {
 
     let clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
  const resultados =
@@ -3809,7 +3794,7 @@ function editarCliente(indice) {
 
     let clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const cliente =
@@ -3848,7 +3833,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const cliente =
@@ -3871,10 +3856,10 @@ async function excluirCliente(indice) {
 
         clientes.splice(indice, 1);
 
-       localStorage.setItem(
-    chaveClientes(),
-    JSON.stringify(clientes)
-);
+        localStorage.setItem(
+            "clientes",
+            JSON.stringify(clientes)
+        );
 
         mostrarClientes();
 
@@ -3918,9 +3903,9 @@ async function excluirCliente(indice) {
     function abrirWhatsAppCliente(indice) {
 
     const clientes =
-    JSON.parse(
-        localStorage.getItem(chaveClientes())
-    ) || [];
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
 
     const cliente =
         clientes[indice];
@@ -3958,10 +3943,10 @@ async function excluirCliente(indice) {
 
    function criarOrcamentoCliente(indice) {
 
-   const clientes =
-    JSON.parse(
-        localStorage.getItem(chaveClientes())
-    ) || [];
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
 
     const cliente =
         clientes[indice];
@@ -3989,10 +3974,11 @@ async function excluirCliente(indice) {
 } 
     function criarCobrancaCliente(indice) {
 
-   const clientes =
-    JSON.parse(
-        localStorage.getItem(chaveClientes())
-    ) || [];
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
     const cliente =
         clientes[indice];
 
@@ -4477,7 +4463,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const select =
@@ -4512,7 +4498,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const cliente =
@@ -4562,7 +4548,7 @@ async function salvarAgenda() {
 
         const clientes =
             JSON.parse(
-                localStorage.getItem(chaveClientes())
+                localStorage.getItem("clientes")
             ) || [];
 
         const clienteSelecionado =
@@ -4897,8 +4883,7 @@ function editarAgenda(indice) {
         compromisso.cliente;
     const clientes =
     JSON.parse(
-       localStorage.getItem(chaveClientes())
-        
+        localStorage.getItem("clientes")
     ) || [];
 
 const indiceCliente =
@@ -7800,7 +7785,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const seletor =
@@ -7835,7 +7820,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const cliente =
@@ -7904,7 +7889,7 @@ document.getElementById(
 
     let clientes =
         JSON.parse(
-            localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     const jaExiste =
@@ -8438,12 +8423,6 @@ if ("serviceWorker" in navigator) {
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    window.uidUsuarioAtual = function() {
-
-    const usuario = auth.currentUser;
-
-    return usuario ? usuario.uid : null;
-};
    window.salvarServicoNaNuvem = async function(servico, idFirebase = null) {
 
     const usuario = auth.currentUser;
@@ -9759,7 +9738,7 @@ window.iniciarSincronizacaoClientes = function() {
 
     const clientesLocais =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem("clientes")
         ) || [];
 
     if (
@@ -9801,9 +9780,9 @@ window.iniciarSincronizacaoClientes = function() {
                 });
 
                 localStorage.setItem(
-    chaveClientes(),
-    JSON.stringify(clientes)
-);
+                    "clientes",
+                    JSON.stringify(clientes)
+                );
 
                 if (
                     typeof window.mostrarClientes === "function"

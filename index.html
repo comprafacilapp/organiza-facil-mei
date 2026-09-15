@@ -8423,6 +8423,12 @@ if ("serviceWorker" in navigator) {
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+window.uidUsuarioAtual = function() {
+    const usuario = auth.currentUser;
+    return usuario ? usuario.uid : null;
+};
+
    window.salvarServicoNaNuvem = async function(servico, idFirebase = null) {
 
     const usuario = auth.currentUser;

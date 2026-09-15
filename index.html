@@ -3530,19 +3530,23 @@ function mascaraTelefone(campo) {
             "($1"
         );
     }
-
     campo.value = numero;
   };
 
-  const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    window.uidUsuarioAtual = function() {
 
-    const usuario = auth.currentUser;
+function chaveClientes() {
 
-    return usuario ? usuario.uid : null;
-};
+    const uid =
+        typeof window.uidUsuarioAtual === "function"
+            ? window.uidUsuarioAtual()
+            : null;
+
+    if (!uid) {
+        return "clientes";
+    }
+
+    return "clientes_" + uid;
+}
 
 
 async function salvarCliente() {

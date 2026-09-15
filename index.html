@@ -3533,6 +3533,15 @@ function mascaraTelefone(campo) {
 
     campo.value = numero;
 }
+   function chaveClientes() {
+    const uid = window.uidUsuarioAtual();
+
+    if (!uid) {
+        return "clientes";
+    }
+
+    return "clientes_" + uid;
+} 
 async function salvarCliente() {
 
     const nome =
@@ -3558,9 +3567,9 @@ async function salvarCliente() {
     }
 
     const clientes =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
+    JSON.parse(
+        localStorage.getItem(chaveClientes())
+    ) || [];
 
     const cliente = {
         nome,
@@ -3593,7 +3602,7 @@ async function salvarCliente() {
         }
 
         localStorage.setItem(
-            "clientes",
+           chaveClientes(),
             JSON.stringify(clientes)
         );
 
@@ -3674,7 +3683,7 @@ function mostrarClientes() {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     mostrarListaClientes(clientes);
@@ -3770,7 +3779,7 @@ function pesquisarClientes() {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
  const resultados =
@@ -3794,7 +3803,7 @@ function editarCliente(indice) {
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -3833,7 +3842,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -3857,7 +3866,7 @@ async function excluirCliente(indice) {
         clientes.splice(indice, 1);
 
         localStorage.setItem(
-            "clientes",
+            chaveClientes(),
             JSON.stringify(clientes)
         );
 
@@ -3904,7 +3913,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes()) 
         ) || [];
 
     const cliente =
@@ -3945,7 +3954,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+          localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -3976,7 +3985,7 @@ async function excluirCliente(indice) {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+          localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -9742,10 +9751,10 @@ window.iniciarSincronizacaoClientes = function() {
         return;
     }
 
-    const clientesLocais =
-        JSON.parse(
-            localStorage.getItem("clientes")
-        ) || [];
+   const clientesLocais =
+    JSON.parse(
+        localStorage.getItem(chaveClientes())
+    ) || [];
 
     if (
         !localStorage.getItem(

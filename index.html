@@ -4472,7 +4472,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const select =
@@ -4507,7 +4507,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -4557,7 +4557,7 @@ async function salvarAgenda() {
 
         const clientes =
             JSON.parse(
-                localStorage.getItem("clientes")
+               localStorage.getItem(chaveClientes())
             ) || [];
 
         const clienteSelecionado =
@@ -4892,7 +4892,7 @@ function editarAgenda(indice) {
         compromisso.cliente;
     const clientes =
     JSON.parse(
-        localStorage.getItem("clientes")
+     localStorage.getItem(chaveClientes())
     ) || [];
 
 const indiceCliente =
@@ -7794,7 +7794,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+          localStorage.getItem(chaveClientes()) 
         ) || [];
 
     const seletor =
@@ -7829,7 +7829,7 @@ document.getElementById(
 
     const clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+           localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -7898,7 +7898,7 @@ document.getElementById(
 
     let clientes =
         JSON.parse(
-            localStorage.getItem("clientes")
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const jaExiste =
@@ -9756,16 +9756,19 @@ window.iniciarSincronizacaoClientes = function() {
         localStorage.getItem(chaveClientes())
     ) || [];
 
-    if (
-        !localStorage.getItem(
-            "backupClientesAntesFirebase"
-        )
-    ) {
-        localStorage.setItem(
-            "backupClientesAntesFirebase",
-            JSON.stringify(clientesLocais)
-        );
-    }
+    const chaveBackupClientes =
+    "backupClientesAntesFirebase_" + usuario.uid;
+
+if (
+    !localStorage.getItem(
+        chaveBackupClientes
+    )
+) {
+    localStorage.setItem(
+        chaveBackupClientes,
+        JSON.stringify(clientesLocais)
+    );
+}
 
     if (cancelarSincronizacaoClientes) {
         cancelarSincronizacaoClientes();
@@ -9795,7 +9798,7 @@ window.iniciarSincronizacaoClientes = function() {
                 });
 
                 localStorage.setItem(
-                    "clientes",
+                    chaveClientes(),
                     JSON.stringify(clientes)
                 );
 

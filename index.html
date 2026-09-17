@@ -2285,6 +2285,16 @@ function mostrarDocumentos() {
 
     });
 }
+   function chaveServicos() {
+    const uid = window.uidUsuarioAtual();
+
+    if (!uid) {
+        return "servicos";
+    }
+
+    return "servicos_" + uid;
+}
+
 async function salvarServico() {
 
     const nome =
@@ -2307,10 +2317,10 @@ async function salvarServico() {
         return;
     }
 
-    const servicos =
-        JSON.parse(
-            localStorage.getItem("servicos")
-        ) || [];
+   const servicos =
+    JSON.parse(
+        localStorage.getItem(chaveServicos())
+    ) || [];
 
     const indiceEdicao =
         localStorage.getItem(
@@ -2343,10 +2353,9 @@ async function salvarServico() {
         }
 
         localStorage.setItem(
-            "servicos",
-            JSON.stringify(servicos)
-        );
-
+    chaveServicos(),
+    JSON.stringify(servicos)
+);
         localStorage.removeItem(
             "indiceServicoEmEdicao"
         );
@@ -2426,7 +2435,7 @@ function mostrarServicos() {
 
     let servicos =
         JSON.parse(
-            localStorage.getItem("servicos")
+            localStorage.getItem(chaveServicos())
         ) || [];
 
     const lista =
@@ -2455,44 +2464,44 @@ function mostrarServicos() {
             <p>💰 Valor: ${formatarMoeda(Number(servico.valor) || 0)}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
             <p>📅 Data de cadastro: ${
-    servico.dataCadastro
-        ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
-        : "Não informada"
-}</p>
+                servico.dataCadastro
+                    ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
+                    : "Não informada"
+            }</p>
 
-<div class="acoes">
+            <div class="acoes">
 
-    <button
-        class="botao-editar"
-        onclick="editarServico(${indice})">
-        ✏️ Editar
-    </button>
+                <button
+                    class="botao-editar"
+                    onclick="editarServico(${indice})">
+                    ✏️ Editar
+                </button>
 
-    <button
-        class="botao-excluir"
-        onclick="excluirServico(${indice})">
-        🗑️ Excluir
-    </button>
+                <button
+                    class="botao-excluir"
+                    onclick="excluirServico(${indice})">
+                    🗑️ Excluir
+                </button>
 
-</div>
+            </div>
         `;
 
         lista.appendChild(item);
-
     });
-}function pesquisarServicos() {
+}
+
+function pesquisarServicos() {
 
     const pesquisa =
         document.getElementById("pesquisaServico")
-        .value
-        .toLowerCase()
-        .trim();
+            .value
+            .toLowerCase()
+            .trim();
 
     let servicos =
         JSON.parse(
-            localStorage.getItem("servicos")
+            localStorage.getItem(chaveServicos())
         ) || [];
-
 
     const filtrados =
         servicos.filter(function(servico) {
@@ -2502,16 +2511,17 @@ function mostrarServicos() {
                 (servico.descricao || "").toLowerCase().includes(pesquisa) ||
                 (servico.tempo || "").toLowerCase().includes(pesquisa)
             );
-
         });
+
     filtrados.forEach(function(servico) {
 
-    servico.indiceOriginal =
-        servicos.indexOf(servico);
-});
+        servico.indiceOriginal =
+            servicos.indexOf(servico);
+    });
 
     mostrarListaServicos(filtrados);
 }
+
 function mostrarListaServicos(servicos) {
 
     const lista =
@@ -2528,10 +2538,11 @@ function mostrarListaServicos(servicos) {
     }
 
     servicos.forEach(function(servico, indice) {
+
         const indiceServico =
-    servico.indiceOriginal !== undefined
-        ? servico.indiceOriginal
-        : indice;
+            servico.indiceOriginal !== undefined
+                ? servico.indiceOriginal
+                : indice;
 
         const item =
             document.createElement("div");
@@ -2544,37 +2555,37 @@ function mostrarListaServicos(servicos) {
             <p>💰 Valor: R$ ${servico.valor || "0,00"}</p>
             <p>⏱️ Tempo: ${servico.tempo || "Não informado"}</p>
             <p>📅 Data de cadastro: ${
-    servico.dataCadastro
-        ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
-        : "Não informada"
-}</p>
+                servico.dataCadastro
+                    ? new Date(servico.dataCadastro).toLocaleDateString("pt-BR")
+                    : "Não informada"
+            }</p>
 
-          <div class="acoes">
+            <div class="acoes">
 
-    <button
-        class="botao-editar"
-        onclick="editarServico(${indiceServico})">
-        ✏️ Editar
-    </button>
+                <button
+                    class="botao-editar"
+                    onclick="editarServico(${indiceServico})">
+                    ✏️ Editar
+                </button>
 
-    <button
-        class="botao-excluir"
-        onclick="excluirServico(${indiceServico})">
-        🗑️ Excluir
-    </button>
+                <button
+                    class="botao-excluir"
+                    onclick="excluirServico(${indiceServico})">
+                    🗑️ Excluir
+                </button>
 
-</div>
+            </div>
         `;
 
         lista.appendChild(item);
-
     });
 }
+
 async function excluirServico(indice) {
 
     const servicos =
         JSON.parse(
-            localStorage.getItem("servicos")
+            localStorage.getItem(chaveServicos())
         ) || [];
 
     const servico =
@@ -2598,7 +2609,7 @@ async function excluirServico(indice) {
         servicos.splice(indice, 1);
 
         localStorage.setItem(
-            "servicos",
+            chaveServicos(),
             JSON.stringify(servicos)
         );
 
@@ -2640,11 +2651,12 @@ async function excluirServico(indice) {
         );
     }
 }
+
 function editarServico(indice) {
 
     let servicos =
         JSON.parse(
-            localStorage.getItem("servicos")
+            localStorage.getItem(chaveServicos())
         ) || [];
 
     const servico = servicos[indice];
@@ -2661,32 +2673,32 @@ function editarServico(indice) {
         servico.descricao || "";
 
     document.getElementById("valorServico").value =
-    servico.valor
-        ? formatarMoeda(Number(servico.valor))
-        : "";
+        servico.valor
+            ? formatarMoeda(Number(servico.valor))
+            : "";
 
     document.getElementById("tempoServico").value =
         servico.tempo || "";
 
-    
     localStorage.setItem(
-    "indiceServicoEmEdicao",
-    indice
-);
+        "indiceServicoEmEdicao",
+        indice
+    );
 
-   document.getElementById("botaoSalvarServico").innerText =
-    "🔄 Atualizar Serviço";
- mostrarServicos();
+    document.getElementById("botaoSalvarServico").innerText =
+        "🔄 Atualizar Serviço";
+
+    mostrarServicos();
+
     document.getElementById(
-    "nomeServico"
-).scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-});
-
-
+        "nomeServico"
+    ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
-    function limparServico() {
+
+function limparServico() {
 
     document.getElementById("nomeServico").value = "";
     document.getElementById("descricaoServico").value = "";
@@ -9926,21 +9938,26 @@ window.iniciarSincronizacaoServicos = function() {
     if (!usuario) {
         return;
     }
-const servicosLocais =
-    JSON.parse(
-        localStorage.getItem("servicos")
-    ) || [];
 
-if (
-    !localStorage.getItem(
-        "backupServicosAntesFirebase"
-    )
-) {
-    localStorage.setItem(
-        "backupServicosAntesFirebase",
-        JSON.stringify(servicosLocais)
-    );
-}
+    const servicosLocais =
+        JSON.parse(
+            localStorage.getItem(chaveServicos())
+        ) || [];
+
+    const chaveBackupServicos =
+        "backupServicosAntesFirebase_" + usuario.uid;
+
+    if (
+        !localStorage.getItem(
+            chaveBackupServicos
+        )
+    ) {
+        localStorage.setItem(
+            chaveBackupServicos,
+            JSON.stringify(servicosLocais)
+        );
+    }
+
     if (cancelarSincronizacaoServicos) {
         cancelarSincronizacaoServicos();
     }
@@ -9969,7 +9986,7 @@ if (
                 });
 
                 localStorage.setItem(
-                    "servicos",
+                    chaveServicos(),
                     JSON.stringify(servicos)
                 );
 
@@ -9989,7 +10006,6 @@ if (
             }
         );
 };
-  
 const formLogin =
     document.getElementById("formLogin");
 

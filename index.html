@@ -9679,7 +9679,7 @@ window.iniciarSincronizacaoPropostas = function() {
             }
         );
 };
-   window.iniciarSincronizacaoAgenda = function() {
+ window.iniciarSincronizacaoAgenda = function() {
 
     const usuario = auth.currentUser;
 
@@ -9689,16 +9689,19 @@ window.iniciarSincronizacaoPropostas = function() {
 
     const agendaLocal =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
+
+    const chaveBackupAgenda =
+        "backupAgendaAntesFirebase_" + usuario.uid;
 
     if (
         !localStorage.getItem(
-            "backupAgendaAntesFirebase"
+            chaveBackupAgenda
         )
     ) {
         localStorage.setItem(
-            "backupAgendaAntesFirebase",
+            chaveBackupAgenda,
             JSON.stringify(agendaLocal)
         );
     }
@@ -9742,7 +9745,7 @@ window.iniciarSincronizacaoPropostas = function() {
                 });
 
                 localStorage.setItem(
-                    "agenda",
+                    chaveAgenda(),
                     JSON.stringify(agenda)
                 );
 
@@ -9761,7 +9764,7 @@ window.iniciarSincronizacaoPropostas = function() {
                 );
             }
         );
-}; 
+};
 window.iniciarSincronizacaoClientes = function() {
 
     const usuario = auth.currentUser;

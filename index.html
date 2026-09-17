@@ -4459,10 +4459,19 @@ async function fixarAnotacao(indice) {
         );
     }
 }
-
 /* =========================
    AGENDA
 ========================= */
+
+function chaveAgenda() {
+    const uid = window.uidUsuarioAtual();
+
+    if (!uid) {
+        return "agenda";
+    }
+
+    return "agenda_" + uid;
+}
 
 function abrirAgenda() {
 
@@ -4472,7 +4481,7 @@ function abrirAgenda() {
         .classList.add("ativa");
 
     mostrarAgenda();
-   carregarClientesAgenda(); 
+    carregarClientesAgenda();
 }
 
 function carregarClientesAgenda() {
@@ -4501,7 +4510,8 @@ function carregarClientesAgenda() {
         select.appendChild(option);
     });
 }
-    function selecionarClienteAgenda() {
+
+function selecionarClienteAgenda() {
 
     const indice =
         document.getElementById(
@@ -4514,7 +4524,7 @@ function carregarClientesAgenda() {
 
     const clientes =
         JSON.parse(
-           localStorage.getItem(chaveClientes())
+            localStorage.getItem(chaveClientes())
         ) || [];
 
     const cliente =
@@ -4529,6 +4539,7 @@ function carregarClientesAgenda() {
     ).value =
         cliente.nome || "";
 }
+
 async function salvarAgenda() {
 
     const data =
@@ -4564,7 +4575,7 @@ async function salvarAgenda() {
 
         const clientes =
             JSON.parse(
-               localStorage.getItem(chaveClientes())
+                localStorage.getItem(chaveClientes())
             ) || [];
 
         const clienteSelecionado =
@@ -4600,7 +4611,7 @@ async function salvarAgenda() {
 
     const agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     const compromisso = {
@@ -4611,87 +4622,88 @@ async function salvarAgenda() {
         telefone
     };
 
-   /* PLANO GRÁTIS */
-if (!window.usuarioPremium()) {
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
 
-    if (agendaEditando === -1) {
+        if (agendaEditando === -1) {
 
-        agenda.push(compromisso);
-
-        alert(
-            "Compromisso salvo com sucesso!"
-        );
-
-    } else {
-
-        agenda[agendaEditando] =
-            compromisso;
-
-        alert(
-            "Compromisso atualizado com sucesso!"
-        );
-    }
-
-    localStorage.setItem(
-        "agenda",
-        JSON.stringify(agenda)
-    );
-
-    limparAgenda();
-
-    mostrarAgenda();
-
-    return;
-}
-
-/* PLANO PREMIUM */
-try {
-
-    if (agendaEditando === -1) {
-
-        await window.salvarAgendaNaNuvem(
-            compromisso
-        );
-
-        alert(
-            "Compromisso salvo com sucesso!"
-        );
-
-    } else {
-
-        const compromissoAnterior =
-            agenda[agendaEditando];
-
-        if (!compromissoAnterior?.idFirebase) {
+            agenda.push(compromisso);
 
             alert(
-                "Este compromisso ainda não possui vínculo com a nuvem."
+                "Compromisso salvo com sucesso!"
             );
 
-            return;
+        } else {
+
+            agenda[agendaEditando] =
+                compromisso;
+
+            alert(
+                "Compromisso atualizado com sucesso!"
+            );
         }
 
-        await window.salvarAgendaNaNuvem(
-            compromisso,
-            compromissoAnterior.idFirebase
+        localStorage.setItem(
+            chaveAgenda(),
+            JSON.stringify(agenda)
         );
 
-        alert(
-            "Compromisso atualizado com sucesso!"
-        );
+        limparAgenda();
+
+        mostrarAgenda();
+
+        return;
     }
 
-    limparAgenda();
+    /* PLANO PREMIUM */
+    try {
 
-} catch (erro) {
+        if (agendaEditando === -1) {
 
-    console.error(erro);
+            await window.salvarAgendaNaNuvem(
+                compromisso
+            );
 
-    alert(
-        "Não foi possível salvar o compromisso na nuvem."
-    );
+            alert(
+                "Compromisso salvo com sucesso!"
+            );
+
+        } else {
+
+            const compromissoAnterior =
+                agenda[agendaEditando];
+
+            if (!compromissoAnterior?.idFirebase) {
+
+                alert(
+                    "Este compromisso ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarAgendaNaNuvem(
+                compromisso,
+                compromissoAnterior.idFirebase
+            );
+
+            alert(
+                "Compromisso atualizado com sucesso!"
+            );
+        }
+
+        limparAgenda();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível salvar o compromisso na nuvem."
+        );
+    }
 }
-}    
+
 function limparAgenda() {
 
     document.getElementById(
@@ -4705,9 +4717,11 @@ function limparAgenda() {
     document.getElementById(
         "clienteAgenda"
     ).value = "";
-document.getElementById(
-    "clienteCadastradoAgenda"
-).value = "";
+
+    document.getElementById(
+        "clienteCadastradoAgenda"
+    ).value = "";
+
     document.getElementById(
         "descricaoAgenda"
     ).value = "";
@@ -4725,7 +4739,6 @@ document.getElementById(
     agendaEditando = -1;
 }
 
-
 function formatarData(data) {
 
     const partes =
@@ -4740,17 +4753,15 @@ function formatarData(data) {
     );
 }
 
-
 function mostrarAgenda() {
 
     let agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     mostrarListaAgenda(agenda);
 }
-
 
 function mostrarListaAgenda(agenda) {
 
@@ -4773,10 +4784,11 @@ function mostrarListaAgenda(agenda) {
         compromisso,
         indice
     ) {
+
         const indiceCompromisso =
-    compromisso.indiceOriginal !== undefined
-        ? compromisso.indiceOriginal
-        : indice;
+            compromisso.indiceOriginal !== undefined
+                ? compromisso.indiceOriginal
+                : indice;
 
         const div =
             document.createElement("div");
@@ -4807,30 +4819,28 @@ function mostrarListaAgenda(agenda) {
 
                 <button
                     class="botao-editar"
-                   onclick="editarAgenda(${indiceCompromisso})">
+                    onclick="editarAgenda(${indiceCompromisso})">
                     ✏️ Editar
                 </button>
 
                 <button
                     class="botao-excluir"
-                   onclick="excluirAgenda(${indiceCompromisso})">
+                    onclick="excluirAgenda(${indiceCompromisso})">
                     🗑️ Excluir
                 </button>
 
+                <button
+                    class="botao-editar"
+                    onclick="abrirWhatsAppAgenda(${indiceCompromisso})">
+                    💬 WhatsApp
+                </button>
 
-    <button
-        class="botao-editar"
-        onclick="abrirWhatsAppAgenda(${indiceCompromisso})">
-        💬 WhatsApp
-    </button>
-
-</div>
+            </div>
         `;
 
         lista.appendChild(div);
     });
 }
-
 
 function pesquisarAgenda() {
 
@@ -4844,7 +4854,7 @@ function pesquisarAgenda() {
 
     let agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     const resultados =
@@ -4863,21 +4873,21 @@ function pesquisarAgenda() {
                     .includes(texto)
             );
         });
+
     resultados.forEach(function(compromisso) {
 
-    compromisso.indiceOriginal =
-        agenda.indexOf(compromisso);
-});
+        compromisso.indiceOriginal =
+            agenda.indexOf(compromisso);
+    });
 
     mostrarListaAgenda(resultados);
 }
-
 
 function editarAgenda(indice) {
 
     let agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     const compromisso =
@@ -4897,22 +4907,23 @@ function editarAgenda(indice) {
         "clienteAgenda"
     ).value =
         compromisso.cliente;
+
     const clientes =
-    JSON.parse(
-     localStorage.getItem(chaveClientes())
-    ) || [];
+        JSON.parse(
+            localStorage.getItem(chaveClientes())
+        ) || [];
 
-const indiceCliente =
-    clientes.findIndex(function(cliente) {
-        return cliente.nome === compromisso.cliente;
-    });
+    const indiceCliente =
+        clientes.findIndex(function(cliente) {
+            return cliente.nome === compromisso.cliente;
+        });
 
-document.getElementById(
-    "clienteCadastradoAgenda"
-).value =
-    indiceCliente >= 0
-        ? String(indiceCliente)
-        : "";
+    document.getElementById(
+        "clienteCadastradoAgenda"
+    ).value =
+        indiceCliente >= 0
+            ? String(indiceCliente)
+            : "";
 
     document.getElementById(
         "descricaoAgenda"
@@ -4930,18 +4941,20 @@ document.getElementById(
         "botaoAgenda"
     ).innerText =
         "💾 Atualizar Compromisso";
+
     document.getElementById(
-    "tituloAgenda"
-).scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-});
+        "tituloAgenda"
+    ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
+
 async function excluirAgenda(indice) {
 
     const agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     const compromisso =
@@ -4963,7 +4976,7 @@ async function excluirAgenda(indice) {
         agenda.splice(indice, 1);
 
         localStorage.setItem(
-            "agenda",
+            chaveAgenda(),
             JSON.stringify(agenda)
         );
 
@@ -5006,11 +5019,11 @@ async function excluirAgenda(indice) {
     }
 }
 
-  function abrirWhatsAppAgenda(indice) {
+function abrirWhatsAppAgenda(indice) {
 
     const agenda =
         JSON.parse(
-            localStorage.getItem("agenda")
+            localStorage.getItem(chaveAgenda())
         ) || [];
 
     const compromisso =
@@ -5053,7 +5066,7 @@ async function excluirAgenda(indice) {
         encodeURIComponent(mensagem);
 
     window.open(link, "_blank");
-}  
+}
 /* =========================
    COBRANÇAS
 ========================= */

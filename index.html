@@ -5813,7 +5813,25 @@ function abrirFinanceiro() {
 
     mostrarFinanceiro();
 }
+function chaveFinanceiro() {
+    const uid = window.uidUsuarioAtual();
 
+    if (!uid) {
+        return "financeiro";
+    }
+
+    return "financeiro_" + uid;
+}
+
+function chaveOrcamentosMensais() {
+    const uid = window.uidUsuarioAtual();
+
+    if (!uid) {
+        return "orcamentosMensais";
+    }
+
+    return "orcamentosMensais_" + uid;
+}
 
 async function salvarFinanceiro() {
 
@@ -5862,7 +5880,7 @@ async function salvarFinanceiro() {
 
     const financeiro =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(chaveFinanceiro())
         ) || [];
 
     const lancamento = {
@@ -5872,87 +5890,88 @@ async function salvarFinanceiro() {
         categoria,
         valor
     };
-/* PLANO GRÁTIS */
-if (!window.usuarioPremium()) {
 
-    if (financeiroEditando === -1) {
+    /* PLANO GRÁTIS */
+    if (!window.usuarioPremium()) {
 
-        financeiro.push(lancamento);
+        if (financeiroEditando === -1) {
 
-        alert(
-            "Lançamento salvo com sucesso!"
-        );
-
-    } else {
-
-        financeiro[financeiroEditando] =
-            lancamento;
-
-        alert(
-            "Lançamento atualizado com sucesso!"
-        );
-    }
-
-    localStorage.setItem(
-        "financeiro",
-        JSON.stringify(financeiro)
-    );
-
-    limparFinanceiro();
-
-    mostrarFinanceiro();
-
-    return;
-}
-
-/* PLANO PREMIUM */
-try {
-
-    if (financeiroEditando === -1) {
-
-        await window.salvarFinanceiroNaNuvem(
-            lancamento
-        );
-
-        alert(
-            "Lançamento salvo com sucesso!"
-        );
-
-    } else {
-
-        const lancamentoAnterior =
-            financeiro[financeiroEditando];
-
-        if (!lancamentoAnterior?.idFirebase) {
+            financeiro.push(lancamento);
 
             alert(
-                "Este lançamento ainda não possui vínculo com a nuvem."
+                "Lançamento salvo com sucesso!"
             );
 
-            return;
+        } else {
+
+            financeiro[financeiroEditando] =
+                lancamento;
+
+            alert(
+                "Lançamento atualizado com sucesso!"
+            );
         }
 
-        await window.salvarFinanceiroNaNuvem(
-            lancamento,
-            lancamentoAnterior.idFirebase
+        localStorage.setItem(
+            chaveFinanceiro(),
+            JSON.stringify(financeiro)
         );
 
-        alert(
-            "Lançamento atualizado com sucesso!"
-        );
+        limparFinanceiro();
+
+        mostrarFinanceiro();
+
+        return;
     }
 
-    limparFinanceiro();
+    /* PLANO PREMIUM */
+    try {
 
-} catch (erro) {
+        if (financeiroEditando === -1) {
 
-    console.error(erro);
+            await window.salvarFinanceiroNaNuvem(
+                lancamento
+            );
 
-    alert(
-        "Não foi possível salvar o lançamento na nuvem."
-    );
+            alert(
+                "Lançamento salvo com sucesso!"
+            );
+
+        } else {
+
+            const lancamentoAnterior =
+                financeiro[financeiroEditando];
+
+            if (!lancamentoAnterior?.idFirebase) {
+
+                alert(
+                    "Este lançamento ainda não possui vínculo com a nuvem."
+                );
+
+                return;
+            }
+
+            await window.salvarFinanceiroNaNuvem(
+                lancamento,
+                lancamentoAnterior.idFirebase
+            );
+
+            alert(
+                "Lançamento atualizado com sucesso!"
+            );
+        }
+
+        limparFinanceiro();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível salvar o lançamento na nuvem."
+        );
+    }
 }
-} 
 function limparFinanceiro() {
 
     document.getElementById(
@@ -6035,7 +6054,7 @@ function valorParaNumero(valor) {
             }
         );
 } 
-   function salvarOrcamentoMensal() {
+  function salvarOrcamentoMensal() {
 
     const mes =
         document.getElementById(
@@ -6059,7 +6078,7 @@ function valorParaNumero(valor) {
     let orcamentosMensais =
         JSON.parse(
             localStorage.getItem(
-                "orcamentosMensais"
+                chaveOrcamentosMensais()
             )
         ) || {};
 
@@ -6067,7 +6086,7 @@ function valorParaNumero(valor) {
         valor;
 
     localStorage.setItem(
-        "orcamentosMensais",
+        chaveOrcamentosMensais(),
         JSON.stringify(
             orcamentosMensais
         )
@@ -6083,42 +6102,45 @@ function mostrarFinanceiro() {
 
     let financeiro =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                chaveFinanceiro()
+            )
         ) || [];
+
     financeiro.forEach(function(
-    lancamento,
-    indice
-) {
-    lancamento.indiceOriginal =
-        indice;
-});
-const mesSelecionado =
-    document.getElementById(
-        "mesFinanceiro"
-    ).value;
+        lancamento,
+        indice
+    ) {
+        lancamento.indiceOriginal =
+            indice;
+    });
 
-if (mesSelecionado !== "") {
+    const mesSelecionado =
+        document.getElementById(
+            "mesFinanceiro"
+        ).value;
 
-    financeiro =
-        financeiro.filter(function(
-            lancamento
-        ) {
+    if (mesSelecionado !== "") {
 
-            return lancamento.data &&
-                   lancamento.data.startsWith(
-                       mesSelecionado
-                   );
-        });
-}
+        financeiro =
+            financeiro.filter(function(
+                lancamento
+            ) {
+
+                return lancamento.data &&
+                       lancamento.data.startsWith(
+                           mesSelecionado
+                       );
+            });
+    }
 
     let entradas = 0;
     let saidas = 0;
 
-
     financeiro.forEach(function(
         lancamento
     ) {
-       
+
         if (
             lancamento.tipo ===
             "entrada"
@@ -6135,78 +6157,79 @@ if (mesSelecionado !== "") {
 
     });
 
-
     const saldo =
         entradas - saidas;
-let orcamentosMensais =
-    JSON.parse(
-        localStorage.getItem(
-            "orcamentosMensais"
-        )
-    ) || {};
 
-const orcamentoDoMes =
-    mesSelecionado
-        ? Number(
-            orcamentosMensais[
-                mesSelecionado
-            ]
-        ) || 0
-        : 0;
+    let orcamentosMensais =
+        JSON.parse(
+            localStorage.getItem(
+                chaveOrcamentosMensais()
+            )
+        ) || {};
 
-const restanteOrcamento =
-    orcamentoDoMes - saidas;
+    const orcamentoDoMes =
+        mesSelecionado
+            ? Number(
+                orcamentosMensais[
+                    mesSelecionado
+                ]
+            ) || 0
+            : 0;
 
-document.getElementById(
-    "orcamentoMensalExibido"
-).innerText =
-    formatarMoeda(
-        orcamentoDoMes
-    );
+    const restanteOrcamento =
+        orcamentoDoMes - saidas;
 
-document.getElementById(
-    "gastoOrcamentoMensal"
-).innerText =
-    formatarMoeda(
-        saidas
-    );
-
-document.getElementById(
-    "restanteOrcamentoMensal"
-).innerText =
-    formatarMoeda(
-        restanteOrcamento
-    );
-
-document.getElementById(
-    "orcamentoMensal"
-).value =
-    orcamentoDoMes
-        ? formatarMoeda(
+    document.getElementById(
+        "orcamentoMensalExibido"
+    ).innerText =
+        formatarMoeda(
             orcamentoDoMes
-        )
-        : "";
+        );
+
+    document.getElementById(
+        "gastoOrcamentoMensal"
+    ).innerText =
+        formatarMoeda(
+            saidas
+        );
+
+    document.getElementById(
+        "restanteOrcamentoMensal"
+    ).innerText =
+        formatarMoeda(
+            restanteOrcamento
+        );
+
+    document.getElementById(
+        "orcamentoMensal"
+    ).value =
+        orcamentoDoMes
+            ? formatarMoeda(
+                orcamentoDoMes
+            )
+            : "";
 
     document.getElementById(
         "totalEntradas"
     ).innerText =
         formatarMoeda(entradas);
 
-
     document.getElementById(
         "totalSaidas"
     ).innerText =
         formatarMoeda(saidas);
 
-
     document.getElementById(
         "saldoFinanceiro"
     ).innerText =
         formatarMoeda(saldo);
-mostrarResumoCategorias(
-    financeiro
-);
-mostrarComparacaoFinanceiro();
+
+    mostrarResumoCategorias(
+        financeiro
+    );
+
+    mostrarComparacaoFinanceiro();
+
     mostrarListaFinanceiro(
         financeiro
     );
@@ -6273,7 +6296,7 @@ mostrarComparacaoFinanceiro();
         resumo.appendChild(div);
     });
 }
-    function mostrarComparacaoFinanceiro() {
+   function mostrarComparacaoFinanceiro() {
 
     const area =
         document.getElementById(
@@ -6321,7 +6344,7 @@ mostrarComparacaoFinanceiro();
     const financeiro =
         JSON.parse(
             localStorage.getItem(
-                "financeiro"
+                chaveFinanceiro()
             )
         ) || [];
 
@@ -6363,40 +6386,42 @@ mostrarComparacaoFinanceiro();
 
     const diferenca =
         saldoAtual - saldoAnterior;
-let porcentagem = null;
 
-if (saldoAnterior !== 0) {
+    let porcentagem = null;
 
-    porcentagem =
-        Math.abs(
-            (diferenca / saldoAnterior) * 100
-        );
-}
+    if (saldoAnterior !== 0) {
+
+        porcentagem =
+            Math.abs(
+                (diferenca / saldoAnterior) * 100
+            );
+    }
+
     let resultado = "";
 
     if (diferenca > 0) {
 
         resultado =
-    "⬆️ Melhorou " +
-    formatarMoeda(diferenca) +
-    (porcentagem !== null
-        ? " (" +
-          porcentagem.toFixed(1).replace(".", ",") +
-          "%)"
-        : "");
+            "⬆️ Melhorou " +
+            formatarMoeda(diferenca) +
+            (porcentagem !== null
+                ? " (" +
+                  porcentagem.toFixed(1).replace(".", ",") +
+                  "%)"
+                : "");
 
     } else if (diferenca < 0) {
 
-    resultado =
-    "⬇️ Caiu " +
-    formatarMoeda(
-        Math.abs(diferenca)
-    ) +
-    (porcentagem !== null
-        ? " (" +
-          porcentagem.toFixed(1).replace(".", ",") +
-          "%)"
-        : "");
+        resultado =
+            "⬇️ Caiu " +
+            formatarMoeda(
+                Math.abs(diferenca)
+            ) +
+            (porcentagem !== null
+                ? " (" +
+                  porcentagem.toFixed(1).replace(".", ",") +
+                  "%)"
+                : "");
 
     } else {
 
@@ -6422,9 +6447,11 @@ function compartilharFinanceiro() {
         ).value;
 
     let financeiro =
-        JSON.parse(
-            localStorage.getItem("financeiro")
-        ) || [];
+    JSON.parse(
+        localStorage.getItem(
+            chaveFinanceiro()
+        )
+    ) || [];
 
     if (mesSelecionado !== "") {
 
@@ -6744,12 +6771,12 @@ botaoCompartilhar.onclick = function(event) {
 }
 function gerarReciboFinanceiro(indice) {
 
-    const financeiro =
-        JSON.parse(
-            localStorage.getItem(
-                "financeiro"
-            )
-        ) || [];
+   const financeiro =
+    JSON.parse(
+        localStorage.getItem(
+            chaveFinanceiro()
+        )
+    ) || [];
 
     const lancamento =
         financeiro[indice];
@@ -6984,10 +7011,12 @@ function pesquisarFinanceiro() {
         .trim();
 
 
-    let financeiro =
-        JSON.parse(
-            localStorage.getItem("financeiro")
-        ) || [];
+   let financeiro =
+    JSON.parse(
+        localStorage.getItem(
+            chaveFinanceiro()
+        )
+    ) || [];
 
 
     const resultados =
@@ -7019,11 +7048,12 @@ resultados.forEach(function(lancamento) {
 
 function editarFinanceiro(indice) {
 
-    let financeiro =
-        JSON.parse(
-            localStorage.getItem("financeiro")
-        ) || [];
-
+let financeiro =
+    JSON.parse(
+        localStorage.getItem(
+            chaveFinanceiro()
+        )
+    ) || [];
 
     const lancamento =
         financeiro[indice];
@@ -7082,12 +7112,13 @@ function editarFinanceiro(indice) {
 }
 
 
-
 async function excluirFinanceiro(indice) {
 
     const financeiro =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                chaveFinanceiro()
+            )
         ) || [];
 
     const lancamento =
@@ -7109,7 +7140,7 @@ async function excluirFinanceiro(indice) {
         financeiro.splice(indice, 1);
 
         localStorage.setItem(
-            "financeiro",
+            chaveFinanceiro(),
             JSON.stringify(financeiro)
         );
 
@@ -9297,7 +9328,7 @@ let cancelarSincronizacaoAgenda = null;
             }
         );
 };
-    window.iniciarSincronizacaoFinanceiro = function() {
+   window.iniciarSincronizacaoFinanceiro = function() {
 
     const usuario = auth.currentUser;
 
@@ -9307,16 +9338,21 @@ let cancelarSincronizacaoAgenda = null;
 
     const financeiroLocal =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                chaveFinanceiro()
+            )
         ) || [];
+
+    const chaveBackupFinanceiro =
+        "backupFinanceiroAntesFirebase_" + usuario.uid;
 
     if (
         !localStorage.getItem(
-            "backupFinanceiroAntesFirebase"
+            chaveBackupFinanceiro
         )
     ) {
         localStorage.setItem(
-            "backupFinanceiroAntesFirebase",
+            chaveBackupFinanceiro,
             JSON.stringify(financeiroLocal)
         );
     }
@@ -9354,7 +9390,7 @@ let cancelarSincronizacaoAgenda = null;
                 });
 
                 localStorage.setItem(
-                    "financeiro",
+                    chaveFinanceiro(),
                     JSON.stringify(financeiro)
                 );
 

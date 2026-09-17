@@ -3601,10 +3601,10 @@ async function salvarCliente() {
             );
         }
 
-        localStorage.setItem(
-           chaveClientes(),
-            JSON.stringify(clientes)
-        );
+       localStorage.setItem(
+    chaveClientes(),
+    JSON.stringify(clientes)
+);
 
         limparCliente();
 
@@ -7922,11 +7922,10 @@ document.getElementById(
 
     clientes.push(cliente);
 
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-    );
-
+   localStorage.setItem(
+    chaveClientes(),
+    JSON.stringify(clientes)
+);
     carregarClientesOrcamento();
 
     document.getElementById(

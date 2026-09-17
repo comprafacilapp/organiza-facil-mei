@@ -4005,7 +4005,15 @@ async function excluirCliente(indice) {
 /* =========================
    ANOTAÇÕES
 ========================= */
+function chaveAnotacoes() {
+    const uid = window.uidUsuarioAtual();
 
+    if (!uid) {
+        return "anotacoes";
+    }
+
+    return "anotacoes_" + uid;
+}
 function abrirAnotacoes() {
 
     esconderTelas();
@@ -4039,7 +4047,7 @@ async function salvarAnotacao() {
 
     const anotacoes =
         JSON.parse(
-            localStorage.getItem("anotacoes")
+            localStorage.getItem(chaveAnotacoes())
         ) || [];
 
     const anotacao = {
@@ -4073,7 +4081,7 @@ async function salvarAnotacao() {
         }
 
         localStorage.setItem(
-            "anotacoes",
+           chaveAnotacoes(),
             JSON.stringify(anotacoes)
         );
 
@@ -4160,7 +4168,7 @@ function mostrarAnotacoes() {
 
     let anotacoes =
         JSON.parse(
-            localStorage.getItem("anotacoes")
+           localStorage.getItem(chaveAnotacoes()) 
         ) || [];
 
     anotacoes =
@@ -4255,11 +4263,10 @@ function pesquisarAnotacoes() {
         .toLowerCase()
         .trim();
 
-    let anotacoes =
-        JSON.parse(
-            localStorage.getItem("anotacoes")
-        ) || [];
-
+   let anotacoes =
+    JSON.parse(
+        localStorage.getItem(chaveAnotacoes())
+    ) || [];
     const resultados =
         anotacoes.filter(function(anotacao) {
 
@@ -4286,7 +4293,7 @@ function editarAnotacao(indice) {
 
     let anotacoes =
         JSON.parse(
-            localStorage.getItem("anotacoes")
+            localStorage.getItem(chaveAnotacoes())
         ) || [];
 
     const anotacao =
@@ -4325,7 +4332,7 @@ async function excluirAnotacao(indice) {
 
     const anotacoes =
         JSON.parse(
-            localStorage.getItem("anotacoes")
+            localStorage.getItem(chaveAnotacoes())
         ) || [];
 
     const anotacao =
@@ -4347,7 +4354,7 @@ async function excluirAnotacao(indice) {
         anotacoes.splice(indice, 1);
 
         localStorage.setItem(
-            "anotacoes",
+           chaveAnotacoes(),
             JSON.stringify(anotacoes)
         );
 
@@ -4394,7 +4401,7 @@ async function fixarAnotacao(indice) {
 
     const anotacoes =
         JSON.parse(
-            localStorage.getItem("anotacoes")
+            localStorage.getItem(chaveAnotacoes())
         ) || [];
 
     const anotacao =
@@ -4417,7 +4424,7 @@ async function fixarAnotacao(indice) {
             anotacaoAtualizada;
 
         localStorage.setItem(
-            "anotacoes",
+          chaveAnotacoes(),
             JSON.stringify(anotacoes)
         );
 
@@ -9825,21 +9832,24 @@ window.iniciarSincronizacaoAnotacoes = function() {
         return;
     }
 
-    const anotacoesLocais =
-        JSON.parse(
-            localStorage.getItem("anotacoes")
-        ) || [];
+   const anotacoesLocais =
+    JSON.parse(
+        localStorage.getItem(chaveAnotacoes())
+    ) || [];
 
-    if (
-        !localStorage.getItem(
-            "backupAnotacoesAntesFirebase"
-        )
-    ) {
-        localStorage.setItem(
-            "backupAnotacoesAntesFirebase",
-            JSON.stringify(anotacoesLocais)
-        );
-    }
+const chaveBackupAnotacoes =
+    "backupAnotacoesAntesFirebase_" + usuario.uid;
+
+if (
+    !localStorage.getItem(
+        chaveBackupAnotacoes
+    )
+) {
+    localStorage.setItem(
+        chaveBackupAnotacoes,
+        JSON.stringify(anotacoesLocais)
+    );
+}
 
     if (cancelarSincronizacaoAnotacoes) {
         cancelarSincronizacaoAnotacoes();
@@ -9873,7 +9883,7 @@ window.iniciarSincronizacaoAnotacoes = function() {
                 });
 
                 localStorage.setItem(
-                    "anotacoes",
+                    chaveAnotacoes(),
                     JSON.stringify(anotacoes)
                 );
 

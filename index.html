@@ -1837,6 +1837,14 @@ function gerarPropostaComercial() {
 
     const enderecoEmpresa =
         configuracoes.endereco || "";
+
+const logoEmpresa =
+        configuracoes.logo || "";
+
+const logoHtml =
+        logoEmpresa
+            ? '<img src="' + logoEmpresa + '" class="logo-empresa" alt="Logo da empresa">'
+            : "";
 const cliente =
     document.getElementById(
         "clienteProposta"
@@ -1967,10 +1975,31 @@ h1 {
     border-radius: 5px;
 }
 
-.dados-empresa {
-    text-align: center;
+.cabecalho-empresa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
     margin-bottom: 25px;
+}
+
+.logo-empresa {
+    max-width: 150px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.dados-empresa {
+    text-align: left;
     color: #555;
+}
+
+.dados-empresa h1 {
+    margin: 0 0 8px;
+    text-align: left;
+    color: #1f3a5f;
 }
 
 .dados-empresa div {
@@ -1992,26 +2021,32 @@ h1 {
 
 <body>
 
-<h1>${nomeEmpresa}</h1>
+<div class="cabecalho-empresa">
 
-<div class="dados-empresa">
+    ${logoHtml}
 
-    <div>
-        <strong>CNPJ/CPF:</strong>
-        ${cnpjEmpresa || "Não informado"}
-    </div>
+    <div class="dados-empresa">
 
-    <div>
-        <strong>Telefone:</strong>
-        ${telefoneEmpresa || "Não informado"}
-        &nbsp; | &nbsp;
-        <strong>E-mail:</strong>
-        ${emailEmpresa || "Não informado"}
-    </div>
+        <h1>${nomeEmpresa}</h1>
 
-    <div>
-        <strong>Endereço:</strong>
-        ${enderecoEmpresa || "Não informado"}
+        <div>
+            <strong>CNPJ/CPF:</strong>
+            ${cnpjEmpresa || "Não informado"}
+        </div>
+
+        <div>
+            <strong>Telefone:</strong>
+            ${telefoneEmpresa || "Não informado"}
+            &nbsp; | &nbsp;
+            <strong>E-mail:</strong>
+            ${emailEmpresa || "Não informado"}
+        </div>
+
+        <div>
+            <strong>Endereço:</strong>
+            ${enderecoEmpresa || "Não informado"}
+        </div>
+
     </div>
 
 </div>

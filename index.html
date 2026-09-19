@@ -628,6 +628,11 @@ main {
    style="display:block; text-align:center; margin:15px 0;">
     🔒 Política de Privacidade
 </a>
+       <button type="button"
+        onclick="solicitarExclusaoConta()"
+        style="display:block; margin:15px auto; padding:10px 18px;">
+    🗑️ Excluir minha conta
+</button> 
         <button class="botao-voltar"
                 onclick="voltarInicio()">
             ← Voltar
@@ -8511,6 +8516,7 @@ if ("serviceWorker" in navigator) {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+     deleteUser,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   import {
@@ -8521,6 +8527,7 @@ if ("serviceWorker" in navigator) {
     setDoc, 
     updateDoc,
     deleteDoc,
+     getDocs,  
     onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
   const firebaseConfig = {
@@ -10178,6 +10185,160 @@ botaoSair.addEventListener("click", async function() {
         console.error(erro);
     }
 });
+    window.solicitarExclusaoConta = async function() {
+
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+        alert("Nenhum usuário está conectado.");
+        return;
+    }
+
+    const confirmar = confirm(
+        "ATENÇÃO!\n\n" +
+        "Esta ação excluirá permanentemente sua conta e os dados associados.\n\n" +
+        "Deseja continuar?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    const confirmarNovamente = confirm(
+        "Esta exclusão não poderá ser desfeita.\n\n" +
+        "Confirma a exclusão definitiva da sua conta?"
+    );
+
+    if (!confirmarNovamente) {
+        return;
+    }
+
+    try {
+
+        const uid = usuario.uid;
+
+        const colecoes = [
+            "servicos",
+            "clientes",
+            "anotacoes",
+            "agenda",
+            "financeiro",
+            "orcamentos",
+            "cobrancas",
+            "documentos",
+            "propostasComerciais"
+        ];
+
+        for (const nomeColecao of colecoes) {
+
+            const consulta = await getDocs(
+                collection(
+                    db,
+                    "usuarios",
+                    uid,
+                    nomeColecao
+                )
+            );
+
+            for (const documento of consulta.docs) {
+
+                await deleteDoc(
+                    doc(
+                        db,
+                        "usuarios",
+                        uid,
+                        nomeColecao,
+                        documento.id
+                    )
+                );
+            }
+        }
+
+        await deleteDoc(
+            doc(
+                db,
+                "usuarios",
+                uid,
+                "configuracoes",
+                "empresa"
+            )
+        );
+
+        await deleteDoc(
+            doc(
+                db,
+                "planos",
+                uid
+            )
+        );
+
+        window.pararSincronizacoesPremium();
+
+        if (cancelarSincronizacaoPlano) {
+            cancelarSincronizacaoPlano();
+            cancelarSincronizacaoPlano = null;
+        }
+
+        const chavesParaExcluir = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+
+            const chave = localStorage.key(i);
+
+            if (
+                chave &&
+                (
+                    chave.includes(uid) ||
+                    chave === "servicos" ||
+                    chave === "clientes" ||
+                    chave === "anotacoes" ||
+                    chave === "agenda" ||
+                    chave === "financeiro" ||
+                    chave === "orcamentos" ||
+                    chave === "orcamentosMensais" ||
+                    chave === "cobrancas" ||
+                    chave === "documentos" ||
+                    chave === "propostasComerciais" ||
+                    chave === "configuracoesEmpresa"
+                )
+            ) {
+                chavesParaExcluir.push(chave);
+            }
+        }
+
+        chavesParaExcluir.forEach(function(chave) {
+            localStorage.removeItem(chave);
+        });
+
+        await deleteUser(usuario);
+
+        alert("Sua conta e os dados associados foram excluídos.");
+
+        location.reload();
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir conta:",
+            erro
+        );
+
+        if (erro.code === "auth/requires-recent-login") {
+
+            alert(
+                "Por segurança, entre novamente na sua conta e tente a exclusão outra vez."
+            );
+
+            await signOut(auth);
+
+            return;
+        }
+
+        alert(
+            "Não foi possível concluir a exclusão da conta. Nenhuma nova tentativa será feita automaticamente."
+        );
+    }
+};
 document.getElementById("botaoCriarConta")
     .addEventListener("click", async function() {
 

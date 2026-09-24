@@ -5447,7 +5447,6 @@ cobrancas.forEach(
                             ? "⚠️ Vencida"
                             : "⏳ Pendente"
                 }
-
                 <div class="acoes">
 
                     <button
@@ -5458,9 +5457,22 @@ cobrancas.forEach(
 
                     <button
                         class="botao-excluir"
-                       onclick="excluirCobranca(${indiceCobranca})"> 
+                        onclick="excluirCobranca(${indiceCobranca})">
                         🗑️ Excluir
                     </button>
+
+                    <button
+                        class="botao-editar"
+                        onclick="alternarMaisCobranca(${indiceCobranca})">
+                        ⋮ Mais
+                    </button>
+
+                </div>
+
+                <div
+                    id="maisCobranca${indiceCobranca}"
+                    class="acoes"
+                    style="display:none;">
 
                     <button
                         class="botao-editar"
@@ -5474,7 +5486,7 @@ cobrancas.forEach(
                         💠 QR Code Pix
                     </button>
 
-                </div>
+                </div> 
             `;
 
             lista.appendChild(div);
@@ -5482,7 +5494,23 @@ cobrancas.forEach(
     );
 }
 
+function alternarMaisCobranca(indice) {
 
+    const menu =
+        document.getElementById(
+            "maisCobranca" + indice
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
+}
 function editarCobranca(indice) {
 
     const cobrancas =

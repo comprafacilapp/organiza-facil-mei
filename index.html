@@ -4901,7 +4901,7 @@ function mostrarListaAgenda(agenda) {
 
             📝 ${compromisso.descricao}
 
-            <div class="acoes">
+                       <div class="acoes">
 
                 <button
                     class="botao-editar"
@@ -4917,6 +4917,19 @@ function mostrarListaAgenda(agenda) {
 
                 <button
                     class="botao-editar"
+                    onclick="alternarMaisAgenda(${indiceCompromisso})">
+                    ⋮ Mais
+                </button>
+
+            </div>
+
+            <div
+                id="maisAgenda${indiceCompromisso}"
+                class="acoes"
+                style="display:none;">
+
+                <button
+                    class="botao-editar"
                     onclick="abrirWhatsAppAgenda(${indiceCompromisso})">
                     💬 WhatsApp
                 </button>
@@ -4927,7 +4940,23 @@ function mostrarListaAgenda(agenda) {
         lista.appendChild(div);
     });
 }
+function alternarMaisAgenda(indice) {
 
+    const menu =
+        document.getElementById(
+            "maisAgenda" + indice
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
+}
 function pesquisarAgenda() {
 
     const texto =

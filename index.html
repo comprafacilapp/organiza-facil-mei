@@ -3784,48 +3784,76 @@ function mostrarListaClientes(clientes) {
 
             📝 ${cliente.observacao || "Sem observações"}
 
-            <div class="acoes">
+                      <div class="acoes">
 
                 <button
                     class="botao-editar"
-                 onclick="editarCliente(${indiceCliente})"> 
+                    onclick="editarCliente(${indiceCliente})">
                     ✏️ Editar
                 </button>
 
-<button
-    class="botao-excluir"
-    onclick="excluirCliente(${indiceCliente})">
-    🗑️ Excluir
-</button>
-               
                 <button
-    class="botao-editar"
-    onclick="abrirWhatsAppCliente(${indiceCliente})">
-    💬 WhatsApp
-</button>
-</div>
-<div class="acoes">
+                    class="botao-excluir"
+                    onclick="excluirCliente(${indiceCliente})">
+                    🗑️ Excluir
+                </button>
 
-    <button
-        class="botao-editar"
-        onclick="criarOrcamentoCliente(${indiceCliente})">
-        🧾 Orçamento
-    </button>
+                <button
+                    class="botao-editar"
+                    onclick="alternarMaisCliente(${indiceCliente})">
+                    ⋮ Mais
+                </button>
 
-    <button
-        class="botao-editar"
-        onclick="criarCobrancaCliente(${indiceCliente})">
-        💳 Cobrança
-    </button>
+            </div>
 
-</div>
+            <div
+                id="maisCliente${indiceCliente}"
+                class="acoes"
+                style="display:none;">
+
+                <button
+                    class="botao-editar"
+                    onclick="abrirWhatsAppCliente(${indiceCliente})">
+                    💬 WhatsApp
+                </button>
+
+                <button
+                    class="botao-editar"
+                    onclick="criarOrcamentoCliente(${indiceCliente})">
+                    🧾 Orçamento
+                </button>
+
+                <button
+                    class="botao-editar"
+                    onclick="criarCobrancaCliente(${indiceCliente})">
+                    💳 Cobrança
+                </button>
+
+            </div>
+
 
         `;
 
         lista.appendChild(div);
     });
 }
+function alternarMaisCliente(indice) {
 
+    const menu =
+        document.getElementById(
+            "maisCliente" + indice
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
+}
 
 function pesquisarClientes() {
 

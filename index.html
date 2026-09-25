@@ -4313,7 +4313,7 @@ const indiceAnotacao =
 
             <p>${anotacao.texto}</p>
 
-            <div class="acoes">
+                       <div class="acoes">
 
                 <button
                     class="botao-editar"
@@ -4326,11 +4326,31 @@ const indiceAnotacao =
                     onclick="excluirAnotacao(${indiceAnotacao})">
                     🗑️ Excluir
                 </button>
-<button
-    class="botao-editar"
-    onclick="fixarAnotacao(${indiceAnotacao})">
-    ${anotacao.fixada ? "📌 Desafixar" : "📌 Fixar"}
-</button>
+
+                <button
+                    class="botao-editar"
+                    onclick="alternarMaisAnotacao(${indiceAnotacao})">
+                    ⋮ Mais
+                </button>
+
+            </div>
+
+            <div
+                id="maisAnotacao${indiceAnotacao}"
+                class="acoes"
+                style="display:none;">
+
+                <div style="flex:1;"></div>
+
+                <button
+                    class="botao-editar"
+                    style="flex:1;"
+                    onclick="fixarAnotacao(${indiceAnotacao})">
+                    ${anotacao.fixada ? "📌 Desafixar" : "📌 Fixar"}
+                </button>
+
+                <div style="flex:1;"></div>
+
             </div>
         `;
 
@@ -4338,7 +4358,23 @@ const indiceAnotacao =
     });
 }
 
+function alternarMaisAnotacao(indice) {
 
+    const menu =
+        document.getElementById(
+            "maisAnotacao" + indice
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
+}
 function pesquisarAnotacoes() {
 
     const texto =

@@ -6798,35 +6798,48 @@ function mostrarListaFinanceiro(
 
             📝 ${lancamento.descricao}
             <br>
-
 🏷️ ${lancamento.categoria || "Sem categoria"}
-<button
-    class="compartilhar-individual"
-    style="display:none;"
-    onclick="event.stopPropagation()">
-    📤 Compartilhar lançamento
-</button>
-            
+
             <div class="acoes">
 
                 <button
                     class="botao-editar"
-                   onclick="editarFinanceiro(${indiceLancamento})">
+                    onclick="editarFinanceiro(${indiceLancamento})">
                     ✏️ Editar
                 </button>
-                ${lancamento.tipo === "entrada" ? `
-    <button
-        class="botao-editar"
-       onclick="event.stopPropagation(); gerarReciboFinanceiro(${indiceLancamento})">
-        🧾 Recibo
-    </button>
-` : ""}
 
                 <button
                     class="botao-excluir"
                     onclick="excluirFinanceiro(${indiceLancamento})">
                     🗑️ Excluir
                 </button>
+
+                <button
+                    class="botao-editar"
+                    onclick="alternarMaisFinanceiro(${indiceLancamento})">
+                    ⋮ Mais
+                </button>
+
+            </div>
+
+            <div
+                id="maisFinanceiro${indiceLancamento}"
+                class="acoes"
+                style="display:none;">
+
+                <button
+                    class="botao-editar compartilhar-individual"
+                    onclick="event.stopPropagation()">
+                    📤 Compartilhar
+                </button>
+
+                ${lancamento.tipo === "entrada" ? `
+                    <button
+                        class="botao-editar"
+                        onclick="event.stopPropagation(); gerarReciboFinanceiro(${indiceLancamento})">
+                        🧾 Recibo
+                    </button>
+                ` : ""}
 
             </div>
         `;
@@ -6847,6 +6860,23 @@ botaoCompartilhar.onclick = function(event) {
 
         lista.appendChild(div);
     });
+}
+    function alternarMaisFinanceiro(indice) {
+
+    const menu =
+        document.getElementById(
+            "maisFinanceiro" + indice
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    if (menu.style.display === "none") {
+        menu.style.display = "flex";
+    } else {
+        menu.style.display = "none";
+    }
 }
     function compartilharLancamento(lancamento, botao) {
 

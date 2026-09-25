@@ -5469,24 +5469,28 @@ cobrancas.forEach(
 
                 </div>
 
-                <div
+                           <div
                     id="maisCobranca${indiceCobranca}"
                     class="acoes"
                     style="display:none;">
 
                     <button
                         class="botao-editar"
+                        style="flex:1;"
                         onclick="compartilharCobranca(${indiceCobranca})">
                         📤 Compartilhar
                     </button>
 
                     <button
                         class="botao-editar"
+                        style="flex:1;"
                         onclick="abrirQrCodeCobranca(${indiceCobranca})">
                         💠 QR Code Pix
                     </button>
 
-                </div> 
+                    <div style="flex:1;"></div>
+
+                </div>
             `;
 
             lista.appendChild(div);
@@ -6822,13 +6826,14 @@ function mostrarListaFinanceiro(
 
             </div>
 
-            <div
+                      <div
                 id="maisFinanceiro${indiceLancamento}"
                 class="acoes"
                 style="display:none;">
 
                 <button
                     class="botao-editar compartilhar-individual"
+                    style="flex:1;"
                     onclick="event.stopPropagation()">
                     📤 Compartilhar
                 </button>
@@ -6836,10 +6841,15 @@ function mostrarListaFinanceiro(
                 ${lancamento.tipo === "entrada" ? `
                     <button
                         class="botao-editar"
+                        style="flex:1;"
                         onclick="event.stopPropagation(); gerarReciboFinanceiro(${indiceLancamento})">
                         🧾 Recibo
                     </button>
-                ` : ""}
+                ` : `
+                    <div style="flex:1;"></div>
+                `}
+
+                <div style="flex:1;"></div>
 
             </div>
         `;
